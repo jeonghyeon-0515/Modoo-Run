@@ -1,4 +1,4 @@
-import { RaceStatus } from './types';
+type RaceStatus = 'open' | 'closed' | 'unknown';
 
 export function getRaceStatusTone(status: RaceStatus) {
   if (status === 'open') return 'info' as const;
