@@ -13,6 +13,10 @@ export const publicEnv = {
   anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
 };
 
+export function getSupabaseUrl() {
+  return process.env.SUPABASE_URL ?? requireEnv('NEXT_PUBLIC_SUPABASE_URL');
+}
+
 export function hasSupabasePublicEnv() {
   return Boolean(publicEnv.url && publicEnv.anonKey);
 }

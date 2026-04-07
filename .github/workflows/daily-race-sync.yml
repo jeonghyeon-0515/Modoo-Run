@@ -27,8 +27,7 @@ jobs:
       run:
         working-directory: apps/web
     env:
-      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_URL: https://ogvfgjfnfpvhbknqluby.supabase.co
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       RACE_SYNC_SHARED_SECRET: ${{ secrets.RACE_SYNC_SHARED_SECRET }}
       DETAIL_LIMIT: ${{ github.event.inputs.detail_limit || '3' }}
@@ -51,7 +50,7 @@ jobs:
 
       - name: Validate required secrets
         run: |
-          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY RACE_SYNC_SHARED_SECRET; do
+          for name in SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY RACE_SYNC_SHARED_SECRET; do
             if [ -z "${!name}" ]; then
               echo "필수 시크릿 $name 이(가) 비어 있습니다."
               exit 1
