@@ -1,0 +1,136 @@
+name: Daily Race Sync
+
+on:
+  schedule:
+    # 매일 오전 6시 KST = 전날 21시 UTC
+    - cron: '0 21 * * *'
+  workflow_dispatch:
+    inputs:
+      detail_limit:
+        description: '상세 수집 제한 개수 (비워두면 전체)'
+        required: false
+        default: '3'
+      years:
+        description: '동기화할 연도 목록 (쉼표 구분, 비워두면 현재 연도)'
+        required: false
+        default: ''
+      source_race_ids:
+        description: '특정 sourceRaceId만 실행할 때 사용 (쉼표 구분)'
+        required: false
+        default: ''
+
+jobs:
+  sync-open-races:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/web
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      RACE_SYNC_SHARED_SECRET: ${{ secrets.RACE_SYNC_SHARED_SECRET }}
+      DETAIL_LIMIT: ${{ github.event.inputs.detail_limit || '3' }}
+      YEARS: ${{ github.event.inputs.years || '' }}
+      SOURCE_RACE_IDS: ${{ github.event.inputs.source_race_ids || '' }}
+      EVENT_NAME: ${{ github.event_name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate required secrets
+        run: |
+          for name in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY RACE_SYNC_SHARED_SECRET; do
+            if [ -z "${!name}" ]; then
+              echo "필수 시크릿 $name 이(가) 비어 있습니다."
+              exit 1
+            fi
+          done
+
+      - name: Build request body
+        run: |
+          python3 - <<'PY' > payload.json
+          import json, os
+
+          def split_csv(value):
+              return [item.strip() for item in value.split(',') if item.strip()]
+
+          payload = {
+              'triggerType': 'manual' if os.environ.get('EVENT_NAME') == 'workflow_dispatch' else 'cron'
+          }
+
+          detail_limit = os.environ.get('DETAIL_LIMIT', '').strip()
+          if detail_limit:
+              payload['detailLimit'] = int(detail_limit)
+
+          years = split_csv(os.environ.get('YEARS', ''))
+          if years:
+              payload['years'] = [int(year) for year in years]
+
+          source_ids = split_csv(os.environ.get('SOURCE_RACE_IDS', ''))
+          if source_ids:
+              payload['sourceRaceIds'] = source_ids
+
+          print(json.dumps(payload))
+          PY
+
+      - name: Start local Next.js server
+        run: |
+          npm run dev > /tmp/modoo-run-dev.log 2>&1 &
+          echo $! > /tmp/modoo-run-dev.pid
+
+      - name: Wait for local server
+        run: |
+          for _ in $(seq 1 30); do
+            if curl -s http://127.0.0.1:3000 >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo '로컬 서버가 기동되지 않았습니다.'
+          cat /tmp/modoo-run-dev.log || true
+          exit 1
+
+      - name: Call local race sync endpoint
+        run: |
+          curl --fail-with-body --silent --show-error \
+            -X POST http://127.0.0.1:3000/api/internal/race-sync \
+            -H 'Content-Type: application/json' \
+            -H "x-race-sync-secret: $RACE_SYNC_SHARED_SECRET" \
+            --data @payload.json | tee response.json
+
+      - name: Print response summary
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path('response.json').read_text())
+          print('syncRunId =', data.get('syncRunId'))
+          print('fetchedCount =', data.get('fetchedCount'))
+          print('parsedCount =', data.get('parsedCount'))
+          print('upsertedCount =', data.get('upsertedCount'))
+          print('failedCount =', data.get('failedCount'))
+          PY
+
+      - name: Show server log on failure
+        if: failure()
+        run: cat /tmp/modoo-run-dev.log || true
+
+      - name: Stop local Next.js server
+        if: always()
+        run: |
+          if [ -f /tmp/modoo-run-dev.pid ]; then
+            kill "$(cat /tmp/modoo-run-dev.pid)" || true
+          fi

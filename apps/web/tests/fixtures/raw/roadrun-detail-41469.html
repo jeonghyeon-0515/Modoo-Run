@@ -1,0 +1,169 @@
+<title>대회일정 상세내용</title>
+<link rel="stylesheet" href="/schedule/lib/module.css">
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ze81xhf2zx&amp;submodules=panorama,geocoder,drawing,visualization"></script>
+<script language="JavaScript">
+<!--
+function open_window(name, url, left, top, width, height, toolbar, menubar, statusbar, scrollbar, resizable)
+{
+var x=window.screenLeft; 
+var y=window.screenTop; 
+var l=x+((document.body.offsetWidth-width)/2); 
+var t=y+((document.body.offsetHeight-height)/4); 
+  toolbar_str = toolbar ? 'yes' : 'no';
+  menubar_str = menubar ? 'yes' : 'no';
+  statusbar_str = statusbar ? 'yes' : 'no';
+  scrollbar_str = scrollbar ? 'yes' : 'no';
+  resizable_str = resizable ? 'yes' : 'no';
+  window.open(url, name, 'left='+l+',top='+t+',width='+width+',height='+height+',toolbar='+toolbar_str+',menubar='+menubar_str+',status='+statusbar_str+',scrollbars='+scrollbar_str+',resizable='+resizable_str);
+} 
+// -->
+</script>
+<table cellpadding="0" cellspacing="0" width="500">
+    <tr>
+        <td width="100%">
+            <table cellpadding="3" cellspacing="1" width="100%" bgcolor="steelblue">
+		<form name="signform" method="post">
+		<tr>
+				<td bgcolor="#86B7DF" width="55" height="25">
+                            <p align="center">대회명</p>
+                    </td>
+                    <td width="430" height="25" bgcolor="white">
+                        <p><B>2026 글로컬 건양대학교 K-국방 마라톤</B></p>
+                    </td>
+                </tr>
+				<tr>
+                    <td width="55" height="25" bgcolor="#86B7DF">
+                        <p align="center">대표자명</p>
+                    </td>
+                    <td width="430" height="25" bgcolor="white">
+                        <p>김동균</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="55" height="25" bgcolor="#86B7DF">
+                        <p align="center">E-mail</p>
+                    </td>
+                    <td width="430" height="25" bgcolor="white">
+                        <p><a href="javascript:open_window('win2', 'form_mail.htm?mail_url=road42195@naver.com', 0, 0, 560, 350, 0, 0, 0, 0, 0)">road42195@naver.com</a></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="55" height="25" bgcolor="#86B7DF">
+                        <p align="center">대회일시</p>
+                    </td>
+                    <td width="430" height="25" bgcolor="white">
+                        <p>2026년4월4일 출발시간:오전 9시 00분			</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="55" height="25" bgcolor="#86B7DF">
+                        <p align="center">전화번호</p>
+                    </td>
+                    <td width="430" height="25" bgcolor="white">1600-3962                    </td>
+                </tr>
+                <tr>
+                    <td width="55" height="25" bgcolor="#86B7DF">
+                        <p align="center">대회종목</p>
+                    </td>
+                    <td width="430" height="25" bgcolor="white">하프,10km,5km</td>
+                </tr>
+                <tr>
+                    <td width="55" height="25" bgcolor="#86B7DF">
+                        <p align="center">대회지역</p>
+                    </td>
+                    <td width="430" height="25" bgcolor="white">충남</td>
+                </tr>
+                <tr>
+                    <td width="55" height="25" bgcolor="#86B7DF">
+                        <p align="center">대회장소</p>
+                    </td>
+                    <td width="430" height="25" bgcolor="white">
+                        <p>건양대학교 글로컬캠퍼스 대운동</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="55" height="25" bgcolor="#86B7DF">
+                        <p align="center">주최단체</p>
+                    </td>
+                    <td width="430" height="25" bgcolor="white">
+                        <p>건양대학교</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="55" height="25" bgcolor="#86B7DF">
+                        <p align="center">접수기간</p>
+                    </td>
+                    <td width="430" height="25" bgcolor="white">2026년3월13일~2026년3월18일
+                    </td>
+                </tr>
+                <tr>
+                    <td width="55" bgcolor="#86B7DF" height="25">
+                        <p align="center">홈페이지</p>
+                    </td>
+                    <td width="430" bgcolor="white" height="25">
+                        <p>http://<a href="http://kyrun.co.kr/" target="_new">kyrun.co.kr/</a></p>
+                    </td>
+                </tr>
+								<tr>
+                    <td width="55" height="250px" bgcolor="#86B7DF">
+                        <p align="center">대회장</p>
+                    </td>
+                    <td bgcolor="white" align="center">
+                       <div id="map" style="width:100%;height:250px;"></div>
+                    </td>
+                </tr>
+				                <tr>
+                    <td width="55" height="24" bgcolor="#86B7DF">
+                        <p align="center">기타소개</p>
+                    </td>
+                    <td width="430" height="24" bgcolor="white">
+                        <p><br>국인, 건양대학생, 계룡시민 무료 참가<br />
+그 외 타지역 및 일반 참가 유료<br>&nbsp;</p>
+                    </td>
+                </tr>
+            </table>
+            <table cellpadding="3" cellspacing="0" width="100%">
+                <tr>
+                    <td width="100%" height="35" bgcolor="white">
+                        <p align="right"> 
+                        <input type="button" name="close" value="닫기" onclick="javascript:self.close()" class="button"></p>
+                    </td>
+                </tr>
+	    </form>
+            </table>
+        </td>
+    </tr>
+</table>
+<script id="code">
+	//지도 생성 시에 옵션을 지정할 수 있습니다.
+	var map = new naver.maps.Map('map', {
+		useStyleMap: true,
+		zoom: 12,
+		center: new naver.maps.LatLng(36.1827999, 127.1114387)
+	});
+	var marker = new naver.maps.Marker({
+		position: new naver.maps.LatLng(36.1827999, 127.1114387),
+		map: map
+	});
+	var contentString = [
+		'<div class="iw_inner">',
+		'	충청남도 논산시 대학로 121',
+		'</div>'
+	].join('');
+
+
+	var infowindow = new naver.maps.InfoWindow({
+		content: contentString,
+		maxWidth: 140,
+		backgroundColor: "#eee",
+		borderColor: "#2db400",
+		borderWidth: 5,
+		anchorSize: new naver.maps.Size(30, 30),
+		anchorSkew: true,
+		anchorColor: "#eee",
+		pixelOffset: new naver.maps.Point(20, -20)
+	});
+
+	infowindow.open(map, marker);
+</script>

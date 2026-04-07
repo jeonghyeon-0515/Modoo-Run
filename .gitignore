@@ -1,2 +1,5 @@
 .omx/
 .playwright-mcp/
+.npm-cache/
+.vercel
+supabase/.temp/
