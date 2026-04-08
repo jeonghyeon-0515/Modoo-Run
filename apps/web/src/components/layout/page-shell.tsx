@@ -37,7 +37,7 @@ export async function PageShell({ title, description, children }: { title: strin
           ) : (
             <Link
               href="/login"
-              className="rounded-full bg-[var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+              className="rounded-full bg-[var(--brand)] px-4 py-2 text-sm font-semibold text-white shadow-[0_14px_32px_rgba(255,107,87,0.24)] transition hover:bg-[var(--brand-strong)]"
             >
               로그인
             </Link>

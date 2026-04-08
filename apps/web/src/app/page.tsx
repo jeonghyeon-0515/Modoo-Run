@@ -82,9 +82,9 @@ export default async function Home() {
       description="접수중인 마라톤 대회를 더 보기 쉽게 찾고, 목표 대회를 기준으로 계획을 세우고, 매일의 달성을 기록하며, 다른 러너와 준비 과정을 나누는 흐름을 하나로 연결합니다."
     >
       <section className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
-        <article className="overflow-hidden rounded-[2rem] bg-slate-950 p-6 text-white shadow-xl shadow-blue-950/10 sm:p-8">
+        <article className="hero-shell overflow-hidden rounded-[2rem] p-6 text-white sm:p-8">
           <div className="max-w-3xl">
-            <p className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-blue-100 ring-1 ring-white/10">
+            <p className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-[var(--brand-soft-strong)] ring-1 ring-white/10">
               모바일 우선 러닝 허브
             </p>
             <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
@@ -100,19 +100,19 @@ export default async function Home() {
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/races"
-              className="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100"
+              className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(255,107,87,0.24)] transition hover:bg-[var(--brand-strong)]"
             >
               접수중 대회 보기
             </Link>
             <Link
               href="/plan"
-              className="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
             >
               월간 플랜으로 이동
             </Link>
             <Link
               href="/community"
-              className="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
             >
               러너 이야기 보기
             </Link>
@@ -205,7 +205,7 @@ export default async function Home() {
               <Link
                 key={race.id}
                 href={`/races/${race.sourceRaceId}`}
-                className="rounded-[1.5rem] border border-slate-200 p-4 transition hover:border-blue-200 hover:bg-blue-50/40"
+                className="interactive-card rounded-[1.5rem] border border-slate-200 p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -280,7 +280,7 @@ export default async function Home() {
                   <Link
                     key={post.id}
                     href={`/community/${post.id}`}
-                    className="block rounded-[1.25rem] border border-slate-200 p-4 transition hover:border-blue-200 hover:bg-blue-50/40"
+                    className="interactive-card block rounded-[1.25rem] border border-slate-200 p-4"
                   >
                     <StatusBadge tone="neutral">{post.category}</StatusBadge>
                     <h3 className="mt-3 text-sm font-semibold text-slate-950">{post.title}</h3>

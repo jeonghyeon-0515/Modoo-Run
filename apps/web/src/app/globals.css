@@ -1,12 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f7f7fb;
+  --foreground: #172033;
   --surface: #ffffff;
-  --surface-muted: #eef2ff;
-  --brand: #2563eb;
-  --brand-strong: #1d4ed8;
+  --surface-muted: #fff3ef;
+  --brand: #ff6b57;
+  --brand-strong: #e45846;
+  --brand-soft: #fff0eb;
+  --brand-soft-strong: #ffd0c6;
+  --hero-start: #18263d;
+  --hero-end: #283c5b;
 }
 
 @theme inline {
@@ -27,8 +31,9 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 24%),
-    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+    radial-gradient(circle at top left, rgba(255, 107, 87, 0.12), transparent 24%),
+    radial-gradient(circle at top right, rgba(24, 38, 61, 0.08), transparent 30%),
+    linear-gradient(180deg, #f7f7fb 0%, #fff8f6 100%);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -36,4 +41,24 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+.hero-shell {
+  background: linear-gradient(135deg, var(--hero-start), var(--hero-end));
+  box-shadow: 0 28px 64px rgba(24, 38, 61, 0.18);
+}
+
+.interactive-card {
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.interactive-card:hover {
+  border-color: var(--brand-soft-strong);
+  background: linear-gradient(180deg, #ffffff 0%, var(--brand-soft) 100%);
+  box-shadow: 0 18px 34px rgba(24, 38, 61, 0.08);
+  transform: translateY(-1px);
 }

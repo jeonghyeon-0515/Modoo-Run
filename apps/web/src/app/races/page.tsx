@@ -62,7 +62,9 @@ function FilterChip({
     <Link
       href={href}
       className={`rounded-full px-3 py-2 text-sm font-medium transition ${
-        active ? 'bg-[var(--brand)] text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+        active
+          ? 'bg-[var(--brand)] text-white'
+          : 'bg-[var(--surface-muted)] text-slate-700 hover:bg-[var(--brand-soft)]'
       }`}
     >
       {children}
@@ -232,7 +234,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                   <Link
                     key={race.id}
                     href={`/races/${race.sourceRaceId}`}
-                    className="block rounded-[1.25rem] border border-slate-200 p-4 transition hover:border-blue-200 hover:bg-blue-50/40"
+                    className="interactive-card block rounded-[1.25rem] border border-slate-200 p-4"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>

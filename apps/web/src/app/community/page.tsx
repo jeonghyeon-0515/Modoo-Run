@@ -85,14 +85,14 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             {categories.map((category) => (
               <Link
                 key={category.value}
-                href={categoryHref(category.value)}
-                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  selectedCategory === category.value
-                    ? 'bg-[var(--brand)] text-white'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                {category.label}
+              href={categoryHref(category.value)}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                selectedCategory === category.value
+                  ? 'bg-[var(--brand)] text-white'
+                  : 'bg-[var(--surface-muted)] text-slate-700 hover:bg-[var(--brand-soft)]'
+              }`}
+            >
+              {category.label}
               </Link>
             ))}
           </div>

@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 type Tone = 'info' | 'success' | 'warning' | 'neutral';
 
 const toneClassMap: Record<Tone, string> = {
-  info: 'bg-blue-50 text-blue-700 ring-blue-100',
+  info: 'bg-[var(--brand-soft)] text-[var(--brand-strong)] ring-[var(--brand-soft-strong)]',
   success: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
   warning: 'bg-amber-50 text-amber-700 ring-amber-100',
   neutral: 'bg-slate-100 text-slate-700 ring-slate-200',

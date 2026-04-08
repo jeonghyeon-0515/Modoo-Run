@@ -295,7 +295,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                               className={`rounded-full px-3 py-2 text-xs font-semibold transition ${
                                 item.status === option.value
                                   ? 'bg-[var(--brand)] text-white'
-                                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                  : 'bg-[var(--surface-muted)] text-slate-700 hover:bg-[var(--brand-soft)]'
                               }`}
                             >
                               {option.label}

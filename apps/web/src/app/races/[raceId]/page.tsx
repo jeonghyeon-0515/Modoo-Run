@@ -58,7 +58,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
         </Link>
       </div>
 
-      <section className="overflow-hidden rounded-[1.9rem] bg-slate-950 p-6 text-white shadow-xl shadow-blue-950/10 sm:p-8">
+      <section className="hero-shell overflow-hidden rounded-[1.9rem] p-6 text-white sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
@@ -75,7 +75,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
             </p>
           </div>
 
-          <div className="min-w-56 rounded-[1.5rem] bg-white/10 p-4 ring-1 ring-white/10">
+          <div className="min-w-56 rounded-[1.5rem] bg-white/10 p-4 ring-1 ring-white/10 backdrop-blur">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-300">마지막 수집</p>
             <p className="mt-2 text-lg font-semibold text-white">{formatLastSyncedAt(race.lastSyncedAt)}</p>
             <p className="mt-3 text-sm text-slate-300">
@@ -131,7 +131,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
                   <Link
                     key={item.id}
                     href={`/races/${item.sourceRaceId}`}
-                    className="rounded-[1.25rem] border border-slate-200 p-4 transition hover:border-blue-200 hover:bg-blue-50/40"
+                    className="interactive-card rounded-[1.25rem] border border-slate-200 p-4"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
