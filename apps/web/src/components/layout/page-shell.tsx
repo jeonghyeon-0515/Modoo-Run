@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { getOptionalViewer } from '@/lib/auth/session';
 import { logoutAction } from '@/app/login/actions';
 import { BottomNav } from './bottom-nav';
+import { ServiceTabs } from './service-tabs';
 
 export async function PageShell({ title, description, children }: { title: string; description: string; children: ReactNode }) {
   const viewer = await getOptionalViewer();
@@ -43,6 +44,7 @@ export async function PageShell({ title, description, children }: { title: strin
             </Link>
           )}
         </div>
+        <ServiceTabs />
       </header>
 
       <main className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8">
