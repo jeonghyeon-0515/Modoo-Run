@@ -27,7 +27,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
   return (
     <PageShell
       title={post.title}
-      description="제목, 본문, 댓글, 신고와 관리 동작이 하나의 흐름으로 이어지도록 단순한 구조를 유지합니다."
+      description="글을 읽고, 공감되는 내용은 댓글로 이어가고, 필요하면 신고까지 할 수 있게 단순하게 정리했어요."
     >
       <div className="mb-4">
         <Link href="/community" className="text-sm font-semibold text-[var(--brand)]">
@@ -44,7 +44,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
           {post.authorLabel} · {new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Seoul' }).format(new Date(post.created_at))}
         </p>
         {post.status === 'hidden' ? (
-          <p className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-700">이 글은 현재 숨김 상태입니다. 관리자 복원으로 다시 노출할 수 있습니다.</p>
+          <p className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-700">이 글은 지금 잠시 가려져 있어요. 운영자가 다시 보이게 할 수 있습니다.</p>
         ) : null}
         <p className="mt-5 whitespace-pre-wrap text-sm leading-7 text-slate-700">{post.content}</p>
 
@@ -58,12 +58,12 @@ export default async function CommunityDetailPage({ params }: { params: Params }
                 type="submit"
                 className="rounded-full border border-amber-200 px-4 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-50"
               >
-                신고하기
+                이 글 신고하기
               </button>
             </form>
           ) : (
             <Link href={`/login?next=${encodeURIComponent(`/community/${post.id}`)}`} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
-              로그인 후 신고/댓글 작성
+              로그인하고 의견 남기기
             </Link>
           )}
 
@@ -75,7 +75,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
                 type="submit"
                 className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               >
-                {post.status === 'hidden' ? '숨김 해제' : '관리자 숨김'}
+                {post.status === 'hidden' ? '다시 보이기' : '잠시 가리기'}
               </button>
             </form>
           ) : null}
@@ -83,25 +83,25 @@ export default async function CommunityDetailPage({ params }: { params: Params }
       </section>
 
       <section className="mt-6 rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-        <h2 className="text-lg font-semibold text-slate-950">댓글 작성</h2>
+        <h2 className="text-lg font-semibold text-slate-950">댓글 남기기</h2>
         {viewer ? (
           <form action={createCommunityCommentAction} className="mt-4 space-y-3">
             <input type="hidden" name="postId" value={post.id} />
             <textarea
               name="content"
               className="min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-              placeholder="경험이나 팁을 댓글로 남겨보세요."
+              placeholder="공감한 점이나 직접 해본 팁을 편하게 남겨보세요."
             />
             <button
               type="submit"
               className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
             >
-              댓글 작성
+              댓글 남기기
             </button>
           </form>
         ) : (
           <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-            댓글 작성은 로그인 후 사용할 수 있습니다.{' '}
+            댓글 남기기은 로그인 후 사용할 수 있습니다.{' '}
             <Link href={`/login?next=${encodeURIComponent(`/community/${post.id}`)}`} className="font-semibold text-[var(--brand)]">
               로그인하기
             </Link>
@@ -112,7 +112,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
       <section className="mt-6 space-y-4">
         {post.comments.length === 0 ? (
           <article className="rounded-[1.75rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
-            <p className="text-base font-semibold text-slate-950">아직 댓글이 없습니다.</p>
+            <p className="text-base font-semibold text-slate-950">아직 댓글이 없어요.</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">첫 댓글로 준비 경험이나 팁을 남겨보세요.</p>
           </article>
         ) : (

@@ -92,21 +92,21 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
 
   return (
     <PageShell
-      title="월간 플랜"
-      description="목표 대회를 중심으로 한 달 계획을 만들고, 날짜별 진행 상황을 기록하며 완료율과 연속 달성을 함께 확인합니다."
+      title="이번 달 러닝 계획"
+      description="이번 달에 어떻게 달릴지 가볍게 정하고, 달린 날마다 체크하면서 내 페이스를 만들어보세요."
     >
       {!viewer ? (
         <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
-          <p className="text-lg font-semibold text-slate-950">로그인 후 개인 플랜을 사용할 수 있습니다.</p>
+          <p className="text-lg font-semibold text-slate-950">로그인하면 내 계획을 이어서 볼 수 있어요.</p>
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            대회 탐색은 계속 이용할 수 있고, 로그인하면 월별 계획 생성/수정/달성 체크가 본인 계정에만 저장됩니다.
+            대회는 계속 둘러볼 수 있고, 로그인하면 이번 달 계획과 달린 기록이 내 계정에 저장돼요.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href={`/login?next=${encodeURIComponent(`/plan?year=${year}&month=${month}`)}`}
               className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
             >
-              로그인하고 플랜 시작하기
+              로그인하고 계획 시작하기
             </Link>
             <Link
               href="/races"
@@ -130,15 +130,15 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
         <>
           <section className="grid gap-4 sm:grid-cols-3">
             <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-              <p className="text-sm font-medium text-slate-500">이번 달 완료율</p>
+              <p className="text-sm font-medium text-slate-500">이번 달 실행률</p>
               <p className="mt-3 text-3xl font-bold text-slate-950">{stats.completionRate}%</p>
             </article>
             <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-              <p className="text-sm font-medium text-slate-500">계획 수</p>
+              <p className="text-sm font-medium text-slate-500">잡아둔 일정</p>
               <p className="mt-3 text-3xl font-bold text-slate-950">{stats.totalCount}개</p>
             </article>
             <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-              <p className="text-sm font-medium text-slate-500">연속 달성</p>
+              <p className="text-sm font-medium text-slate-500">이어 달린 날</p>
               <p className="mt-3 text-3xl font-bold text-slate-950">{stats.streak}일</p>
             </article>
           </section>
@@ -147,7 +147,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold text-slate-950">{monthTitle}</h2>
-                <p className="mt-2 text-sm text-slate-600">월간 계획은 저장하면 계속 수정할 수 있고, 각 아이템은 상태를 기록하며 누적됩니다.</p>
+                <p className="mt-2 text-sm text-slate-600">가볍게 적어두고, 달린 날마다 체크해가며 조금씩 다듬어보세요.</p>
               </div>
               <div className="flex items-center gap-2">
                 <Link href={monthHref(prevMonth.year, prevMonth.month)} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
@@ -164,21 +164,21 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
               <input type="hidden" name="month" value={month} />
               <div className="space-y-4">
                 <label className="block">
-                  <span className="text-sm font-semibold text-slate-700">플랜 제목</span>
+                  <span className="text-sm font-semibold text-slate-700">계획 이름</span>
                   <input
                     name="title"
                     defaultValue={plan?.title ?? `${monthTitle} 러닝 플랜`}
                     className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none ring-0 transition focus:border-blue-400"
-                    placeholder="예: 10km 봄 시즌 대비"
+                    placeholder="예: 10km 완주 준비"
                   />
                 </label>
                 <label className="block">
-                  <span className="text-sm font-semibold text-slate-700">메모</span>
+                  <span className="text-sm font-semibold text-slate-700">계획 메모</span>
                   <textarea
                     name="notes"
                     defaultValue={plan?.notes ?? ''}
                     className="mt-2 min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                    placeholder="이번 달 목표, 회복 전략, 주간 훈련 포인트를 적어두세요."
+                    placeholder="이번 달에 꼭 지키고 싶은 목표나 메모를 적어보세요."
                   />
                 </label>
               </div>
@@ -191,7 +191,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     defaultValue={plan?.target_race_id ?? ''}
                     className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                   >
-                    <option value="">선택 안 함</option>
+                    <option value="">아직 안 정했어요</option>
                     {races.map((race) => (
                       <option key={race.id} value={race.id}>
                         {race.title} · {formatRaceDate(race.eventDate, race.eventDateLabel)}
@@ -202,7 +202,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="block">
-                    <span className="text-sm font-semibold text-slate-700">목표 거리 (km)</span>
+                    <span className="text-sm font-semibold text-slate-700">이번 달 거리 목표 (km)</span>
                     <input
                       type="number"
                       step="0.1"
@@ -213,7 +213,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     />
                   </label>
                   <label className="block">
-                    <span className="text-sm font-semibold text-slate-700">목표 세션 수</span>
+                    <span className="text-sm font-semibold text-slate-700">이번 달 달리기 횟수</span>
                     <input
                       type="number"
                       name="goalSessions"
@@ -229,7 +229,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     type="submit"
                     className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
                   >
-                    {plan ? '플랜 수정하기' : '플랜 만들기'}
+                    {plan ? '계획 저장하기' : '플랜 만들기'}
                   </button>
                   {plan ? (
                     <>
@@ -239,7 +239,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                         formAction={deleteMonthlyPlanAction}
                         className="inline-flex items-center justify-center rounded-full border border-red-200 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
                       >
-                        플랜 삭제
+                        이달 계획 지우기
                       </button>
                     </>
                   ) : null}
@@ -252,18 +252,18 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
             <article className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-950">이번 달 계획 아이템</h3>
-                  <p className="mt-2 text-sm text-slate-600">날짜별 계획을 만들고, 상태 버튼으로 완료 / 부분 완료 / 건너뜀을 바로 기록할 수 있습니다.</p>
+                  <h3 className="text-lg font-semibold text-slate-950">이번 달 달리기 일정</h3>
+                  <p className="mt-2 text-sm text-slate-600">날짜별로 가볍게 적어두고, 끝난 뒤에는 상태만 눌러 기록해보세요.</p>
                 </div>
               </div>
 
               {!plan ? (
                 <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
-                  아직 이 달의 플랜이 없습니다. 위 폼에서 먼저 월간 플랜을 저장하면 아이템을 추가할 수 있습니다.
+                  아직 이번 달 계획이 없어요. 위에서 먼저 이번 달 계획을 만들어보세요.
                 </div>
               ) : items.length === 0 ? (
                 <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
-                  아직 계획 아이템이 없습니다. 오른쪽 폼에서 첫 훈련 계획을 추가해보세요.
+                  아직 일정이 없어요. 오른쪽에서 첫 달리기 일정을 추가해보세요.
                 </div>
               ) : (
                 <div className="mt-6 space-y-4">
@@ -305,7 +305,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       </div>
 
                       <details className="mt-4 rounded-2xl bg-slate-50 p-4">
-                        <summary className="cursor-pointer text-sm font-semibold text-slate-700">아이템 수정</summary>
+                        <summary className="cursor-pointer text-sm font-semibold text-slate-700">일정 수정</summary>
                         <form action={updatePlanItemAction} className="mt-4 space-y-3">
                           <input type="hidden" name="itemId" value={item.id} />
                           <div className="grid gap-3 sm:grid-cols-2">
@@ -344,14 +344,14 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                               name="targetDistanceKm"
                               defaultValue={item.target_distance_km ?? ''}
                               className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                              placeholder="목표 거리"
+                              placeholder="예: 8"
                             />
                             <input
                               type="number"
                               name="targetDurationMinutes"
                               defaultValue={item.target_duration_minutes ?? ''}
                               className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                              placeholder="목표 시간(분)"
+                              placeholder="예: 50"
                             />
                           </div>
                           <div className="flex flex-wrap gap-3">
@@ -359,14 +359,14 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                               type="submit"
                               className="rounded-full bg-[var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
                             >
-                              아이템 수정
+                              일정 수정
                             </button>
                             <button
                               type="submit"
                               formAction={deletePlanItemAction}
                               className="rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
                             >
-                              삭제
+                              일정 삭제
                             </button>
                           </div>
                         </form>
@@ -379,8 +379,8 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
 
             <aside className="space-y-6">
               <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-                <h3 className="text-lg font-semibold text-slate-950">새 계획 아이템 추가</h3>
-                <p className="mt-2 text-sm text-slate-600">달력 셀 대신 빠르게 추가하는 방식으로 먼저 시작합니다.</p>
+                <h3 className="text-lg font-semibold text-slate-950">새 일정 추가</h3>
+                <p className="mt-2 text-sm text-slate-600">복잡하게 생각하지 말고, 먼저 한 번 달릴 일정을 적어보세요.</p>
                 {plan ? (
                   <form action={createPlanItemAction} className="mt-5 space-y-3">
                     <input type="hidden" name="planId" value={plan.id} />
@@ -404,12 +404,12 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     <input
                       name="title"
                       className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                      placeholder="예: 수요일 템포 런"
+                      placeholder="예: 퇴근 후 가볍게 5km"
                     />
                     <textarea
                       name="description"
                       className="min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                      placeholder="훈련 메모나 목표 페이스를 적어두세요."
+                      placeholder="훈련 계획 메모나 목표 페이스를 적어두세요."
                     />
                     <div className="grid gap-3 sm:grid-cols-2">
                       <input
@@ -430,29 +430,29 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       type="submit"
                       className="inline-flex w-full items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
                     >
-                      계획 아이템 추가
+                      이 일정 추가하기
                     </button>
                   </form>
                 ) : (
                   <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-                    먼저 월간 플랜을 만든 뒤 아이템을 추가할 수 있습니다.
+                    먼저 이번 달 계획을 만든 뒤 일정을 추가할 수 있어요.
                   </div>
                 )}
               </section>
 
           <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h3 className="text-lg font-semibold text-slate-950">요약</h3>
+            <h3 className="text-lg font-semibold text-slate-950">이번 달 한눈에 보기</h3>
             <div className="mt-4 space-y-3 text-sm text-slate-600">
-              <p>완료 {stats.completedCount}개</p>
-              <p>부분 완료 {stats.partialCount}개</p>
-              <p>건너뜀 {stats.skippedCount}개</p>
-              <p>연속 달성 {stats.streak}일</p>
+              <p>완료한 일정 {stats.completedCount}개</p>
+              <p>조금은 해낸 일정 {stats.partialCount}개</p>
+              <p>쉬어간 일정 {stats.skippedCount}개</p>
+              <p>이어 달린 날 {stats.streak}일</p>
             </div>
           </section>
 
           {!plan || items.length === 0 ? (
             <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-              <h3 className="text-lg font-semibold text-slate-950">시작용 추천 템플릿</h3>
+              <h3 className="text-lg font-semibold text-slate-950">처음 시작할 때 참고해보세요</h3>
               <div className="mt-4 space-y-3">
                 {starterTemplates.map((template) => (
                   <article key={template.id} className="rounded-[1.25rem] border border-slate-200 p-4">

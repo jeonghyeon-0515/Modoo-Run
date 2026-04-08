@@ -113,29 +113,29 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
 
     return (
       <PageShell
-        title="대회 탐색"
-        description="접수 상태, 지역, 월, 거리 기준으로 대회를 빠르게 훑고, 필요한 상세 정보로 바로 이어질 수 있는 모바일 우선 목록을 제공합니다."
+        title="대회 둘러보기"
+        description="지금 열려 있는 대회부터 지역별 대회까지, 필요한 정보만 골라 편하게 둘러보세요."
       >
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
             <p className="text-sm font-medium text-slate-500">접수중 대회</p>
             <p className="mt-3 text-3xl font-bold text-slate-950">{summary.openCount.toLocaleString('ko-KR')}개</p>
-            <p className="mt-2 text-sm text-slate-500">기본 필터도 접수중 기준으로 시작합니다.</p>
+            <p className="mt-2 text-sm text-slate-500">처음엔 지금 신청 가능한 대회부터 보여드려요.</p>
           </article>
           <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
             <p className="text-sm font-medium text-slate-500">접수마감 포함</p>
             <p className="mt-3 text-3xl font-bold text-slate-950">{summary.totalCount.toLocaleString('ko-KR')}개</p>
-            <p className="mt-2 text-sm text-slate-500">과거 대회도 함께 살펴볼 수 있습니다.</p>
+            <p className="mt-2 text-sm text-slate-500">지난 대회까지 같이 보면 선택 폭이 넓어져요.</p>
           </article>
           <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
             <p className="text-sm font-medium text-slate-500">지역 커버리지</p>
             <p className="mt-3 text-3xl font-bold text-slate-950">{summary.regionCount}개</p>
-            <p className="mt-2 text-sm text-slate-500">전국 주요 지역별로 빠르게 좁힐 수 있습니다.</p>
+            <p className="mt-2 text-sm text-slate-500">가고 싶은 지역부터 빠르게 좁혀볼 수 있어요.</p>
           </article>
           <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
             <p className="text-sm font-medium text-slate-500">최근 동기화</p>
             <p className="mt-3 text-lg font-bold text-slate-950">{formatLastSyncedAt(summary.latestSyncAt)}</p>
-            <p className="mt-2 text-sm text-slate-500">최신 수집 순으로도 확인할 수 있습니다.</p>
+            <p className="mt-2 text-sm text-slate-500">최근 올라온 대회부터 차례로 볼 수 있어요.</p>
           </article>
         </section>
 
@@ -143,11 +143,11 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           <div className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
             <div className="space-y-5">
               <div>
-                <p className="text-sm font-semibold text-slate-500">현재 조건</p>
+                <p className="text-sm font-semibold text-slate-500">지금 보고 있는 조건</p>
                 <p className="mt-1 text-sm text-slate-700">
-                  {activeLabels.length > 0 ? activeLabels.join(' · ') : '조건 없이 전체 대회를 보고 있습니다.'}
+                  {activeLabels.length > 0 ? activeLabels.join(' · ') : '전체 대회를 넓게 보고 있어요.'}
                 </p>
-                <p className="mt-1 text-sm text-slate-500">총 {races.length}개의 대회를 불러왔습니다.</p>
+                <p className="mt-1 text-sm text-slate-500">지금 {races.length}개의 대회를 볼 수 있어요.</p>
               </div>
 
               <div className="space-y-4">
@@ -225,9 +225,9 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
 
           <aside className="space-y-6">
             <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-              <h2 className="text-lg font-semibold text-slate-950">최근 수집된 대회</h2>
+              <h2 className="text-lg font-semibold text-slate-950">최근 올라온 대회</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                데이터가 늘어난 만큼 최근 들어온 대회도 함께 빠르게 훑어볼 수 있습니다.
+                새로 들어온 대회도 함께 챙겨보면 놓치는 일정이 줄어요.
               </p>
               <div className="mt-4 space-y-3">
                 {recentRaces.map((race) => (
@@ -253,7 +253,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             </section>
 
             <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-              <h2 className="text-lg font-semibold text-slate-950">지역별 상위 분포</h2>
+              <h2 className="text-lg font-semibold text-slate-950">어느 지역 대회가 많을까?</h2>
               <div className="mt-4 space-y-3">
                 {summary.topRegions.map((item) => (
                   <div key={item.region} className="rounded-2xl bg-slate-50 p-4">
@@ -332,9 +332,9 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                 <div className="mt-4 flex flex-col gap-2 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
                   <div className="space-y-1">
                     <p>{race.organizer ?? '주최 정보 없음'}</p>
-                    <p>마지막 수집: {formatLastSyncedAt(race.lastSyncedAt)}</p>
+                    <p>최근 업데이트: {formatLastSyncedAt(race.lastSyncedAt)}</p>
                   </div>
-                  <span className="font-semibold text-[var(--brand)]">상세 보기</span>
+                  <span className="font-semibold text-[var(--brand)]">자세히 보기</span>
                 </div>
               </Link>
             ))
@@ -346,7 +346,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
     const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
     return (
       <PageShell
-        title="대회 탐색"
+        title="대회 둘러보기"
         description="대회 목록을 불러오지 못했을 때도 다음 행동이 바로 보이도록 안내합니다."
       >
         <article className="rounded-[1.75rem] bg-white p-8 shadow-sm ring-1 ring-black/5">

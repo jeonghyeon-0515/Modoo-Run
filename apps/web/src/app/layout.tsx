@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "모두의 러닝",
   description:
-    "접수중인 마라톤 대회 탐색, 월별 러닝 계획, 달성 체크, 커뮤니티를 연결하는 모바일 우선 러닝 웹앱",
+    "대회 찾기부터 계획 세우기, 기록 남기기까지 함께하는 러닝 서비스",
 };
 
 export default function RootLayout({

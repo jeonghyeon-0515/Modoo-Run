@@ -14,8 +14,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
 
   return (
     <PageShell
-      title="로그인 또는 회원가입"
-      description="개인 월간 플랜, 달성 체크, 관심 대회 저장, 커뮤니티 작성 기능은 로그인 후 사용할 수 있습니다."
+      title="로그인하기하고 이어서 달려요"
+      description="계획 저장, 찜한 대회, 글쓰기 같은 기능은 로그인하기 후 바로 이어서 쓸 수 있어요."
     >
       <section className="mx-auto max-w-2xl rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
         {message ? (
@@ -63,14 +63,14 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
               formAction={loginAction}
               className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
             >
-              로그인
+              로그인하기
             </button>
             <button
               type="submit"
               formAction={signupAction}
               className="inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
-              회원가입
+              회원가입하기
             </button>
           </div>
         </form>
