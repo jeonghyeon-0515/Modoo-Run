@@ -156,18 +156,29 @@ export async function listRelatedRaces(input: {
   limit?: number;
 }): Promise<RaceListItem[]> {
   const supabase = await getSupabaseServerClient();
-  let query = supabase
-    .from('races')
-    .select(raceListColumns)
-    .neq('source_race_id', input.excludeSourceRaceId)
-    .order('event_date', { ascending: true, nullsFirst: false })
-    .limit(input.limit ?? 3);
+  const limit = input.limit ?? 3;
+
+  const buildBaseQuery = () =>
+    supabase
+      .from('races')
+      .select(raceListColumns)
+      .neq('source_race_id', input.excludeSourceRaceId)
+      .order('event_date', { ascending: true, nullsFirst: false })
+      .limit(limit);
 
   if (input.region) {
-    query = query.eq('region', input.region);
+    const { data, error } = await buildBaseQuery().eq('region', input.region);
+
+    if (error) {
+      throw new Error(`관련 대회 조회 실패: ${error.message}`);
+    }
+
+    if ((data ?? []).length > 0) {
+      return (data ?? []).map((row: RawRace) => mapRace(row));
+    }
   }
 
-  const { data, error } = await query;
+  const { data, error } = await buildBaseQuery();
 
   if (error) {
     throw new Error(`관련 대회 조회 실패: ${error.message}`);
