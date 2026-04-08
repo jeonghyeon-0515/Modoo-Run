@@ -7,12 +7,7 @@ import {
   getRaceStatusLabel,
   getRaceStatusTone,
 } from '@/lib/races/formatters';
-import {
-  getRaceExplorerSummary,
-  listRaces,
-  listRecentlySyncedRaces,
-  listRegions,
-} from '@/lib/races/repository';
+import { listRaces, listRegions } from '@/lib/races/repository';
 import { RaceStatus } from '@/lib/races/types';
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -90,7 +85,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
   };
 
   try {
-    const [races, regions, summary, recentRaces] = await Promise.all([
+    const [races, regions] = await Promise.all([
       listRaces({
         registrationStatus: filters.registrationStatus,
         region: filters.region || undefined,
@@ -98,8 +93,6 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
         distance: filters.distance || undefined,
       }),
       listRegions(),
-      getRaceExplorerSummary(),
-      listRecentlySyncedRaces(3),
     ]);
 
     const activeLabels = [
@@ -116,164 +109,89 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
         title="대회 둘러보기"
         description="지금 열려 있는 대회부터 지역별 대회까지, 필요한 정보만 골라 편하게 둘러보세요."
       >
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-            <p className="text-sm font-medium text-slate-500">접수중 대회</p>
-            <p className="mt-3 text-3xl font-bold text-slate-950">{summary.openCount.toLocaleString('ko-KR')}개</p>
-            <p className="mt-2 text-sm text-slate-500">처음엔 지금 신청 가능한 대회부터 보여드려요.</p>
-          </article>
-          <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-            <p className="text-sm font-medium text-slate-500">접수마감 포함</p>
-            <p className="mt-3 text-3xl font-bold text-slate-950">{summary.totalCount.toLocaleString('ko-KR')}개</p>
-            <p className="mt-2 text-sm text-slate-500">지난 대회까지 같이 보면 선택 폭이 넓어져요.</p>
-          </article>
-          <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-            <p className="text-sm font-medium text-slate-500">지역 커버리지</p>
-            <p className="mt-3 text-3xl font-bold text-slate-950">{summary.regionCount}개</p>
-            <p className="mt-2 text-sm text-slate-500">가고 싶은 지역부터 빠르게 좁혀볼 수 있어요.</p>
-          </article>
-          <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-            <p className="text-sm font-medium text-slate-500">최근 동기화</p>
-            <p className="mt-3 text-lg font-bold text-slate-950">{formatLastSyncedAt(summary.latestSyncAt)}</p>
-            <p className="mt-2 text-sm text-slate-500">최근 올라온 대회부터 차례로 볼 수 있어요.</p>
-          </article>
-        </section>
+        <section className="mt-2 rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="space-y-5">
+            <div>
+              <p className="text-sm font-semibold text-slate-500">지금 보고 있는 조건</p>
+              <p className="mt-1 text-sm text-slate-700">
+                {activeLabels.length > 0 ? activeLabels.join(' · ') : '전체 대회를 넓게 보고 있어요.'}
+              </p>
+              <p className="mt-1 text-sm text-slate-500">
+                가까운 일정 순으로 정리했어요. 지금 {races.length}개의 대회를 볼 수 있어요.
+              </p>
+            </div>
 
-        <section className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <div className="space-y-5">
+            <div className="space-y-4">
               <div>
-                <p className="text-sm font-semibold text-slate-500">지금 보고 있는 조건</p>
-                <p className="mt-1 text-sm text-slate-700">
-                  {activeLabels.length > 0 ? activeLabels.join(' · ') : '전체 대회를 넓게 보고 있어요.'}
-                </p>
-                <p className="mt-1 text-sm text-slate-500">지금 {races.length}개의 대회를 볼 수 있어요.</p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">접수 상태</p>
+                <div className="flex flex-wrap gap-2">
+                  {statusOptions.map((option) => (
+                    <FilterChip
+                      key={option.value}
+                      active={filters.registrationStatus === option.value}
+                      href={createFilterHref(normalizedQuery, 'registrationStatus', option.value)}
+                    >
+                      {option.label}
+                    </FilterChip>
+                  ))}
+                </div>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">접수 상태</p>
-                  <div className="flex flex-wrap gap-2">
-                    {statusOptions.map((option) => (
-                      <FilterChip
-                        key={option.value}
-                        active={filters.registrationStatus === option.value}
-                        href={createFilterHref(normalizedQuery, 'registrationStatus', option.value)}
-                      >
-                        {option.label}
-                      </FilterChip>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">지역</p>
-                  <div className="flex flex-wrap gap-2">
-                    <FilterChip active={!filters.region} href={createFilterHref(normalizedQuery, 'region', 'all')}>
-                      전체
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">지역</p>
+                <div className="flex flex-wrap gap-2">
+                  <FilterChip active={!filters.region} href={createFilterHref(normalizedQuery, 'region', 'all')}>
+                    전체
+                  </FilterChip>
+                  {regions.map((region) => (
+                    <FilterChip
+                      key={region}
+                      active={filters.region === region}
+                      href={createFilterHref(normalizedQuery, 'region', region)}
+                    >
+                      {region}
                     </FilterChip>
-                    {regions.map((region) => (
-                      <FilterChip
-                        key={region}
-                        active={filters.region === region}
-                        href={createFilterHref(normalizedQuery, 'region', region)}
-                      >
-                        {region}
-                      </FilterChip>
-                    ))}
-                  </div>
+                  ))}
                 </div>
+              </div>
 
-                <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">월</p>
-                  <div className="flex flex-wrap gap-2">
-                    <FilterChip active={!filters.month} href={createFilterHref(normalizedQuery, 'month', 'all')}>
-                      전체
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">월</p>
+                <div className="flex flex-wrap gap-2">
+                  <FilterChip active={!filters.month} href={createFilterHref(normalizedQuery, 'month', 'all')}>
+                    전체
+                  </FilterChip>
+                  {monthOptions.map((month) => (
+                    <FilterChip
+                      key={month}
+                      active={filters.month === month}
+                      href={createFilterHref(normalizedQuery, 'month', month)}
+                    >
+                      {month}
                     </FilterChip>
-                    {monthOptions.map((month) => (
-                      <FilterChip
-                        key={month}
-                        active={filters.month === month}
-                        href={createFilterHref(normalizedQuery, 'month', month)}
-                      >
-                        {month}
-                      </FilterChip>
-                    ))}
-                  </div>
+                  ))}
                 </div>
+              </div>
 
-                <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">거리</p>
-                  <div className="flex flex-wrap gap-2">
-                    <FilterChip active={!filters.distance} href={createFilterHref(normalizedQuery, 'distance', 'all')}>
-                      전체
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">거리</p>
+                <div className="flex flex-wrap gap-2">
+                  <FilterChip active={!filters.distance} href={createFilterHref(normalizedQuery, 'distance', 'all')}>
+                    전체
+                  </FilterChip>
+                  {distanceOptions.map((distance) => (
+                    <FilterChip
+                      key={distance}
+                      active={filters.distance === distance}
+                      href={createFilterHref(normalizedQuery, 'distance', distance)}
+                    >
+                      {distance}
                     </FilterChip>
-                    {distanceOptions.map((distance) => (
-                      <FilterChip
-                        key={distance}
-                        active={filters.distance === distance}
-                        href={createFilterHref(normalizedQuery, 'distance', distance)}
-                      >
-                        {distance}
-                      </FilterChip>
-                    ))}
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-
-          <aside className="space-y-6">
-            <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-              <h2 className="text-lg font-semibold text-slate-950">최근 올라온 대회</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                새로 들어온 대회도 함께 챙겨보면 놓치는 일정이 줄어요.
-              </p>
-              <div className="mt-4 space-y-3">
-                {recentRaces.map((race) => (
-                  <Link
-                    key={race.id}
-                    href={`/races/${race.sourceRaceId}`}
-                    className="interactive-card block rounded-[1.25rem] border border-slate-200 p-4"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-sm font-semibold text-slate-950">{race.title}</h3>
-                        <p className="mt-1 text-xs text-slate-500">
-                          {formatRaceDate(race.eventDate, race.eventDateLabel)}
-                        </p>
-                      </div>
-                      <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
-                        {getRaceStatusLabel(race.registrationStatus)}
-                      </StatusBadge>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-
-            <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-              <h2 className="text-lg font-semibold text-slate-950">어느 지역 대회가 많을까?</h2>
-              <div className="mt-4 space-y-3">
-                {summary.topRegions.map((item) => (
-                  <div key={item.region} className="rounded-2xl bg-slate-50 p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="text-sm font-semibold text-slate-900">{item.region}</p>
-                      <p className="text-sm text-slate-500">{item.count.toLocaleString('ko-KR')}개</p>
-                    </div>
-                    <div className="mt-3 h-2 rounded-full bg-slate-200">
-                      <div
-                        className="h-2 rounded-full bg-[var(--brand)]"
-                        style={{
-                          width: `${Math.max(14, Math.round((item.count / Math.max(summary.totalCount, 1)) * 100))}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </aside>
         </section>
 
         <section className="mt-6 space-y-3 sm:space-y-4">

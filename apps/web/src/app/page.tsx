@@ -10,11 +10,7 @@ import {
   getRaceStatusLabel,
   getRaceStatusTone,
 } from '@/lib/races/formatters';
-import {
-  getRaceExplorerSummary,
-  listRaces,
-  listRecentlySyncedRaces,
-} from '@/lib/races/repository';
+import { listRaces } from '@/lib/races/repository';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,158 +29,61 @@ const starterPrompts = [
   },
 ];
 
-function formatStatValue(value: number) {
-  return `${value.toLocaleString('ko-KR')}개`;
-}
-
 export default async function Home() {
   const viewer = await getOptionalViewer();
-  const [raceSummary, openRaces, recentRaces, posts, planView] = await Promise.all([
-    getRaceExplorerSummary(),
+  const [openRaces, posts, planView] = await Promise.all([
     listRaces({ registrationStatus: 'open', limit: 6 }),
-    listRecentlySyncedRaces(4),
     listCommunityPosts('all'),
     viewer ? getPlanView() : Promise.resolve(null),
   ]);
 
-  const featuredRaces = openRaces.length > 0 ? openRaces : recentRaces;
   const latestPosts = posts.slice(0, 3);
   const categoryLabels: Record<string, string> = {
     free: '자유게시판',
     training: '대회 준비',
     review: '후기',
   };
-  const summaryStats = [
-    {
-      label: '지금 접수중',
-      value: formatStatValue(raceSummary.openCount),
-      tone: 'info' as const,
-      caption: '지금 바로 살펴볼 수 있는 대회예요',
-    },
-    {
-      label: '누적 대회',
-      value: formatStatValue(raceSummary.totalCount),
-      tone: 'neutral' as const,
-      caption: '차곡차곡 모아둔 대회 목록이에요',
-    },
-    {
-      label: '지역 커버리지',
-      value: `${raceSummary.regionCount}개`,
-      tone: 'success' as const,
-      caption: '어느 지역 대회를 볼 수 있는지 한눈에 보여줘요',
-    },
-    {
-      label: '커뮤니티 글',
-      value: formatStatValue(latestPosts.length),
-      tone: 'warning' as const,
-      caption: '러너들이 최근에 나눈 이야기예요',
-    },
-  ];
 
   return (
     <PageShell
       title="대회 찾기부터 기록까지 한 번에"
       description="참가할 대회를 찾고, 이번 달 계획을 세우고, 달린 기록까지 차근차근 남겨보세요. 모두의 러닝이 그 과정을 함께할게요."
     >
-      <section className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
-        <article className="hero-shell overflow-hidden rounded-[2rem] p-6 text-white sm:p-8">
-          <div className="max-w-3xl">
-            <p className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-[var(--brand-soft-strong)] ring-1 ring-white/10">
-              달리기 준비, 여기서 시작해요
-            </p>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-              오늘 볼 대회와
-              <br className="hidden sm:block" /> 이번 달 달리기 계획을 한 화면에서
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-slate-200 sm:text-base">
-              접수중인 대회가 적은 날에도 볼거리가 없지 않도록 최근 올라온 대회까지 함께 보여드려요.
-              마음에 드는 대회를 찾았다면 바로 계획으로 이어가 보세요.
-            </p>
-          </div>
+      <section className="hero-shell overflow-hidden rounded-[2rem] p-6 text-white sm:p-8">
+        <div className="max-w-3xl">
+          <p className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-[var(--brand-soft-strong)] ring-1 ring-white/10">
+            달리기 준비, 여기서 시작해요
+          </p>
+          <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+            가까운 일정부터
+            <br className="hidden sm:block" /> 지금 접수중인 대회를 살펴보세요
+          </h2>
+          <p className="mt-4 text-sm leading-7 text-slate-200 sm:text-base">
+            지금 신청할 수 있는 대회를 날짜 순으로 먼저 보여드려요. 마음에 드는 대회를 찾았다면
+            바로 계획으로 이어가 보세요.
+          </p>
+        </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/races"
-              className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(255,107,87,0.24)] transition hover:bg-[var(--brand-strong)]"
-            >
-              지금 대회 보러 가기
-            </Link>
-            <Link
-              href="/plan"
-              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
-            >
-              이번 달 계획 세우기
-            </Link>
-            <Link
-              href="/community"
-              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
-            >
-              러너 이야기 보러 가기
-            </Link>
-          </div>
-
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {summaryStats.map((item) => (
-              <article
-                key={item.label}
-                className="rounded-[1.5rem] bg-white/8 p-4 ring-1 ring-white/10 backdrop-blur"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-medium text-slate-200">{item.label}</p>
-                  <StatusBadge tone={item.tone}>{item.label}</StatusBadge>
-                </div>
-                <p className="mt-3 text-2xl font-bold text-white">{item.value}</p>
-                <p className="mt-2 text-xs leading-5 text-slate-300">{item.caption}</p>
-              </article>
-            ))}
-          </div>
-        </article>
-
-        <aside className="space-y-6">
-          <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-500">최근 업데이트</p>
-                <h3 className="mt-1 text-xl font-semibold text-slate-950">
-                  {formatLastSyncedAt(raceSummary.latestSyncAt)}
-                </h3>
-              </div>
-              <StatusBadge tone={raceSummary.openCount > 0 ? 'success' : 'warning'}>
-                {raceSummary.openCount > 0 ? '볼거리가 넉넉해졌어요' : '최근 올라온 대회부터'}
-              </StatusBadge>
-            </div>
-            <p className="mt-4 text-sm leading-6 text-slate-600">
-              접수중인 대회가 적어도 첫 화면이 심심하지 않도록 최근 올라온 대회도 함께 보여드려요.
-            </p>
-          </section>
-
-          <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-slate-950">어느 지역 대회가 많을까?</h3>
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Top {raceSummary.topRegions.length}
-              </span>
-            </div>
-            <div className="mt-4 space-y-3">
-              {raceSummary.topRegions.map((item) => (
-                <div key={item.region} className="rounded-2xl bg-slate-50 p-4">
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="text-sm font-semibold text-slate-900">{item.region}</p>
-                    <p className="text-sm text-slate-500">{item.count.toLocaleString('ko-KR')}개</p>
-                  </div>
-                  <div className="mt-3 h-2 rounded-full bg-slate-200">
-                    <div
-                      className="h-2 rounded-full bg-[var(--brand)]"
-                      style={{
-                        width: `${Math.max(12, Math.round((item.count / Math.max(raceSummary.totalCount, 1)) * 100))}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        </aside>
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/races"
+            className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(255,107,87,0.24)] transition hover:bg-[var(--brand-strong)]"
+          >
+            지금 대회 보러 가기
+          </Link>
+          <Link
+            href="/plan"
+            className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
+          >
+            이번 달 계획 세우기
+          </Link>
+          <Link
+            href="/community"
+            className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
+          >
+            러너 이야기 보러 가기
+          </Link>
+        </div>
       </section>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
@@ -206,7 +105,7 @@ export default async function Home() {
           </div>
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            {featuredRaces.map((race) => (
+            {openRaces.map((race) => (
               <Link
                 key={race.id}
                 href={`/races/${race.sourceRaceId}`}
@@ -271,7 +170,7 @@ export default async function Home() {
               <div>
                 <h2 className="text-xl font-semibold text-slate-950">러너들의 이야기</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
-                  실제 게시글이 적을 때도 바로 참여할 수 있는 주제를 함께 노출합니다.
+                  요즘 올라온 이야기와 바로 써볼 만한 주제를 함께 보여드려요.
                 </p>
               </div>
               <Link href="/community" className="text-sm font-semibold text-[var(--brand)]">
