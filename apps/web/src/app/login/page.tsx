@@ -14,8 +14,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
 
   return (
     <PageShell
-      title="로그인하기하고 이어서 달려요"
-      description="계획 저장, 찜한 대회, 글쓰기 같은 기능은 로그인하기 후 바로 이어서 쓸 수 있어요."
+      title="로그인하고 이어서 달려요"
+      description="계획 저장, 찜한 대회, 글쓰기 같은 기능은 로그인 후 바로 이어서 쓸 수 있어요."
     >
       <section className="mx-auto max-w-2xl rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
         {message ? (
