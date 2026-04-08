@@ -8,6 +8,11 @@ function requireEnv(name: string) {
   return value;
 }
 
+function readOptionalEnv(name: string) {
+  const value = process.env[name]?.trim();
+  return value ? value : null;
+}
+
 export const publicEnv = {
   url: process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
   anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
@@ -15,6 +20,10 @@ export const publicEnv = {
 
 export function getSupabaseUrl() {
   return process.env.SUPABASE_URL ?? requireEnv('NEXT_PUBLIC_SUPABASE_URL');
+}
+
+export function getSupabaseAnonKey() {
+  return requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY');
 }
 
 export function hasSupabasePublicEnv() {
@@ -26,5 +35,9 @@ export function getSupabaseServiceRoleKey() {
 }
 
 export function getRaceSyncSharedSecret() {
-  return requireEnv('RACE_SYNC_SHARED_SECRET');
+  return readOptionalEnv('RACE_SYNC_SHARED_SECRET') ?? requireEnv('CRON_SECRET');
+}
+
+export function getRaceSyncSecrets() {
+  return [...new Set([readOptionalEnv('RACE_SYNC_SHARED_SECRET'), readOptionalEnv('CRON_SECRET')].filter(Boolean))] as string[];
 }

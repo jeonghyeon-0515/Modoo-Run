@@ -151,3 +151,6 @@
 - **배포**: Vercel
 - **스케줄 수집**: Vercel Cron → ingestion 경계 → Supabase upsert
 - **확장 전략**: 웹앱 우선 출시 후 Flutter 앱 확장 가능 구조 유지
+
+## 운영 메모
+- 인증/권한/크론 운영 절차: `docs/ops-auth-and-cron.md`

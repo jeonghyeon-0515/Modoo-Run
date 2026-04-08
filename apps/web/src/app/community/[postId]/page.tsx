@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getOptionalViewer } from '@/lib/auth/session';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { getCommunityPost } from '@/lib/community/repository';
@@ -17,7 +18,7 @@ function getCategoryLabel(value: string) {
 
 export default async function CommunityDetailPage({ params }: { params: Params }) {
   const { postId } = await params;
-  const post = await getCommunityPost(postId);
+  const [post, viewer] = await Promise.all([getCommunityPost(postId), getOptionalViewer()]);
 
   if (!post) {
     notFound();
@@ -35,7 +36,10 @@ export default async function CommunityDetailPage({ params }: { params: Params }
       </div>
 
       <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-        <StatusBadge tone="neutral">{getCategoryLabel(post.category)}</StatusBadge>
+        <div className="flex flex-wrap items-center gap-2">
+          <StatusBadge tone="neutral">{getCategoryLabel(post.category)}</StatusBadge>
+          {post.status === 'hidden' ? <StatusBadge tone="warning">숨김 상태</StatusBadge> : null}
+        </div>
         <p className="mt-3 text-sm text-slate-500">
           {post.authorLabel} · {new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Seoul' }).format(new Date(post.created_at))}
         </p>
@@ -45,47 +49,64 @@ export default async function CommunityDetailPage({ params }: { params: Params }
         <p className="mt-5 whitespace-pre-wrap text-sm leading-7 text-slate-700">{post.content}</p>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <form action={reportCommunityPostAction} className="flex flex-wrap gap-2">
-            <input type="hidden" name="postId" value={post.id} />
-            <input type="hidden" name="reason" value="운영 검토 요청" />
-            <input type="hidden" name="description" value="사용자가 직접 신고 버튼을 눌렀습니다." />
-            <button
-              type="submit"
-              className="rounded-full border border-amber-200 px-4 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-50"
-            >
-              신고하기
-            </button>
-          </form>
+          {viewer ? (
+            <form action={reportCommunityPostAction} className="flex flex-wrap gap-2">
+              <input type="hidden" name="postId" value={post.id} />
+              <input type="hidden" name="reason" value="운영 검토 요청" />
+              <input type="hidden" name="description" value="사용자가 직접 신고 버튼을 눌렀습니다." />
+              <button
+                type="submit"
+                className="rounded-full border border-amber-200 px-4 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-50"
+              >
+                신고하기
+              </button>
+            </form>
+          ) : (
+            <Link href={`/login?next=${encodeURIComponent(`/community/${post.id}`)}`} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+              로그인 후 신고/댓글 작성
+            </Link>
+          )}
 
-          <form action={toggleCommunityPostHiddenAction}>
-            <input type="hidden" name="postId" value={post.id} />
-            <input type="hidden" name="hidden" value={post.status === 'hidden' ? 'false' : 'true'} />
-            <button
-              type="submit"
-              className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-            >
-              {post.status === 'hidden' ? '숨김 해제' : '관리자 숨김'}
-            </button>
-          </form>
+          {viewer?.isStaff ? (
+            <form action={toggleCommunityPostHiddenAction}>
+              <input type="hidden" name="postId" value={post.id} />
+              <input type="hidden" name="hidden" value={post.status === 'hidden' ? 'false' : 'true'} />
+              <button
+                type="submit"
+                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                {post.status === 'hidden' ? '숨김 해제' : '관리자 숨김'}
+              </button>
+            </form>
+          ) : null}
         </div>
       </section>
 
       <section className="mt-6 rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
         <h2 className="text-lg font-semibold text-slate-950">댓글 작성</h2>
-        <form action={createCommunityCommentAction} className="mt-4 space-y-3">
-          <input type="hidden" name="postId" value={post.id} />
-          <textarea
-            name="content"
-            className="min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-            placeholder="경험이나 팁을 댓글로 남겨보세요."
-          />
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
-          >
-            댓글 작성
-          </button>
-        </form>
+        {viewer ? (
+          <form action={createCommunityCommentAction} className="mt-4 space-y-3">
+            <input type="hidden" name="postId" value={post.id} />
+            <textarea
+              name="content"
+              className="min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+              placeholder="경험이나 팁을 댓글로 남겨보세요."
+            />
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+            >
+              댓글 작성
+            </button>
+          </form>
+        ) : (
+          <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
+            댓글 작성은 로그인 후 사용할 수 있습니다.{' '}
+            <Link href={`/login?next=${encodeURIComponent(`/community/${post.id}`)}`} className="font-semibold text-[var(--brand)]">
+              로그인하기
+            </Link>
+          </div>
+        )}
       </section>
 
       <section className="mt-6 space-y-4">

@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isAuthorizedInternalRequest } from '@/lib/internal/request-auth';
 import { setRaceSourceDisabled } from '@/lib/races/sync';
-import { getRaceSyncSharedSecret } from '@/lib/supabase/env';
+import { getRaceSyncSecrets } from '@/lib/supabase/env';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 function isAuthorized(request: NextRequest) {
-  const headerSecret = request.headers.get('x-race-sync-secret');
-  return headerSecret === getRaceSyncSharedSecret();
+  return isAuthorizedInternalRequest({
+    authorizationHeader: request.headers.get('authorization'),
+    sharedSecretHeader: request.headers.get('x-race-sync-secret'),
+    allowedSecrets: getRaceSyncSecrets(),
+  });
 }
 
 export async function POST(

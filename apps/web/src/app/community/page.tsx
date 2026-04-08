@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getOptionalViewer } from '@/lib/auth/session';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { listCommunityPosts } from '@/lib/community/repository';
@@ -32,9 +33,10 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
   const resolvedSearchParams = await searchParams;
   const selectedCategory = readValue(resolvedSearchParams.category) ?? 'all';
 
-  const [posts, races] = await Promise.all([
+  const [posts, races, viewer] = await Promise.all([
     listCommunityPosts(selectedCategory),
     listRaces({ registrationStatus: 'all', limit: 20 }),
+    getOptionalViewer(),
   ]);
 
   return (
@@ -59,69 +61,78 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
           ))}
         </div>
 
-        <form action={createCommunityPostAction} className="mt-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="space-y-4">
-            <label className="block">
-              <span className="text-sm font-semibold text-slate-700">카테고리</span>
-              <select
-                name="category"
-                defaultValue={selectedCategory === 'all' ? 'free' : selectedCategory}
-                className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-              >
-                {categories
-                  .filter((category) => category.value !== 'all')
-                  .map((category) => (
-                    <option key={category.value} value={category.value}>
-                      {category.label}
+        {viewer ? (
+          <form action={createCommunityPostAction} className="mt-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+            <div className="space-y-4">
+              <label className="block">
+                <span className="text-sm font-semibold text-slate-700">카테고리</span>
+                <select
+                  name="category"
+                  defaultValue={selectedCategory === 'all' ? 'free' : selectedCategory}
+                  className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                >
+                  {categories
+                    .filter((category) => category.value !== 'all')
+                    .map((category) => (
+                      <option key={category.value} value={category.value}>
+                        {category.label}
+                      </option>
+                    ))}
+                </select>
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-semibold text-slate-700">관련 대회</span>
+                <select
+                  name="linkedRaceId"
+                  defaultValue=""
+                  className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                >
+                  <option value="">선택 안 함</option>
+                  {races.map((race) => (
+                    <option key={race.id} value={race.id}>
+                      {race.title}
                     </option>
                   ))}
-              </select>
-            </label>
+                </select>
+              </label>
+            </div>
 
-            <label className="block">
-              <span className="text-sm font-semibold text-slate-700">관련 대회</span>
-              <select
-                name="linkedRaceId"
-                defaultValue=""
-                className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+            <div className="space-y-4">
+              <label className="block">
+                <span className="text-sm font-semibold text-slate-700">제목</span>
+                <input
+                  name="title"
+                  className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                  placeholder="예: 10km 첫 참가 전날 체크리스트 공유합니다"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-semibold text-slate-700">내용</span>
+                <textarea
+                  name="content"
+                  className="mt-2 min-h-32 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                  placeholder="준비 과정, 훈련 기록, 후기와 팁을 자유롭게 남겨보세요."
+                />
+              </label>
+
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
               >
-                <option value="">선택 안 함</option>
-                {races.map((race) => (
-                  <option key={race.id} value={race.id}>
-                    {race.title}
-                  </option>
-                ))}
-              </select>
-            </label>
+                글 작성하기
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
+            커뮤니티 글 작성은 로그인 후 사용할 수 있습니다.{' '}
+            <Link href="/login?next=/community" className="font-semibold text-[var(--brand)]">
+              로그인하기
+            </Link>
           </div>
-
-          <div className="space-y-4">
-            <label className="block">
-              <span className="text-sm font-semibold text-slate-700">제목</span>
-              <input
-                name="title"
-                className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                placeholder="예: 10km 첫 참가 전날 체크리스트 공유합니다"
-              />
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-semibold text-slate-700">내용</span>
-              <textarea
-                name="content"
-                className="mt-2 min-h-32 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                placeholder="준비 과정, 훈련 기록, 후기와 팁을 자유롭게 남겨보세요."
-              />
-            </label>
-
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
-            >
-              글 작성하기
-            </button>
-          </div>
-        </form>
+        )}
       </section>
 
       <section className="mt-6 space-y-4">
@@ -139,7 +150,10 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <StatusBadge tone="neutral">{getCategoryLabel(post.category)}</StatusBadge>
+                  <div className="flex items-center gap-2">
+                    <StatusBadge tone="neutral">{getCategoryLabel(post.category)}</StatusBadge>
+                    {post.status === 'hidden' ? <StatusBadge tone="warning">숨김</StatusBadge> : null}
+                  </div>
                   <h2 className="mt-3 text-lg font-semibold text-slate-950">{post.title}</h2>
                 </div>
                 <span className="text-sm font-semibold text-[var(--brand)]">읽기</span>

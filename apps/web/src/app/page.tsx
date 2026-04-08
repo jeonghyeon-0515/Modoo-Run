@@ -1,15 +1,28 @@
 import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { communityPosts, featuredRaces, planHighlights, summaryStats } from '@/lib/ui/mock-data';
+import { getOptionalViewer } from '@/lib/auth/session';
+import { listCommunityPosts } from '@/lib/community/repository';
+import { getPlanView } from '@/lib/plans/repository';
+import { formatRaceDate, getRaceStatusLabel, getRaceStatusTone } from '@/lib/races/formatters';
+import { listRaces } from '@/lib/races/repository';
 
-const toneMap = {
-  info: 'info',
-  warning: 'warning',
-  neutral: 'neutral',
-} as const;
+export const dynamic = 'force-dynamic';
 
-export default function Home() {
+export default async function Home() {
+  const viewer = await getOptionalViewer();
+  const [races, posts, planView] = await Promise.all([
+    listRaces({ registrationStatus: 'open', limit: 3 }),
+    listCommunityPosts('all'),
+    viewer ? getPlanView() : Promise.resolve(null),
+  ]);
+
+  const summaryStats = [
+    { label: '접수중 대회', value: `${races.length}개`, tone: 'info' as const },
+    { label: '이번 달 플랜', value: planView ? `${planView.stats.totalCount}개` : '로그인 필요', tone: 'neutral' as const },
+    { label: '커뮤니티 최신 글', value: `${posts.slice(0, 2).length}개`, tone: 'warning' as const },
+  ];
+
   return (
     <PageShell
       title="대회 탐색부터 월간 플랜까지"
@@ -21,7 +34,7 @@ export default function Home() {
             <p className="text-sm font-medium text-slate-500">{item.label}</p>
             <div className="mt-3 flex items-center justify-between">
               <strong className="text-3xl font-bold text-slate-950">{item.value}</strong>
-              <StatusBadge tone={toneMap[item.tone]}>{item.label}</StatusBadge>
+              <StatusBadge tone={item.tone}>{item.label}</StatusBadge>
             </div>
           </article>
         ))}
@@ -64,22 +77,27 @@ export default function Home() {
             <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">더 보기</Link>
           </div>
           <div className="mt-5 space-y-4">
-            {featuredRaces.map((race) => (
-              <Link key={race.id} href={`/races/${race.id}`} className="block rounded-[1.25rem] border border-slate-200 p-4 transition hover:border-blue-200 hover:bg-blue-50/40">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="text-base font-semibold text-slate-950">{race.title}</h3>
-                    <p className="mt-1 text-sm text-slate-500">{race.date}</p>
+            {races.length === 0 ? (
+              <div className="rounded-[1.25rem] border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+                아직 수집된 접수중 대회가 없습니다. 동기화 후 다시 확인해주세요.
+              </div>
+            ) : (
+              races.map((race) => (
+                <Link key={race.id} href={`/races/${race.sourceRaceId}`} className="block rounded-[1.25rem] border border-slate-200 p-4 transition hover:border-blue-200 hover:bg-blue-50/40">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-base font-semibold text-slate-950">{race.title}</h3>
+                      <p className="mt-1 text-sm text-slate-500">{formatRaceDate(race.eventDate, race.eventDateLabel)}</p>
+                    </div>
+                    <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>{getRaceStatusLabel(race.registrationStatus)}</StatusBadge>
                   </div>
-                  <StatusBadge tone={race.status === '마감임박' ? 'warning' : 'info'}>{race.status}</StatusBadge>
-                </div>
-                <div className="mt-3 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
-                  <p>{race.location}</p>
-                  <p>{race.course}</p>
-                </div>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{race.note}</p>
-              </Link>
-            ))}
+                  <div className="mt-3 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
+                    <p>{race.location ?? '장소 정보 없음'}</p>
+                    <p>{race.courseSummary ?? '종목 정보 없음'}</p>
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
         </article>
 
@@ -92,22 +110,22 @@ export default function Home() {
               </div>
               <Link href="/plan" className="text-sm font-semibold text-[var(--brand)]">보기</Link>
             </div>
-            <div className="mt-5 space-y-3">
-              {planHighlights.map((item) => (
-                <div key={`${item.day}-${item.title}`} className="rounded-[1.25rem] border border-slate-200 p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{item.day}</p>
-                      <h3 className="mt-1 text-sm font-semibold text-slate-950">{item.title}</h3>
-                    </div>
-                    <StatusBadge tone={item.status === '완료' ? 'success' : item.status === '부분 완료' ? 'warning' : 'neutral'}>
-                      {item.status}
-                    </StatusBadge>
-                  </div>
-                  <p className="mt-2 text-sm text-slate-600">{item.meta}</p>
+            {planView ? (
+              <div className="mt-5 space-y-3">
+                <div className="rounded-[1.25rem] border border-slate-200 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">이번 달 완료율</p>
+                  <p className="mt-2 text-2xl font-bold text-slate-950">{planView.stats.completionRate}%</p>
                 </div>
-              ))}
-            </div>
+                <div className="rounded-[1.25rem] border border-slate-200 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">연속 달성</p>
+                  <p className="mt-2 text-2xl font-bold text-slate-950">{planView.stats.streak}일</p>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-5 rounded-[1.25rem] border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+                로그인 후 개인 월간 플랜과 달성 현황을 확인할 수 있습니다.
+              </div>
+            )}
           </article>
 
           <article className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
@@ -119,11 +137,11 @@ export default function Home() {
               <Link href="/community" className="text-sm font-semibold text-[var(--brand)]">더 보기</Link>
             </div>
             <div className="mt-5 space-y-3">
-              {communityPosts.slice(0, 2).map((post) => (
+              {posts.slice(0, 2).map((post) => (
                 <Link key={post.id} href={`/community/${post.id}`} className="block rounded-[1.25rem] border border-slate-200 p-4 transition hover:border-blue-200 hover:bg-blue-50/40">
                   <StatusBadge tone="neutral">{post.category}</StatusBadge>
                   <h3 className="mt-3 text-sm font-semibold text-slate-950">{post.title}</h3>
-                  <p className="mt-2 text-xs text-slate-500">{post.author} · {post.meta}</p>
+                  <p className="mt-2 text-xs text-slate-500">{post.authorLabel} · 댓글 {post.comment_count}</p>
                 </Link>
               ))}
             </div>

@@ -2,18 +2,26 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { getOptionalViewer } from '@/lib/auth/session';
 import { formatLastSyncedAt, formatRaceDate, getRaceStatusLabel, getRaceStatusTone } from '@/lib/races/formatters';
-import { getRaceBySourceRaceId } from '@/lib/races/repository';
+import { getRaceBySourceRaceId, listBookmarkedRaceIds } from '@/lib/races/repository';
+import { toggleRaceBookmarkAction } from './actions';
 
 type Params = Promise<{ raceId: string }>;
 
 export default async function RaceDetailPage({ params }: { params: Params }) {
   const { raceId } = await params;
-  const race = await getRaceBySourceRaceId(raceId);
+  const viewer = await getOptionalViewer();
+  const [race, bookmarkedRaceIds] = await Promise.all([
+    getRaceBySourceRaceId(raceId),
+    viewer ? listBookmarkedRaceIds(viewer.id) : Promise.resolve(new Set<string>()),
+  ]);
 
   if (!race) {
     notFound();
   }
+
+  const isBookmarked = bookmarkedRaceIds.has(race.id);
 
   const informationCards = [
     ['일정', formatRaceDate(race.eventDate, race.eventDateLabel)],
@@ -123,9 +131,26 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
               >
                 이 대회로 계획 만들기
               </Link>
-              <button className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
-                관심 대회 저장
-              </button>
+              {viewer ? (
+                <form action={toggleRaceBookmarkAction}>
+                  <input type="hidden" name="sourceRaceId" value={race.sourceRaceId} />
+                  <input type="hidden" name="raceId" value={race.id} />
+                  <input type="hidden" name="enabled" value={isBookmarked ? 'false' : 'true'} />
+                  <button
+                    type="submit"
+                    className="w-full rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  >
+                    {isBookmarked ? '관심 대회 해제' : '관심 대회 저장'}
+                  </button>
+                </form>
+              ) : (
+                <Link
+                  href={`/login?next=${encodeURIComponent(`/races/${race.sourceRaceId}`)}`}
+                  className="inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  로그인하고 관심 대회 저장
+                </Link>
+              )}
             </div>
           </section>
         </aside>

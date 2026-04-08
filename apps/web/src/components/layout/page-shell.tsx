@@ -1,16 +1,47 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import { getOptionalViewer } from '@/lib/auth/session';
+import { logoutAction } from '@/app/login/actions';
 import { BottomNav } from './bottom-nav';
 
-export function PageShell({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+export async function PageShell({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+  const viewer = await getOptionalViewer();
+  const roleLabel = viewer?.role === 'admin' ? '관리자' : viewer?.role === 'moderator' ? '운영자' : '러너';
+
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
-          <Link href="/" className="text-base font-bold tracking-tight text-slate-950">
-            모두의 러닝
-          </Link>
-          <div className="text-sm text-slate-500">모바일 우선 러닝 웹앱</div>
+        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8">
+          <div>
+            <Link href="/" className="text-base font-bold tracking-tight text-slate-950">
+              모두의 러닝
+            </Link>
+            <div className="text-sm text-slate-500">모바일 우선 러닝 웹앱</div>
+          </div>
+
+          {viewer ? (
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <p className="text-sm font-semibold text-slate-900">{viewer.displayName}</p>
+                <p className="text-xs text-slate-500">{roleLabel}</p>
+              </div>
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  로그아웃
+                </button>
+              </form>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-full bg-[var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+            >
+              로그인
+            </Link>
+          )}
         </div>
       </header>
 

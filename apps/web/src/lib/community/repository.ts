@@ -1,5 +1,5 @@
-import { getSupabaseAdminClient } from '@/lib/supabase/admin';
-import { getOrCreateDemoUserId } from '@/lib/demo-user';
+import { getOptionalViewer, requireModerator, requireViewer } from '@/lib/auth/session';
+import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 type RawPost = {
   id: string;
@@ -34,15 +34,24 @@ export type CommunityDetail = CommunityPost & {
   comments: Array<RawComment & { authorLabel: string }>;
 };
 
-function getAuthorLabel(authorUserId: string, currentUserId: string) {
-  return authorUserId === currentUserId ? '데모 러너' : '러너';
+function assertRequiredText(value: string, label: string) {
+  const normalized = value.trim();
+
+  if (!normalized) {
+    throw new Error(`${label}을(를) 입력해 주세요.`);
+  }
+
+  return normalized;
+}
+
+function getAuthorLabel(authorUserId: string, currentUserId?: string | null) {
+  return currentUserId && authorUserId === currentUserId ? '나' : '러너';
 }
 
 export async function listCommunityPosts(category?: string) {
-  const currentUserId = await getOrCreateDemoUserId();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const admin: any = getSupabaseAdminClient();
-  let query = admin
+  const viewer = await getOptionalViewer();
+  const supabase = await getSupabaseServerClient();
+  let query = supabase
     .from('community_posts')
     .select('id, author_user_id, linked_race_id, category, title, content, status, like_count, comment_count, report_count, created_at, updated_at')
     .neq('status', 'deleted')
@@ -57,19 +66,16 @@ export async function listCommunityPosts(category?: string) {
     throw new Error(`커뮤니티 목록 조회 실패: ${error.message}`);
   }
 
-  return (data ?? [])
-    .filter((post: RawPost) => post.status !== 'hidden')
-    .map((post: RawPost) => ({
-      ...post,
-      authorLabel: getAuthorLabel(post.author_user_id, currentUserId),
-    })) as CommunityPost[];
+  return (data ?? []).map((post: RawPost) => ({
+    ...post,
+    authorLabel: getAuthorLabel(post.author_user_id, viewer?.id),
+  })) as CommunityPost[];
 }
 
 export async function getCommunityPost(postId: string) {
-  const currentUserId = await getOrCreateDemoUserId();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const admin: any = getSupabaseAdminClient();
-  const { data: post, error: postError } = await admin
+  const viewer = await getOptionalViewer();
+  const supabase = await getSupabaseServerClient();
+  const { data: post, error: postError } = await supabase
     .from('community_posts')
     .select('id, author_user_id, linked_race_id, category, title, content, status, like_count, comment_count, report_count, created_at, updated_at')
     .eq('id', postId)
@@ -83,7 +89,7 @@ export async function getCommunityPost(postId: string) {
     return null;
   }
 
-  const { data: comments, error: commentError } = await admin
+  const { data: comments, error: commentError } = await supabase
     .from('community_comments')
     .select('id, post_id, author_user_id, parent_comment_id, content, status, created_at')
     .eq('post_id', postId)
@@ -96,13 +102,11 @@ export async function getCommunityPost(postId: string) {
 
   return {
     ...(post as RawPost),
-    authorLabel: getAuthorLabel(post.author_user_id, currentUserId),
-    comments: (comments ?? [])
-      .filter((comment: RawComment) => comment.status !== 'hidden')
-      .map((comment: RawComment) => ({
-        ...comment,
-        authorLabel: getAuthorLabel(comment.author_user_id, currentUserId),
-      })),
+    authorLabel: getAuthorLabel(post.author_user_id, viewer?.id),
+    comments: (comments ?? []).map((comment: RawComment) => ({
+      ...comment,
+      authorLabel: getAuthorLabel(comment.author_user_id, viewer?.id),
+    })),
   } as CommunityDetail;
 }
 
@@ -112,15 +116,14 @@ export async function createCommunityPost(input: {
   content: string;
   linkedRaceId?: string | null;
 }) {
-  const currentUserId = await getOrCreateDemoUserId();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const admin: any = getSupabaseAdminClient();
-  const { error } = await admin.from('community_posts').insert({
-    author_user_id: currentUserId,
+  const viewer = await requireViewer('/community');
+  const supabase = await getSupabaseServerClient();
+  const { error } = await supabase.from('community_posts').insert({
+    author_user_id: viewer.id,
     linked_race_id: input.linkedRaceId || null,
     category: input.category,
-    title: input.title.trim(),
-    content: input.content.trim(),
+    title: assertRequiredText(input.title, '게시글 제목'),
+    content: assertRequiredText(input.content, '게시글 내용'),
   });
 
   if (error) {
@@ -129,20 +132,19 @@ export async function createCommunityPost(input: {
 }
 
 export async function createCommunityComment(input: { postId: string; content: string }) {
-  const currentUserId = await getOrCreateDemoUserId();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const admin: any = getSupabaseAdminClient();
-  const { error } = await admin.from('community_comments').insert({
+  const viewer = await requireViewer('/community');
+  const supabase = await getSupabaseServerClient();
+  const { error } = await supabase.from('community_comments').insert({
     post_id: input.postId,
-    author_user_id: currentUserId,
-    content: input.content.trim(),
+    author_user_id: viewer.id,
+    content: assertRequiredText(input.content, '댓글 내용'),
   });
 
   if (error) {
     throw new Error(`댓글 생성 실패: ${error.message}`);
   }
 
-  const { data: post, error: postError } = await admin
+  const { data: post, error: postError } = await supabase
     .from('community_posts')
     .select('comment_count')
     .eq('id', input.postId)
@@ -152,7 +154,7 @@ export async function createCommunityComment(input: { postId: string; content: s
     throw new Error(`댓글 수 조회 실패: ${postError.message}`);
   }
 
-  const { error: updateError } = await admin
+  const { error: updateError } = await supabase
     .from('community_posts')
     .update({ comment_count: (post.comment_count ?? 0) + 1 })
     .eq('id', input.postId);
@@ -163,13 +165,12 @@ export async function createCommunityComment(input: { postId: string; content: s
 }
 
 export async function reportCommunityPost(input: { postId: string; reason: string; description?: string }) {
-  const currentUserId = await getOrCreateDemoUserId();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const admin: any = getSupabaseAdminClient();
-  const { error } = await admin.from('community_reports').insert({
+  const viewer = await requireViewer('/community');
+  const supabase = await getSupabaseServerClient();
+  const { error } = await supabase.from('community_reports').insert({
     post_id: input.postId,
-    reporter_user_id: currentUserId,
-    reason: input.reason.trim(),
+    reporter_user_id: viewer.id,
+    reason: assertRequiredText(input.reason, '신고 사유'),
     description: input.description?.trim() || null,
   });
 
@@ -177,7 +178,7 @@ export async function reportCommunityPost(input: { postId: string; reason: strin
     throw new Error(`게시글 신고 실패: ${error.message}`);
   }
 
-  const { data: post, error: postError } = await admin
+  const { data: post, error: postError } = await supabase
     .from('community_posts')
     .select('report_count')
     .eq('id', input.postId)
@@ -187,7 +188,7 @@ export async function reportCommunityPost(input: { postId: string; reason: strin
     throw new Error(`신고 수 조회 실패: ${postError.message}`);
   }
 
-  const { error: updateError } = await admin
+  const { error: updateError } = await supabase
     .from('community_posts')
     .update({ report_count: (post.report_count ?? 0) + 1 })
     .eq('id', input.postId);
@@ -198,18 +199,17 @@ export async function reportCommunityPost(input: { postId: string; reason: strin
 }
 
 export async function setCommunityPostHidden(postId: string, hidden: boolean) {
-  const currentUserId = await getOrCreateDemoUserId();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const admin: any = getSupabaseAdminClient();
+  const viewer = await requireModerator('/community');
+  const supabase = await getSupabaseServerClient();
   const status = hidden ? 'hidden' : 'published';
-  const { error } = await admin.from('community_posts').update({ status }).eq('id', postId);
+  const { error } = await supabase.from('community_posts').update({ status }).eq('id', postId);
 
   if (error) {
     throw new Error(`게시글 숨김 상태 변경 실패: ${error.message}`);
   }
 
-  const { error: auditError } = await admin.from('admin_audit_logs').insert({
-    actor_user_id: currentUserId,
+  const { error: auditError } = await supabase.from('admin_audit_logs').insert({
+    actor_user_id: viewer.id,
     target_table: 'community_posts',
     target_id: postId,
     action: hidden ? 'hide' : 'restore',

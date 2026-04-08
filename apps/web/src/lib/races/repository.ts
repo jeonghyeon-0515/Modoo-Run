@@ -1,4 +1,4 @@
-import { getSupabaseAdminClient } from '@/lib/supabase/admin';
+import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { RaceDetailItem, RaceFilters, RaceListItem, RaceStatus } from './types';
 import { normalizeMonthFilter } from './formatters';
 
@@ -61,9 +61,8 @@ function mapRaceDetail(row: RawRace): RaceDetailItem {
 }
 
 export async function listRaces(filters: RaceFilters = {}): Promise<RaceListItem[]> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const admin: any = getSupabaseAdminClient();
-  let query = admin
+  const supabase = await getSupabaseServerClient();
+  let query = supabase
     .from('races')
     .select(
       'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, last_synced_at',
@@ -107,9 +106,8 @@ export async function listRaces(filters: RaceFilters = {}): Promise<RaceListItem
 }
 
 export async function getRaceBySourceRaceId(sourceRaceId: string): Promise<RaceDetailItem | null> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const admin: any = getSupabaseAdminClient();
-  const { data, error } = await admin
+  const supabase = await getSupabaseServerClient();
+  const { data, error } = await supabase
     .from('races')
     .select(
       'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, last_synced_at, representative_name, phone, homepage_url, summary, description, source_detail_url, source_list_url, registration_open_at, registration_close_at',
@@ -129,12 +127,47 @@ export async function getRaceBySourceRaceId(sourceRaceId: string): Promise<RaceD
 }
 
 export async function listRegions() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const admin: any = getSupabaseAdminClient();
-  const { data, error } = await admin.from('races').select('region').not('region', 'is', null);
+  const supabase = await getSupabaseServerClient();
+  const { data, error } = await supabase.from('races').select('region').not('region', 'is', null);
   if (error) {
     throw new Error(`지역 목록 조회 실패: ${error.message}`);
   }
 
   return [...new Set((data ?? []).map((row: { region: string | null }) => row.region).filter(Boolean))] as string[];
+}
+
+export async function listBookmarkedRaceIds(userId: string) {
+  const supabase = await getSupabaseServerClient();
+  const { data, error } = await supabase.from('race_bookmarks').select('race_id').eq('user_id', userId);
+
+  if (error) {
+    throw new Error(`관심 대회 조회 실패: ${error.message}`);
+  }
+
+  return new Set((data ?? []).map((row: { race_id: string }) => row.race_id));
+}
+
+export async function setRaceBookmark(userId: string, raceId: string, enabled: boolean) {
+  const supabase = await getSupabaseServerClient();
+
+  if (enabled) {
+    const { error } = await supabase.from('race_bookmarks').upsert(
+      {
+        user_id: userId,
+        race_id: raceId,
+      },
+      { onConflict: 'user_id,race_id' },
+    );
+
+    if (error) {
+      throw new Error(`관심 대회 저장 실패: ${error.message}`);
+    }
+
+    return;
+  }
+
+  const { error } = await supabase.from('race_bookmarks').delete().eq('user_id', userId).eq('race_id', raceId);
+  if (error) {
+    throw new Error(`관심 대회 해제 실패: ${error.message}`);
+  }
 }
