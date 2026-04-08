@@ -3,6 +3,7 @@ import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { formatRaceDate } from '@/lib/races/formatters';
 import { listRaces } from '@/lib/races/repository';
+import { buildPlanStarterTemplates } from '@/lib/ui/catalog-insights';
 import { PlanItemStatus } from '@/lib/plans/stats';
 import { getPlanView } from '@/lib/plans/repository';
 import {
@@ -87,6 +88,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
   const prevMonth = shiftMonth(year, month, -1);
   const nextMonth = shiftMonth(year, month, 1);
   const monthTitle = `${year}년 ${month}월`;
+  const starterTemplates = buildPlanStarterTemplates(races);
 
   return (
     <PageShell
@@ -112,6 +114,16 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
             >
               먼저 대회 둘러보기
             </Link>
+          </div>
+
+          <div className="mt-8 grid gap-3 lg:grid-cols-3">
+            {starterTemplates.map((template) => (
+              <article key={template.id} className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{template.accent}</p>
+                <h3 className="mt-2 text-sm font-semibold text-slate-950">{template.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{template.description}</p>
+              </article>
+            ))}
           </div>
         </section>
       ) : (
@@ -428,17 +440,32 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                 )}
               </section>
 
-              <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-                <h3 className="text-lg font-semibold text-slate-950">요약</h3>
-                <div className="mt-4 space-y-3 text-sm text-slate-600">
-                  <p>완료 {stats.completedCount}개</p>
-                  <p>부분 완료 {stats.partialCount}개</p>
-                  <p>건너뜀 {stats.skippedCount}개</p>
-                  <p>연속 달성 {stats.streak}일</p>
-                </div>
-              </section>
-            </aside>
+          <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <h3 className="text-lg font-semibold text-slate-950">요약</h3>
+            <div className="mt-4 space-y-3 text-sm text-slate-600">
+              <p>완료 {stats.completedCount}개</p>
+              <p>부분 완료 {stats.partialCount}개</p>
+              <p>건너뜀 {stats.skippedCount}개</p>
+              <p>연속 달성 {stats.streak}일</p>
+            </div>
           </section>
+
+          {!plan || items.length === 0 ? (
+            <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <h3 className="text-lg font-semibold text-slate-950">시작용 추천 템플릿</h3>
+              <div className="mt-4 space-y-3">
+                {starterTemplates.map((template) => (
+                  <article key={template.id} className="rounded-[1.25rem] border border-slate-200 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{template.accent}</p>
+                    <h4 className="mt-2 text-sm font-semibold text-slate-950">{template.title}</h4>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">{template.description}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+        </aside>
+      </section>
         </>
       )}
     </PageShell>

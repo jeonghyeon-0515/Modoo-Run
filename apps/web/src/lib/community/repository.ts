@@ -143,25 +143,6 @@ export async function createCommunityComment(input: { postId: string; content: s
   if (error) {
     throw new Error(`댓글 생성 실패: ${error.message}`);
   }
-
-  const { data: post, error: postError } = await supabase
-    .from('community_posts')
-    .select('comment_count')
-    .eq('id', input.postId)
-    .single();
-
-  if (postError) {
-    throw new Error(`댓글 수 조회 실패: ${postError.message}`);
-  }
-
-  const { error: updateError } = await supabase
-    .from('community_posts')
-    .update({ comment_count: (post.comment_count ?? 0) + 1 })
-    .eq('id', input.postId);
-
-  if (updateError) {
-    throw new Error(`댓글 수 업데이트 실패: ${updateError.message}`);
-  }
 }
 
 export async function reportCommunityPost(input: { postId: string; reason: string; description?: string }) {
@@ -176,25 +157,6 @@ export async function reportCommunityPost(input: { postId: string; reason: strin
 
   if (error) {
     throw new Error(`게시글 신고 실패: ${error.message}`);
-  }
-
-  const { data: post, error: postError } = await supabase
-    .from('community_posts')
-    .select('report_count')
-    .eq('id', input.postId)
-    .single();
-
-  if (postError) {
-    throw new Error(`신고 수 조회 실패: ${postError.message}`);
-  }
-
-  const { error: updateError } = await supabase
-    .from('community_posts')
-    .update({ report_count: (post.report_count ?? 0) + 1 })
-    .eq('id', input.postId);
-
-  if (updateError) {
-    throw new Error(`신고 수 업데이트 실패: ${updateError.message}`);
   }
 }
 

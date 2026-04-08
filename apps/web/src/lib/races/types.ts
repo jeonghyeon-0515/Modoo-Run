@@ -35,3 +35,18 @@ export type RaceFilters = {
   distance?: string;
   limit?: number;
 };
+
+export type RaceRegionSummary = {
+  region: string;
+  count: number;
+};
+
+export type RaceExplorerSummary = {
+  totalCount: number;
+  openCount: number;
+  closedCount: number;
+  unknownCount: number;
+  regionCount: number;
+  latestSyncAt: string | null;
+  topRegions: RaceRegionSummary[];
+};

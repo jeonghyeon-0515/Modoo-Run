@@ -1,5 +1,12 @@
 import { getSupabaseServerClient } from '@/lib/supabase/server';
-import { RaceDetailItem, RaceFilters, RaceListItem, RaceStatus } from './types';
+import {
+  RaceDetailItem,
+  RaceExplorerSummary,
+  RaceFilters,
+  RaceListItem,
+  RaceRegionSummary,
+  RaceStatus,
+} from './types';
 import { normalizeMonthFilter } from './formatters';
 
 type RawRace = {
@@ -26,6 +33,9 @@ type RawRace = {
   registration_open_at?: string | null;
   registration_close_at?: string | null;
 };
+
+const raceListColumns =
+  'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, last_synced_at';
 
 function mapRace(row: RawRace): RaceListItem {
   return {
@@ -64,9 +74,7 @@ export async function listRaces(filters: RaceFilters = {}): Promise<RaceListItem
   const supabase = await getSupabaseServerClient();
   let query = supabase
     .from('races')
-    .select(
-      'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, last_synced_at',
-    )
+    .select(raceListColumns)
     .order('event_date', { ascending: true, nullsFirst: false })
     .order('title', { ascending: true });
 
@@ -124,6 +132,101 @@ export async function getRaceBySourceRaceId(sourceRaceId: string): Promise<RaceD
   }
 
   return mapRaceDetail(data as RawRace);
+}
+
+export async function listRecentlySyncedRaces(limit = 6): Promise<RaceListItem[]> {
+  const supabase = await getSupabaseServerClient();
+  const { data, error } = await supabase
+    .from('races')
+    .select(raceListColumns)
+    .order('last_synced_at', { ascending: false })
+    .order('event_date', { ascending: true, nullsFirst: false })
+    .limit(limit);
+
+  if (error) {
+    throw new Error(`최근 수집 대회 조회 실패: ${error.message}`);
+  }
+
+  return (data ?? []).map((row: RawRace) => mapRace(row));
+}
+
+export async function listRelatedRaces(input: {
+  excludeSourceRaceId: string;
+  region?: string | null;
+  limit?: number;
+}): Promise<RaceListItem[]> {
+  const supabase = await getSupabaseServerClient();
+  let query = supabase
+    .from('races')
+    .select(raceListColumns)
+    .neq('source_race_id', input.excludeSourceRaceId)
+    .order('event_date', { ascending: true, nullsFirst: false })
+    .limit(input.limit ?? 3);
+
+  if (input.region) {
+    query = query.eq('region', input.region);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(`관련 대회 조회 실패: ${error.message}`);
+  }
+
+  return (data ?? []).map((row: RawRace) => mapRace(row));
+}
+
+export async function getRaceExplorerSummary(limitRegions = 4): Promise<RaceExplorerSummary> {
+  const supabase = await getSupabaseServerClient();
+  const { data, error } = await supabase
+    .from('races')
+    .select('region, registration_status, last_synced_at');
+
+  if (error) {
+    throw new Error(`대회 요약 조회 실패: ${error.message}`);
+  }
+
+  const rows =
+    (data as Array<{
+      region: string | null;
+      registration_status: RaceStatus;
+      last_synced_at: string | null;
+    }>) ?? [];
+
+  const regionCounts = new Map<string, number>();
+  let latestSyncAt: string | null = null;
+  let openCount = 0;
+  let closedCount = 0;
+  let unknownCount = 0;
+
+  rows.forEach((row) => {
+    if (row.registration_status === 'open') openCount += 1;
+    else if (row.registration_status === 'closed') closedCount += 1;
+    else unknownCount += 1;
+
+    if (row.region) {
+      regionCounts.set(row.region, (regionCounts.get(row.region) ?? 0) + 1);
+    }
+
+    if (row.last_synced_at && (!latestSyncAt || new Date(row.last_synced_at) > new Date(latestSyncAt))) {
+      latestSyncAt = row.last_synced_at;
+    }
+  });
+
+  const topRegions: RaceRegionSummary[] = [...regionCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limitRegions)
+    .map(([region, count]) => ({ region, count }));
+
+  return {
+    totalCount: rows.length,
+    openCount,
+    closedCount,
+    unknownCount,
+    regionCount: regionCounts.size,
+    latestSyncAt,
+    topRegions,
+  };
 }
 
 export async function listRegions() {
