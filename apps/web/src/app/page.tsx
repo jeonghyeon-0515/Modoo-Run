@@ -210,12 +210,12 @@ export default async function Home() {
               <Link
                 key={race.id}
                 href={`/races/${race.sourceRaceId}`}
-                className="interactive-card rounded-[1.5rem] border border-slate-200 p-4"
+                className="interactive-card rounded-[1.25rem] border border-slate-200 p-3 sm:rounded-[1.5rem] sm:p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-base font-semibold text-slate-950">{race.title}</h3>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <h3 className="text-sm font-semibold text-slate-950 sm:text-base">{race.title}</h3>
+                    <p className="mt-1 text-xs text-slate-500 sm:text-sm">
                       {formatRaceDate(race.eventDate, race.eventDateLabel)}
                     </p>
                   </div>
@@ -224,10 +224,10 @@ export default async function Home() {
                   </StatusBadge>
                 </div>
 
-                <div className="mt-4 grid gap-2 text-sm text-slate-600">
+                <div className="mt-3 grid gap-1 text-sm text-slate-600 sm:mt-4 sm:gap-2">
                   <p>{race.region ?? '지역 정보 없음'} · {race.location ?? '장소 정보 없음'}</p>
-                  <p>{race.courseSummary ?? '종목 정보 없음'}</p>
-                  <p>최근 업데이트 {formatLastSyncedAt(race.lastSyncedAt)}</p>
+                  <p className="line-clamp-1">{race.courseSummary ?? '종목 정보 없음'}</p>
+                  <p className="text-xs sm:text-sm">최근 업데이트 {formatLastSyncedAt(race.lastSyncedAt)}</p>
                 </div>
               </Link>
             ))}

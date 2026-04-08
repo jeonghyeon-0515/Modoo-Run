@@ -276,7 +276,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           </aside>
         </section>
 
-        <section className="mt-6 space-y-4">
+        <section className="mt-6 space-y-3 sm:space-y-4">
           {races.length === 0 ? (
             <article className="rounded-[1.75rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
               <p className="text-base font-semibold text-slate-950">조건에 맞는 대회가 없습니다.</p>
@@ -295,15 +295,15 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
               <Link
                 key={race.id}
                 href={`/races/${race.sourceRaceId}`}
-                className="block rounded-[1.75rem] bg-white p-5 shadow-sm ring-1 ring-black/5 transition hover:ring-blue-200"
+                className="block rounded-[1.25rem] bg-white p-4 shadow-sm ring-1 ring-black/5 transition hover:ring-blue-200 sm:rounded-[1.75rem] sm:p-5"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-lg font-semibold text-slate-950">{race.title}</h2>
+                      <h2 className="text-base font-semibold text-slate-950 sm:text-lg">{race.title}</h2>
                       {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
                     </div>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-xs text-slate-500 sm:text-sm">
                       {formatRaceDate(race.eventDate, race.eventDateLabel)}
                     </p>
                   </div>
@@ -312,7 +312,19 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                   </StatusBadge>
                 </div>
 
-                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="mt-3 space-y-2 sm:hidden">
+                  <p className="text-sm text-slate-700">
+                    {race.location ?? '장소 정보 없음'}
+                  </p>
+                  <p className="text-sm text-slate-600">
+                    {race.courseSummary ?? '종목 정보 없음'}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {race.organizer ?? '주최 정보 없음'} · 최근 업데이트 {formatLastSyncedAt(race.lastSyncedAt)}
+                  </p>
+                </div>
+
+                <div className="mt-4 hidden gap-3 sm:grid sm:grid-cols-3">
                   <div className="rounded-2xl bg-slate-50 p-4">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">장소</p>
                     <p className="mt-2 text-sm text-slate-700">{race.location ?? '장소 정보 없음'}</p>
@@ -329,12 +341,16 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                   </div>
                 </div>
 
-                <div className="mt-4 flex flex-col gap-2 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mt-3 hidden flex-col gap-2 text-sm text-slate-600 sm:flex sm:flex-row sm:items-center sm:justify-between">
                   <div className="space-y-1">
                     <p>{race.organizer ?? '주최 정보 없음'}</p>
                     <p>최근 업데이트: {formatLastSyncedAt(race.lastSyncedAt)}</p>
                   </div>
                   <span className="font-semibold text-[var(--brand)]">자세히 보기</span>
+                </div>
+
+                <div className="mt-3 flex items-center justify-end sm:hidden">
+                  <span className="text-xs font-semibold text-[var(--brand)]">자세히 보기</span>
                 </div>
               </Link>
             ))
