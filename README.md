@@ -154,3 +154,4 @@
 
 ## 운영 메모
 - 인증/권한/크론 운영 절차: `docs/ops-auth-and-cron.md`
+- 현재 Vercel Hobby 제약으로 자동 동기화 크론은 하루 1회(UTC 00:00)로 설정됨

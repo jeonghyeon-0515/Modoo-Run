@@ -39,6 +39,13 @@
 - `Authorization: Bearer <CRON_SECRET>`
 - `x-race-sync-secret: <RACE_SYNC_SHARED_SECRET>`
 
+## 3-1. 현재 배포 플랜 제약
+- 현재 Vercel 프로젝트는 **Hobby 플랜 제약**으로 하루 1회보다 잦은 Cron을 사용할 수 없다.
+- 그래서 현재 `apps/web/vercel.json`의 운영 크론은 **UTC 00:00, 하루 1회**로 설정되어 있다.
+- 더 자주 동기화가 필요하면 아래 둘 중 하나로 확장한다.
+  1. Vercel Pro 이상으로 업그레이드
+  2. Supabase 스케줄러/pg_cron 기반으로 수집 주기를 이전
+
 ## 4. 배포 후 확인 체크리스트
 1. `apps/web/vercel.json`의 cron이 배포 프로젝트 루트 기준으로 반영됐는지 확인
 2. `/api/internal/race-sync` 무인증 호출이 401인지 확인
