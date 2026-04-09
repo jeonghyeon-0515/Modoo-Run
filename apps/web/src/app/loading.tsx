@@ -1,12 +1,8 @@
+import { RouteLoadingChrome } from '@/components/ui/route-loading-chrome';
+
 export default function Loading() {
   return (
-    <>
-      <div className="route-loading-overlay" aria-hidden="true" />
-      <div className="route-progress opacity-100" aria-hidden="true" />
-      <div className="route-toast translate-y-0 opacity-100" aria-live="polite" aria-atomic="true">
-        <span className="route-toast-dot" />
-        페이지 여는 중…
-      </div>
+    <RouteLoadingChrome>
       <div className="mx-auto w-full max-w-5xl px-5 py-6 sm:px-8">
         <div className="space-y-4">
           <div className="route-loading-card h-8 w-52 rounded-2xl bg-white/90 shadow-sm" />
@@ -17,6 +13,6 @@ export default function Loading() {
           </div>
         </div>
       </div>
-    </>
+    </RouteLoadingChrome>
   );
 }
