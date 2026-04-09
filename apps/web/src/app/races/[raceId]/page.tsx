@@ -68,7 +68,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
       <div className="mb-4">
         <Link
           href="/races"
-          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-soft)] hover:text-[var(--brand-strong)]"
+          className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-soft-strong)] bg-white px-5 py-3 text-base font-semibold text-slate-900 shadow-sm transition hover:border-[var(--brand)] hover:text-[var(--brand-strong)]"
         >
           <span aria-hidden="true">←</span>
           대회 목록으로 돌아가기

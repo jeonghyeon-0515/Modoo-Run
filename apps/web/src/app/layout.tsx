@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { RouteTransitionIndicator } from '@/components/layout/route-transition-indicator';
 
 export const metadata: Metadata = {
   title: "모두의 러닝",
@@ -16,7 +15,6 @@ export default function RootLayout({
   return (
     <html lang="ko" className="h-full antialiased">
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
-        <RouteTransitionIndicator />
         {children}
       </body>
     </html>
