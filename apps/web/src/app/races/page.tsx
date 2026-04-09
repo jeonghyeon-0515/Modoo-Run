@@ -213,7 +213,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">
               <span className="inline-flex items-center gap-2">
                 조건 초기화
-                <LinkPendingCue mode="dot" />
+                <LinkPendingCue mode="badge" label="이동 중" />
               </span>
             </Link>
           ) : null}
@@ -252,7 +252,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             >
               <span className="inline-flex items-center gap-2">
                 필터 초기화
-                <LinkPendingCue mode="dot" />
+                <LinkPendingCue mode="badge" label="이동 중" />
               </span>
             </Link>
           </article>
@@ -291,7 +291,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                   </StatusBadge>
                   <span className="inline-flex items-center gap-2 text-[11px] font-semibold text-[var(--brand)] transition group-hover:translate-x-0.5 sm:text-xs">
                     자세히 보기 →
-                    <LinkPendingCue mode="dot" />
+                    <LinkPendingCue mode="badge" label="여는 중" />
                   </span>
                 </div>
               </div>

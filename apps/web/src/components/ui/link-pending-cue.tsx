@@ -4,7 +4,7 @@ import { useLinkStatus } from 'next/link';
 
 type LinkPendingCueProps = {
   label?: string;
-  mode?: 'inline' | 'pill' | 'dot';
+  mode?: 'inline' | 'pill' | 'dot' | 'badge';
   className?: string;
 };
 
@@ -26,6 +26,15 @@ export function LinkPendingCue({
   if (mode === 'pill') {
     return (
       <span className={`route-link-pill ${className}`.trim()}>
+        <span className="route-link-dot" aria-hidden="true" />
+        {label}
+      </span>
+    );
+  }
+
+  if (mode === 'badge') {
+    return (
+      <span className={`route-link-badge ${className}`.trim()}>
         <span className="route-link-dot" aria-hidden="true" />
         {label}
       </span>

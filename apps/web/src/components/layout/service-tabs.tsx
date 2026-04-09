@@ -35,7 +35,7 @@ export function ServiceTabs() {
             >
               <span className="inline-flex items-center gap-2">
                 {item.label}
-                <LinkPendingCue mode="dot" />
+                <LinkPendingCue mode="badge" label="이동 중" />
               </span>
             </Link>
           );

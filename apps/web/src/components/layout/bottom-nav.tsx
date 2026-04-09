@@ -36,7 +36,7 @@ export function BottomNav() {
             }`}
           >
             <span>{item.label}</span>
-            <LinkPendingCue mode="dot" className="mt-1" />
+            <LinkPendingCue mode="badge" label="로딩" className="mt-1" />
           </Link>
         ))}
       </div>

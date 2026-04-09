@@ -80,7 +80,7 @@ export default async function Home() {
           >
             <span className="inline-flex items-center gap-2">
               이번 달 계획 세우기
-              <LinkPendingCue mode="dot" />
+              <LinkPendingCue mode="badge" label="열기 중" />
             </span>
           </Link>
           <Link
@@ -89,7 +89,7 @@ export default async function Home() {
           >
             <span className="inline-flex items-center gap-2">
               러너 이야기 보러 가기
-              <LinkPendingCue mode="dot" />
+              <LinkPendingCue mode="badge" label="열기 중" />
             </span>
           </Link>
         </div>
@@ -111,7 +111,7 @@ export default async function Home() {
             <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">
               <span className="inline-flex items-center gap-2">
                 전체 일정 보기
-                <LinkPendingCue mode="dot" />
+                <LinkPendingCue mode="badge" label="이동 중" />
               </span>
             </Link>
           </div>
@@ -153,7 +153,7 @@ export default async function Home() {
                     <span>카드 어디를 눌러도 상세로 이동해요</span>
                     <span className="inline-flex items-center gap-2 text-[var(--brand)] transition group-hover:translate-x-0.5">
                       상세 보기 →
-                      <LinkPendingCue mode="dot" />
+                      <LinkPendingCue mode="badge" label="여는 중" />
                     </span>
                   </div>
                 </Link>
@@ -176,7 +176,7 @@ export default async function Home() {
               <Link href="/plan" className="text-sm font-semibold text-[var(--brand)]">
                 <span className="inline-flex items-center gap-2">
                   보기
-                  <LinkPendingCue mode="dot" />
+                  <LinkPendingCue mode="badge" label="이동 중" />
                 </span>
               </Link>
             </div>
@@ -208,7 +208,7 @@ export default async function Home() {
               <Link href="/community" className="text-sm font-semibold text-[var(--brand)]">
                 <span className="inline-flex items-center gap-2">
                   더 보기
-                  <LinkPendingCue mode="dot" />
+                  <LinkPendingCue mode="badge" label="이동 중" />
                 </span>
               </Link>
             </div>

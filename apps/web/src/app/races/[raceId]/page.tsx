@@ -73,7 +73,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
         >
           <span aria-hidden="true">←</span>
           대회 목록으로 돌아가기
-          <LinkPendingCue mode="dot" />
+          <LinkPendingCue mode="badge" label="돌아가는 중" />
         </Link>
       </div>
 
@@ -185,7 +185,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
             <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">
               <span className="inline-flex items-center gap-2">
                 전체 보기
-                <LinkPendingCue mode="dot" />
+                <LinkPendingCue mode="badge" label="이동 중" />
               </span>
             </Link>
           </div>
@@ -215,7 +215,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
                   <div className="mt-3 text-right text-xs font-semibold text-[var(--brand)] transition group-hover:translate-x-0.5">
                     <span className="inline-flex items-center gap-2">
                       이 대회 보기 →
-                      <LinkPendingCue mode="dot" />
+                      <LinkPendingCue mode="badge" label="여는 중" />
                     </span>
                   </div>
                 </Link>
