@@ -56,6 +56,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
             />
           </label>
 
+          <div className="text-right text-sm">
+            <Link href="/forgot-password" className="font-semibold text-[var(--brand)]">
+              비밀번호 찾기
+            </Link>
+          </div>
+
           <div className="grid gap-3 sm:grid-cols-2">
             <button
               type="submit"
@@ -68,7 +74,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
               href={`/signup?next=${encodeURIComponent(nextPath)}`}
               className="inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
-              회원가입 페이지로 가기
+              회원가입
             </Link>
           </div>
         </form>

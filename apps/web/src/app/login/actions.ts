@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { normalizeNextPath } from '@/lib/auth/session';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { resolveDisplayName } from '@/lib/auth/utils';
+import { buildAbsoluteUrl } from '@/lib/site';
 
 function readRequiredString(formData: FormData, key: string) {
   const value = String(formData.get(key) ?? '').trim();
@@ -69,8 +70,15 @@ export async function signupAction(formData: FormData) {
   const supabase = await createSupabaseServerClient();
   const email = readRequiredString(formData, 'email');
   const password = readRequiredString(formData, 'password');
+  const passwordConfirm = readRequiredString(formData, 'passwordConfirm');
   const displayName = String(formData.get('displayName') ?? '').trim();
   const nextPath = readNextPath(formData);
+
+  if (password !== passwordConfirm) {
+    redirect(
+      `/signup?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent('비밀번호 확인이 일치하지 않아요.')}`,
+    );
+  }
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -108,4 +116,22 @@ export async function logoutAction() {
   await supabase.auth.signOut();
   revalidatePath('/', 'layout');
   redirect('/');
+}
+
+export async function requestPasswordResetAction(formData: FormData) {
+  const supabase = await createSupabaseServerClient();
+  const email = readRequiredString(formData, 'email');
+  const redirectTo = buildAbsoluteUrl('/reset-password');
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo,
+  });
+
+  if (error) {
+    redirect(`/forgot-password?message=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect(
+    `/forgot-password?message=${encodeURIComponent('재설정 메일을 보냈어요. 받은 편지함과 스팸함을 함께 확인해 주세요.')}`,
+  );
 }

@@ -58,6 +58,18 @@ export default async function SignupPage({ searchParams }: { searchParams: Searc
             />
           </label>
 
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-700">비밀번호 확인</span>
+            <input
+              name="passwordConfirm"
+              type="password"
+              required
+              minLength={8}
+              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+              placeholder="같은 비밀번호를 한 번 더 입력"
+            />
+          </label>
+
           <button
             type="submit"
             formAction={signupAction}
