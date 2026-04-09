@@ -27,7 +27,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
   return (
     <PageShell
       title={post.title}
-      description="글을 읽고, 공감되는 내용은 댓글로 이어가고, 필요하면 신고까지 할 수 있게 단순하게 정리했어요."
+      description="글을 읽고 댓글을 남기거나 필요한 경우 신고할 수 있습니다."
     >
       <div className="mb-4">
         <Link href="/community" className="text-sm font-semibold text-[var(--brand)]">
@@ -44,7 +44,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
           {post.authorLabel} · {new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Seoul' }).format(new Date(post.created_at))}
         </p>
         {post.status === 'hidden' ? (
-          <p className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-700">이 글은 지금 잠시 가려져 있어요. 운영자가 다시 보이게 할 수 있습니다.</p>
+          <p className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-700">이 글은 현재 숨김 상태입니다. 운영자가 다시 공개할 수 있습니다.</p>
         ) : null}
         <p className="mt-5 whitespace-pre-wrap text-sm leading-7 text-slate-700">{post.content}</p>
 
@@ -101,7 +101,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
           </form>
         ) : (
           <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-            댓글 남기기은 로그인 후 사용할 수 있습니다.{' '}
+            댓글 남기기는 로그인 후 사용할 수 있습니다.{' '}
             <Link href={`/login?next=${encodeURIComponent(`/community/${post.id}`)}`} className="font-semibold text-[var(--brand)]">
               로그인하기
             </Link>

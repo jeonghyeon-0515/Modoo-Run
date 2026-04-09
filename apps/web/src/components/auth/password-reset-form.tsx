@@ -14,12 +14,12 @@ export function PasswordResetForm() {
     setMessage(null);
 
     if (password.length < 8) {
-      setMessage('비밀번호는 8자 이상이어야 해요.');
+      setMessage('비밀번호는 8자 이상이어야 합니다.');
       return;
     }
 
     if (password !== passwordConfirm) {
-      setMessage('비밀번호 확인이 일치하지 않아요.');
+      setMessage('비밀번호 확인이 일치하지 않습니다.');
       return;
     }
 
@@ -33,11 +33,11 @@ export function PasswordResetForm() {
         throw error;
       }
 
-      setMessage('비밀번호를 바꿨어요. 이제 새 비밀번호로 로그인해 주세요.');
+      setMessage('비밀번호를 변경했습니다. 새 비밀번호로 로그인해 주세요.');
       setPassword('');
       setPasswordConfirm('');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '비밀번호 변경에 실패했어요.');
+      setMessage(error instanceof Error ? error.message : '비밀번호 변경에 실패했습니다.');
     } finally {
       setPending(false);
     }

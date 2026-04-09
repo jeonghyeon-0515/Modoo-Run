@@ -198,7 +198,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
     return (
       <PageShell
         title="대회 일정"
-        description="대회 목록을 바로 다시 살펴볼 수 있도록 간단히 안내합니다."
+        description="대회 목록을 다시 불러올 수 있도록 안내합니다."
       >
         <article className="rounded-[1.75rem] bg-white p-8 shadow-sm ring-1 ring-black/5">
           <p className="text-base font-semibold text-slate-950">대회 목록을 불러오지 못했습니다.</p>
@@ -217,21 +217,21 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
   return (
     <PageShell
       title="대회 일정"
-      description="접수중인 대회를 가까운 일정부터 보여드려요."
+      description="접수 중인 대회를 가까운 일정 순으로 보여줍니다."
       compactIntro
     >
       <section className="mt-1 rounded-[1.25rem] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[1.5rem]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-sm font-semibold text-slate-900">
-              {filters.registrationStatus === 'open' ? '접수중 대회부터 보여드려요' : '원하는 상태로 골라보세요'}
+              {filters.registrationStatus === 'open' ? '접수 중 대회를 우선 표시합니다' : '원하는 상태를 선택해 보세요'}
             </p>
             <p className="mt-1 text-sm text-slate-600">
               {isDefaultOpenView
-                ? '날짜가 가까운 순서로 바로 볼 수 있게 정리했어요.'
+                ? '날짜가 가까운 순서로 정렬했습니다.'
                 : activeLabels.length > 0
-                  ? `${activeLabels.join(' · ')} 조건을 함께 적용했어요.`
-                  : '조건을 바꾸면 원하는 일정만 빠르게 좁혀볼 수 있어요.'}
+                  ? `${activeLabels.join(' · ')} 조건을 함께 적용했습니다.`
+                  : '조건을 바꾸면 원하는 일정만 골라볼 수 있습니다.'}
             </p>
           </div>
 
@@ -261,7 +261,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           <summary className="cursor-pointer list-none text-sm font-semibold text-slate-800">
             지역 · 월 · 거리 더 고르기
           </summary>
-          <p className="mt-3 text-xs text-slate-500">여러 조건을 한 번에 눌러 함께 좁혀볼 수 있어요.</p>
+          <p className="mt-3 text-xs text-slate-500">여러 조건을 동시에 적용할 수 있습니다.</p>
           <div className="mt-4 space-y-4">{renderAdvancedFilters()}</div>
         </details>
       </section>
@@ -271,7 +271,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           <article className="rounded-[1.75rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
             <p className="text-base font-semibold text-slate-950">조건에 맞는 대회가 없습니다.</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              필터를 조금 넓히거나 접수 상태를 전체 보기로 바꿔 다른 일정도 함께 살펴보세요.
+              필터를 조정하거나 접수 상태를 전체 보기로 바꿔 다른 일정도 확인해 보세요.
             </p>
             <Link
               href="/races"
@@ -307,7 +307,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                   <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-600 sm:text-sm">
                     <span className="line-clamp-1">{race.location ?? '장소 정보는 상세에서 확인해보세요.'}</span>
                     <span className="text-slate-300">·</span>
-                    <span className="line-clamp-1">{race.courseSummary ?? '종목 정보는 상세 화면에서 확인할 수 있어요.'}</span>
+                    <span className="line-clamp-1">{race.courseSummary ?? '종목 정보는 상세 페이지에서 확인할 수 있습니다.'}</span>
                   </div>
                   {race.registrationPeriodLabel ? (
                     <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">접수 {race.registrationPeriodLabel}</p>

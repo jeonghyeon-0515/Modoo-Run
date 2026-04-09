@@ -141,7 +141,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
   return (
     <PageShell
       title={race.title}
-      description="참가 전에 필요한 일정과 장소부터 먼저 볼 수 있게 정리했어요."
+      description="참가 전에 확인할 핵심 정보를 먼저 정리했습니다."
       compactIntro
     >
       <RaceDetailViewTracker sourceRaceId={race.sourceRaceId} />
@@ -177,7 +177,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
           </p>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-5xl">{race.title}</h2>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-200 sm:text-base">
-            {race.summary ?? race.description ?? '대회 이야기가 아직 충분히 들어오지 않았어요.'}
+            {race.summary ?? race.description ?? '대회 소개 문구가 아직 등록되지 않았습니다.'}
           </p>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -269,8 +269,8 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
           </div>
           <p className="mt-2 text-sm leading-6 text-slate-600">
             {race.location
-              ? `${race.location} 기준으로 지도를 보여드려요. 현장 집결 위치는 주최 측 안내에서 한 번 더 확인해주세요.`
-              : '장소 정보가 부족해서 지도를 바로 보여주기 어렵습니다.'}
+              ? `${race.location} 기준 지도를 보여줍니다. 현장 집결 위치는 주최 측 안내에서 다시 확인해 주세요.`
+              : '장소 정보가 부족해 지도를 표시할 수 없습니다.'}
           </p>
           {mapEmbedUrl ? (
             <div className="mt-5 overflow-hidden rounded-[1.5rem] ring-1 ring-slate-200">
@@ -293,7 +293,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-semibold text-slate-950">비슷한 지역의 다른 접수중 대회</h3>
-              <p className="mt-1 text-sm text-slate-500">지금 바로 함께 살펴볼 수 있는 일정만 모았어요.</p>
+              <p className="mt-1 text-sm text-slate-500">현재 접수 중인 일정만 모았습니다.</p>
             </div>
             <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">
               <span className="inline-flex items-center gap-2">
@@ -337,7 +337,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
             </div>
           ) : (
             <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-600">
-              지금 추천할 수 있는 같은 지역의 접수중 대회를 아직 충분히 찾지 못했습니다.
+              현재 같은 지역의 접수 중 대회가 없습니다.
             </div>
           )}
         </section>

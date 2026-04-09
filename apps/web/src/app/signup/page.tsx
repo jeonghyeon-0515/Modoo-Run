@@ -15,8 +15,8 @@ export default async function SignupPage({ searchParams }: { searchParams: Searc
 
   return (
     <PageShell
-      title="회원가입하고 러닝을 시작해요"
-      description="이메일로 계정을 만들고 바로 계획 저장, 찜한 대회, 커뮤니티 글쓰기를 이어갈 수 있어요."
+      title="회원가입"
+      description="이메일로 계정을 만들면 대회 저장, 계획 작성, 커뮤니티 기능을 이용할 수 있습니다."
     >
       <section className="mx-auto max-w-2xl rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
         {message ? (

@@ -45,7 +45,7 @@ export async function GET(request: Request) {
   if (error) {
     return NextResponse.redirect(
       new URL(
-        `/login?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent('소셜 로그인에 실패했어요. 설정을 다시 확인해 주세요.')}`,
+        `/login?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent('소셜 로그인에 실패했습니다. 설정을 다시 확인해 주세요.')}`,
         request.url,
       ),
     );

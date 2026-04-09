@@ -106,7 +106,7 @@ export async function signupAction(formData: FormData) {
 
   redirect(
     `/signup?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent(
-      '회원가입은 생성됐지만 세션이 열리지 않았어요. Supabase에서 Confirm Email 설정이 꺼져 있는지 확인해 주세요.',
+      '회원가입은 완료됐지만 자동 로그인은 되지 않았습니다. Supabase Confirm Email 설정을 확인해 주세요.',
     )}`,
   );
 }
@@ -132,6 +132,6 @@ export async function requestPasswordResetAction(formData: FormData) {
   }
 
   redirect(
-    `/forgot-password?message=${encodeURIComponent('재설정 메일을 보냈어요. 받은 편지함과 스팸함을 함께 확인해 주세요.')}`,
+    `/forgot-password?message=${encodeURIComponent('재설정 메일을 보냈습니다. 받은 편지함과 스팸함을 확인해 주세요.')}`,
   );
 }

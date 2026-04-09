@@ -5,8 +5,8 @@ import { PasswordResetForm } from '@/components/auth/password-reset-form';
 export default function ResetPasswordPage() {
   return (
     <PageShell
-      title="새 비밀번호를 입력해 주세요"
-      description="이 페이지는 재설정 링크로 들어왔을 때만 정상적으로 동작합니다."
+      title="새 비밀번호 설정"
+      description="재설정 링크로 접속한 뒤 새 비밀번호를 입력해 주세요."
     >
       <section className="mx-auto max-w-2xl rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
         <PasswordResetForm />

@@ -16,8 +16,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
 
   return (
     <PageShell
-      title="로그인하고 이어서 달려요"
-      description="계획 저장, 찜한 대회, 글쓰기 같은 기능은 로그인 후 바로 이어서 쓸 수 있어요. 소셜 로그인도 바로 쓸 수 있습니다."
+      title="로그인"
+      description="저장한 대회, 계획, 커뮤니티 활동을 계속 이용하려면 로그인해 주세요."
     >
       <section className="mx-auto max-w-2xl rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
         {message ? (
@@ -26,7 +26,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
 
         <div className="mt-2">
           <h2 className="text-sm font-semibold text-slate-900">이메일 로그인</h2>
-          <p className="mt-1 text-xs text-slate-500">이미 만든 계정으로 바로 로그인할 수 있어요.</p>
+          <p className="mt-1 text-xs text-slate-500">이메일과 비밀번호로 로그인할 수 있습니다.</p>
         </div>
 
         <form className="mt-6 space-y-4">

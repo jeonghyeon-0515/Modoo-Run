@@ -14,8 +14,8 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
 
   return (
     <PageShell
-      title="비밀번호를 다시 설정해요"
-      description="가입한 이메일로 재설정 링크를 보내드릴게요."
+      title="비밀번호 재설정"
+      description="가입한 이메일로 재설정 링크를 보냅니다."
     >
       <section className="mx-auto max-w-2xl rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
         {message ? (
