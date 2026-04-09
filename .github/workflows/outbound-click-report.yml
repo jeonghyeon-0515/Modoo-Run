@@ -1,0 +1,48 @@
+name: Outbound Click Report
+
+on:
+  schedule:
+    - cron: '30 21 * * *'
+  workflow_dispatch:
+    inputs:
+      report_days:
+        description: '최근 며칠 데이터를 볼지 입력'
+        required: false
+        default: '7'
+
+jobs:
+  outbound-click-report:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    env:
+      SUPABASE_URL: https://ogvfgjfnfpvhbknqluby.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      OUTBOUND_REPORT_DAYS: ${{ github.event.inputs.report_days || '7' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate required secrets
+        run: |
+          for name in SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY; do
+            if [ -z "${!name}" ]; then
+              echo "필수 시크릿 $name 이(가) 비어 있습니다."
+              exit 1
+            fi
+          done
+
+      - name: Build outbound click report
+        run: node scripts/outbound-click-report.mjs
+

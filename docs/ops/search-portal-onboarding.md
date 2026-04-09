@@ -111,3 +111,23 @@
 2. Google Domain property 전환
 3. Naver IndexNow 자동화 workflow 추가
 4. Search Console / Naver 리포트 주간 자동화
+
+---
+
+## 8. 운영자가 직접 해야 할 일
+
+아래 항목은 계정 소유권과 토큰 발급이 필요해서 제가 대신 끝낼 수 없습니다.
+
+### 필수
+1. **Google Search Console**
+   - `https://modoo-run.vercel.app/` 를 URL-prefix property로 추가
+   - 발급된 메타 토큰을 `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` 으로 Vercel에 입력
+2. **Naver Search Advisor**
+   - `https://modoo-run.vercel.app/` 등록
+   - 발급된 메타 토큰을 `NEXT_PUBLIC_NAVER_SITE_VERIFICATION` 으로 Vercel에 입력
+3. 입력 후 **재배포 또는 환경변수 재적용**
+4. 두 포털에서 `sitemap.xml` 제출
+
+### 선택
+5. Preview 환경에도 같은 verification env 반영
+6. 커스텀 도메인을 붙일 계획이면 이후 Domain property로 재등록
