@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { LinkPendingCue } from '@/components/ui/link-pending-cue';
 import { getOptionalViewer } from '@/lib/auth/session';
 import { listCommunityPosts } from '@/lib/community/repository';
 import { getPlanView } from '@/lib/plans/repository';
@@ -68,19 +69,28 @@ export default async function Home() {
             href="/races"
             className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(255,107,87,0.24)] transition hover:bg-[var(--brand-strong)]"
           >
-            지금 대회 보러 가기
+            <span className="inline-flex items-center gap-2">
+              지금 대회 보러 가기
+              <LinkPendingCue mode="pill" label="여는 중…" />
+            </span>
           </Link>
           <Link
             href="/plan"
             className="text-sm font-semibold text-slate-100 underline-offset-4 hover:underline"
           >
-            이번 달 계획 세우기
+            <span className="inline-flex items-center gap-2">
+              이번 달 계획 세우기
+              <LinkPendingCue mode="dot" />
+            </span>
           </Link>
           <Link
             href="/community"
             className="text-sm font-semibold text-slate-100 underline-offset-4 hover:underline"
           >
-            러너 이야기 보러 가기
+            <span className="inline-flex items-center gap-2">
+              러너 이야기 보러 가기
+              <LinkPendingCue mode="dot" />
+            </span>
           </Link>
         </div>
       </section>
@@ -99,7 +109,10 @@ export default async function Home() {
               </p>
             </div>
             <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">
-              전체 일정 보기
+              <span className="inline-flex items-center gap-2">
+                전체 일정 보기
+                <LinkPendingCue mode="dot" />
+              </span>
             </Link>
           </div>
 
@@ -138,7 +151,10 @@ export default async function Home() {
 
                   <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3 text-[11px] font-semibold text-slate-500 sm:text-xs">
                     <span>카드 어디를 눌러도 상세로 이동해요</span>
-                    <span className="text-[var(--brand)] transition group-hover:translate-x-0.5">상세 보기 →</span>
+                    <span className="inline-flex items-center gap-2 text-[var(--brand)] transition group-hover:translate-x-0.5">
+                      상세 보기 →
+                      <LinkPendingCue mode="dot" />
+                    </span>
                   </div>
                 </Link>
               ))
@@ -158,7 +174,10 @@ export default async function Home() {
                 <p className="mt-1 text-sm leading-6 text-slate-600">달릴 날짜를 정하고, 완료한 날만 체크해보세요.</p>
               </div>
               <Link href="/plan" className="text-sm font-semibold text-[var(--brand)]">
-                보기
+                <span className="inline-flex items-center gap-2">
+                  보기
+                  <LinkPendingCue mode="dot" />
+                </span>
               </Link>
             </div>
 
@@ -187,7 +206,10 @@ export default async function Home() {
                 <p className="mt-1 text-sm leading-6 text-slate-600">후기와 준비 팁만 가볍게 둘러보세요.</p>
               </div>
               <Link href="/community" className="text-sm font-semibold text-[var(--brand)]">
-                더 보기
+                <span className="inline-flex items-center gap-2">
+                  더 보기
+                  <LinkPendingCue mode="dot" />
+                </span>
               </Link>
             </div>
 

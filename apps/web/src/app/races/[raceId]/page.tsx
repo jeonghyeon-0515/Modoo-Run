@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { LinkPendingCue } from '@/components/ui/link-pending-cue';
 import { getOptionalViewer } from '@/lib/auth/session';
 import {
   formatRaceDate,
@@ -72,6 +73,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
         >
           <span aria-hidden="true">←</span>
           대회 목록으로 돌아가기
+          <LinkPendingCue mode="dot" />
         </Link>
       </div>
 
@@ -181,7 +183,10 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
               <p className="mt-1 text-sm text-slate-500">지금 바로 함께 살펴볼 수 있는 일정만 모았어요.</p>
             </div>
             <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">
-              전체 보기
+              <span className="inline-flex items-center gap-2">
+                전체 보기
+                <LinkPendingCue mode="dot" />
+              </span>
             </Link>
           </div>
 
@@ -208,7 +213,10 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
                     {item.location ?? '장소 정보 없음'} · {item.courseSummary ?? '종목 정보 없음'}
                   </p>
                   <div className="mt-3 text-right text-xs font-semibold text-[var(--brand)] transition group-hover:translate-x-0.5">
-                    이 대회 보기 →
+                    <span className="inline-flex items-center gap-2">
+                      이 대회 보기 →
+                      <LinkPendingCue mode="dot" />
+                    </span>
                   </div>
                 </Link>
               ))}

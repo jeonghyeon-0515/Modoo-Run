@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LinkPendingCue } from '@/components/ui/link-pending-cue';
 
 const items = [
   { href: '/', label: '홈' },
@@ -34,7 +35,8 @@ export function BottomNav() {
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
             }`}
           >
-            {item.label}
+            <span>{item.label}</span>
+            <LinkPendingCue mode="dot" className="mt-1" />
           </Link>
         ))}
       </div>

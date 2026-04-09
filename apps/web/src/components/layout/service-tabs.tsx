@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LinkPendingCue } from '@/components/ui/link-pending-cue';
 
 const items = [
   { href: '/races', label: '대회 일정' },
@@ -32,7 +33,10 @@ export function ServiceTabs() {
                   : 'bg-[var(--surface-muted)] text-slate-700 hover:bg-[var(--brand-soft)]'
               }`}
             >
-              {item.label}
+              <span className="inline-flex items-center gap-2">
+                {item.label}
+                <LinkPendingCue mode="dot" />
+              </span>
             </Link>
           );
         })}
