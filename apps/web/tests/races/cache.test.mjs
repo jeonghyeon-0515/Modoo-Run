@@ -74,6 +74,20 @@ test('월 필터와 limit를 동일하게 적용한다', () => {
   assert.equal(january[0].sourceRaceId, '41182');
 });
 
+test('지역·월·거리 다중 선택을 함께 적용한다', () => {
+  const filtered = applyRaceFilters(sampleRaces, {
+    region: ['서울', '부산'],
+    month: ['1월', '4월'],
+    distance: ['하프', '10km'],
+  });
+
+  assert.equal(filtered.length, 2);
+  assert.deepEqual(
+    filtered.map((item) => item.sourceRaceId),
+    ['41182', '41183'],
+  );
+});
+
 test('접수 종료일 기준으로 TTL을 계산한다', () => {
   const ttl = getRaceCacheTtlSeconds('2099-12-31', new Date('2099-12-30T12:00:00+09:00'));
   assert.ok(ttl > 60 * 60 * 30);

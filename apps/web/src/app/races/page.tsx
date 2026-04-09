@@ -8,6 +8,7 @@ import {
   getRaceStatusLabel,
   getRaceStatusTone,
 } from '@/lib/races/formatters';
+import { summarizeActiveRaceFilters } from '@/lib/races/cache-helpers';
 import { listRaces, listRegions } from '@/lib/races/repository';
 import { RaceStatus } from '@/lib/races/types';
 
@@ -25,20 +26,41 @@ function readFirstValue(value?: string | string[]) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function readMultiValue(value?: string | string[]) {
+  if (!value) return [] as string[];
+  return [...new Set((Array.isArray(value) ? value : [value]).map((item) => item.trim()).filter(Boolean))];
+}
+
 function createFilterHref(
-  current: Record<string, string | undefined>,
+  current: Record<'registrationStatus', string | undefined> & {
+    region: string[];
+    month: string[];
+    distance: string[];
+  },
   key: 'registrationStatus' | 'region' | 'month' | 'distance',
   value: string,
 ) {
   const next = new URLSearchParams();
 
-  Object.entries(current).forEach(([entryKey, entryValue]) => {
-    if (!entryValue || entryKey === key) return;
-    next.set(entryKey, entryValue);
+  if (current.registrationStatus && key !== 'registrationStatus') {
+    next.set('registrationStatus', current.registrationStatus);
+  }
+
+  (['region', 'month', 'distance'] as const).forEach((entryKey) => {
+    if (entryKey === key || current[entryKey].length === 0) return;
+    current[entryKey].forEach((entryValue) => next.append(entryKey, entryValue));
   });
 
-  if (value && value !== 'all') {
-    next.set(key, value);
+  if (key === 'registrationStatus') {
+    if (value && value !== 'all') {
+      next.set(key, value);
+    }
+  } else if (value !== 'all') {
+    const existing = current[key];
+    const toggled = existing.includes(value)
+      ? existing.filter((item) => item !== value)
+      : [...existing, value];
+    toggled.forEach((entryValue) => next.append(key, entryValue));
   }
 
   const query = next.toString();
@@ -77,16 +99,16 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
   const filters = {
     registrationStatus:
       (readFirstValue(resolvedSearchParams.registrationStatus) as RaceStatus | 'all' | undefined) ?? 'open',
-    region: readFirstValue(resolvedSearchParams.region) ?? '',
-    month: readFirstValue(resolvedSearchParams.month) ?? '',
-    distance: readFirstValue(resolvedSearchParams.distance) ?? '',
+    region: readMultiValue(resolvedSearchParams.region),
+    month: readMultiValue(resolvedSearchParams.month),
+    distance: readMultiValue(resolvedSearchParams.distance),
   };
 
   const normalizedQuery = {
     registrationStatus: filters.registrationStatus === 'all' ? undefined : filters.registrationStatus,
-    region: filters.region || undefined,
-    month: filters.month || undefined,
-    distance: filters.distance || undefined,
+    region: filters.region,
+    month: filters.month,
+    distance: filters.distance,
   };
 
   let races = [] as Awaited<ReturnType<typeof listRaces>>;
@@ -97,9 +119,9 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
     [races, regions] = await Promise.all([
       listRaces({
         registrationStatus: filters.registrationStatus,
-        region: filters.region || undefined,
-        month: filters.month || undefined,
-        distance: filters.distance || undefined,
+        region: filters.region,
+        month: filters.month,
+        distance: filters.distance,
       }),
       listRegions(),
     ]);
@@ -107,22 +129,25 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
     loadError = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
   }
 
-  const activeLabels = [filters.region || null, filters.month || null, filters.distance || null].filter(Boolean);
+  const activeLabels = summarizeActiveRaceFilters(filters);
   const isDefaultOpenView =
-    filters.registrationStatus === 'open' && !filters.region && !filters.month && !filters.distance;
+    filters.registrationStatus === 'open' &&
+    filters.region.length === 0 &&
+    filters.month.length === 0 &&
+    filters.distance.length === 0;
 
   const renderAdvancedFilters = () => (
     <>
       <div>
         <FilterLabel>지역</FilterLabel>
         <div className="flex flex-wrap gap-2">
-          <FilterChip active={!filters.region} href={createFilterHref(normalizedQuery, 'region', 'all')}>
+          <FilterChip active={filters.region.length === 0} href={createFilterHref(normalizedQuery, 'region', 'all')}>
             전체
           </FilterChip>
           {regions.map((region) => (
             <FilterChip
               key={region}
-              active={filters.region === region}
+              active={filters.region.includes(region)}
               href={createFilterHref(normalizedQuery, 'region', region)}
             >
               {region}
@@ -134,13 +159,13 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
       <div>
         <FilterLabel>월</FilterLabel>
         <div className="flex flex-wrap gap-2">
-          <FilterChip active={!filters.month} href={createFilterHref(normalizedQuery, 'month', 'all')}>
+          <FilterChip active={filters.month.length === 0} href={createFilterHref(normalizedQuery, 'month', 'all')}>
             전체
           </FilterChip>
           {monthOptions.map((month) => (
             <FilterChip
               key={month}
-              active={filters.month === month}
+              active={filters.month.includes(month)}
               href={createFilterHref(normalizedQuery, 'month', month)}
             >
               {month}
@@ -152,13 +177,13 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
       <div>
         <FilterLabel>거리</FilterLabel>
         <div className="flex flex-wrap gap-2">
-          <FilterChip active={!filters.distance} href={createFilterHref(normalizedQuery, 'distance', 'all')}>
+          <FilterChip active={filters.distance.length === 0} href={createFilterHref(normalizedQuery, 'distance', 'all')}>
             전체
           </FilterChip>
           {distanceOptions.map((distance) => (
             <FilterChip
               key={distance}
-              active={filters.distance === distance}
+              active={filters.distance.includes(distance)}
               href={createFilterHref(normalizedQuery, 'distance', distance)}
             >
               {distance}
@@ -205,7 +230,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
               {isDefaultOpenView
                 ? '날짜가 가까운 순서로 바로 볼 수 있게 정리했어요.'
                 : activeLabels.length > 0
-                  ? `${activeLabels.join(' · ')} 조건으로 다시 정리했어요.`
+                  ? `${activeLabels.join(' · ')} 조건을 함께 적용했어요.`
                   : '조건을 바꾸면 원하는 일정만 빠르게 좁혀볼 수 있어요.'}
             </p>
           </div>
@@ -236,6 +261,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           <summary className="cursor-pointer list-none text-sm font-semibold text-slate-800">
             지역 · 월 · 거리 더 고르기
           </summary>
+          <p className="mt-3 text-xs text-slate-500">여러 조건을 한 번에 눌러 함께 좁혀볼 수 있어요.</p>
           <div className="mt-4 space-y-4">{renderAdvancedFilters()}</div>
         </details>
       </section>

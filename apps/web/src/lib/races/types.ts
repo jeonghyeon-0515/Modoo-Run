@@ -30,9 +30,9 @@ export type RaceDetailItem = RaceListItem & {
 
 export type RaceFilters = {
   registrationStatus?: RaceStatus | 'all';
-  region?: string;
-  month?: string;
-  distance?: string;
+  region?: string | string[];
+  month?: string | string[];
+  distance?: string | string[];
   limit?: number;
 };
 

@@ -12,6 +12,7 @@ import {
   getCachedRaceList,
   getCachedRegions,
 } from './cache';
+import { applyRaceFilters } from './cache-helpers';
 import { normalizeMonthFilter } from './formatters';
 
 type RawRace = {
@@ -92,12 +93,18 @@ export async function listRaces(filters: RaceFilters = {}): Promise<RaceListItem
     query = query.eq('registration_status', filters.registrationStatus);
   }
 
-  if (filters.region) {
-    query = query.eq('region', filters.region);
+  const regions = Array.isArray(filters.region) ? filters.region.filter(Boolean) : filters.region ? [filters.region] : [];
+  if (regions.length === 1) {
+    query = query.eq('region', regions[0]);
+  } else if (regions.length > 1) {
+    query = query.in('region', regions);
   }
 
-  const month = normalizeMonthFilter(filters.month);
-  if (month) {
+  const months = (Array.isArray(filters.month) ? filters.month : filters.month ? [filters.month] : [])
+    .map((value) => normalizeMonthFilter(value))
+    .filter(Boolean);
+  if (months.length === 1) {
+    const month = months[0] as number;
     const currentYear = new Date().getFullYear();
     const start = `${currentYear}-${String(month).padStart(2, '0')}-01`;
     const endMonth = month === 12 ? 1 : month + 1;
@@ -106,12 +113,13 @@ export async function listRaces(filters: RaceFilters = {}): Promise<RaceListItem
     query = query.gte('event_date', start).lt('event_date', end);
   }
 
-  if (filters.distance) {
-    query = query.ilike('course_summary', `%${filters.distance}%`);
-  }
-
-  if (filters.limit) {
-    query = query.limit(filters.limit);
+  const distances = Array.isArray(filters.distance)
+    ? filters.distance.filter(Boolean)
+    : filters.distance
+      ? [filters.distance]
+      : [];
+  if (distances.length === 1) {
+    query = query.ilike('course_summary', `%${distances[0]}%`);
   }
 
   const { data, error } = await query;
@@ -120,7 +128,7 @@ export async function listRaces(filters: RaceFilters = {}): Promise<RaceListItem
     throw new Error(`대회 목록 조회 실패: ${error.message}`);
   }
 
-  return (data ?? []).map((row: RawRace) => mapRace(row));
+  return applyRaceFilters((data ?? []).map((row: RawRace) => mapRace(row)), filters);
 }
 
 export async function getRaceBySourceRaceId(sourceRaceId: string): Promise<RaceDetailItem | null> {
