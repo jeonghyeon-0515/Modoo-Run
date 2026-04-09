@@ -57,17 +57,14 @@ export function RouteTransitionIndicator() {
     return () => window.clearTimeout(timeout);
   }, [pending]);
 
+  if (!pending) {
+    return null;
+  }
+
   return (
     <>
-      <div
-        className={`route-progress ${pending ? 'opacity-100' : 'opacity-0'}`}
-        aria-hidden="true"
-      />
-      <div
-        className={`route-toast ${pending ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'}`}
-        aria-live="polite"
-        aria-atomic="true"
-      >
+      <div className="route-progress opacity-100" aria-hidden="true" />
+      <div className="route-toast translate-y-0 opacity-100" aria-live="polite" aria-atomic="true">
         <span className="route-toast-dot" />
         페이지 여는 중…
       </div>

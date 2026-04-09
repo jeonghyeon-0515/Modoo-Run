@@ -66,8 +66,12 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
       compactIntro
     >
       <div className="mb-4">
-        <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">
-          ← 대회 목록으로 돌아가기
+        <Link
+          href="/races"
+          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-[var(--brand-soft)] hover:text-[var(--brand-strong)]"
+        >
+          <span aria-hidden="true">←</span>
+          대회 목록으로 돌아가기
         </Link>
       </div>
 
