@@ -24,10 +24,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
           <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{message}</div>
         ) : null}
 
-        <div className="my-2 flex items-center gap-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
-          <span className="h-px flex-1 bg-slate-200" />
-          또는 이메일로
-          <span className="h-px flex-1 bg-slate-200" />
+        <div className="mt-2">
+          <h2 className="text-sm font-semibold text-slate-900">이메일 로그인</h2>
+          <p className="mt-1 text-xs text-slate-500">이미 만든 계정으로 바로 로그인할 수 있어요.</p>
         </div>
 
         <form className="mt-6 space-y-4">
