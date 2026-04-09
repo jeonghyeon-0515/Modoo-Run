@@ -53,6 +53,11 @@
   - `UPSTASH_REDIS_REST_URL`
   - `UPSTASH_REDIS_REST_TOKEN`
 - 현재 구현은 REST SDK를 사용하므로 Redis 포트(`6379`)는 앱 코드에서 직접 사용하지 않는다.
+- 현재 키 구조
+  - `races:v2:open:ids`: 접수중 대회 `sourceRaceId[]`
+  - `races:v2:detail:{sourceRaceId}`: 각 대회 상세 JSON
+- 캐시는 **접수중(`open`) 대회만** 저장한다.
+- 각 대회 상세 키 TTL은 `registration_close_at` 종료 시점까지 유지되고, 값이 없으면 24시간 뒤 만료된다.
 
 ## 4. 배포 후 확인 체크리스트
 1. `apps/web/vercel.json`의 cron이 배포 프로젝트 루트 기준으로 반영됐는지 확인

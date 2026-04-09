@@ -1,12 +1,10 @@
 import { getUpstashRedisClient } from '@/lib/cache/upstash';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
-import { applyRaceFilters } from './cache-helpers';
+import { applyRaceFilters, getRaceCacheTtlSeconds } from './cache-helpers';
 import {
   RaceDetailItem,
-  RaceExplorerSummary,
   RaceFilters,
   RaceListItem,
-  RaceRegionSummary,
   RaceStatus,
 } from './types';
 
@@ -35,11 +33,10 @@ type RawRace = {
   registration_close_at?: string | null;
 };
 
-type RaceCacheDataset = {
-  version: 'v1';
+type OpenRaceIndex = {
+  version: 'v2';
   warmedAt: string;
-  list: RaceListItem[];
-  detailsBySourceId: Record<string, RaceDetailItem>;
+  sourceRaceIds: string[];
 };
 
 type RaceCacheWarmResult = {
@@ -50,13 +47,19 @@ type RaceCacheWarmResult = {
   message?: string;
 };
 
-const RACE_CACHE_KEY = 'races:v1:dataset';
-const RACE_CACHE_TTL_SECONDS = 60 * 60 * 36;
-const RACE_CACHE_MEMORY_TTL_MS = 60 * 1000;
+const OPEN_RACE_INDEX_KEY = 'races:v2:open:ids';
+const OPEN_RACE_DETAIL_PREFIX = 'races:v2:detail:';
+const LEGACY_DATASET_KEY = 'races:v1:dataset';
+const MEMORY_TTL_MS = 60 * 1000;
 const raceCacheSelectColumns =
   'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, last_synced_at, representative_name, phone, homepage_url, summary, description, source_detail_url, source_list_url, registration_open_at, registration_close_at';
 
-let memoryDataset: { expiresAt: number; value: RaceCacheDataset } | null = null;
+let memoryOpenIndex: { expiresAt: number; value: OpenRaceIndex } | null = null;
+const memoryOpenDetails = new Map<string, { expiresAt: number; value: RaceDetailItem }>();
+
+function detailKey(sourceRaceId: string) {
+  return `${OPEN_RACE_DETAIL_PREFIX}${sourceRaceId}`;
+}
 
 function mapRace(row: RawRace): RaceListItem {
   return {
@@ -91,69 +94,145 @@ function mapRaceDetail(row: RawRace): RaceDetailItem {
   };
 }
 
-function rememberDataset(dataset: RaceCacheDataset) {
-  memoryDataset = {
-    expiresAt: Date.now() + RACE_CACHE_MEMORY_TTL_MS,
-    value: dataset,
+function mapDetailToList(detail: RaceDetailItem): RaceListItem {
+  return {
+    id: detail.id,
+    sourceRaceId: detail.sourceRaceId,
+    title: detail.title,
+    eventDate: detail.eventDate,
+    eventDateLabel: detail.eventDateLabel,
+    weekdayLabel: detail.weekdayLabel,
+    region: detail.region,
+    location: detail.location,
+    courseSummary: detail.courseSummary,
+    organizer: detail.organizer,
+    registrationStatus: detail.registrationStatus,
+    registrationPeriodLabel: detail.registrationPeriodLabel,
+    lastSyncedAt: detail.lastSyncedAt,
   };
 }
 
-function parseDataset(raw: string | null) {
-  if (!raw) return null;
+function readJson<T>(raw: unknown): T | null {
+  if (raw == null) return null;
 
-  try {
-    const parsed = JSON.parse(raw) as RaceCacheDataset;
-    if (parsed.version !== 'v1' || !Array.isArray(parsed.list) || !parsed.detailsBySourceId) {
+  if (typeof raw === 'string') {
+    try {
+      return JSON.parse(raw) as T;
+    } catch {
       return null;
     }
-    return parsed;
-  } catch {
-    return null;
   }
+
+  return raw as T;
 }
 
-async function readRaceCacheDataset() {
-  if (memoryDataset && memoryDataset.expiresAt > Date.now()) {
-    return memoryDataset.value;
-  }
+function rememberOpenIndex(index: OpenRaceIndex) {
+  memoryOpenIndex = {
+    expiresAt: Date.now() + MEMORY_TTL_MS,
+    value: index,
+  };
+}
 
-  const redis = getUpstashRedisClient();
-  if (!redis) {
+function rememberDetail(detail: RaceDetailItem) {
+  memoryOpenDetails.set(detail.sourceRaceId, {
+    expiresAt: Date.now() + MEMORY_TTL_MS,
+    value: detail,
+  });
+}
+
+function getRememberedDetail(sourceRaceId: string) {
+  const cached = memoryOpenDetails.get(sourceRaceId);
+  if (!cached) return null;
+  if (cached.expiresAt <= Date.now()) {
+    memoryOpenDetails.delete(sourceRaceId);
     return null;
   }
+  return cached.value;
+}
 
-  const raw = await redis.get<string>(RACE_CACHE_KEY);
-  const parsed = parseDataset(raw);
-  if (parsed) {
-    rememberDataset(parsed);
+async function readOpenIndexFromRedis() {
+  const redis = getUpstashRedisClient();
+  if (!redis) return null;
+
+  const raw = await redis.get(OPEN_RACE_INDEX_KEY);
+  return readJson<OpenRaceIndex>(raw);
+}
+
+async function readOpenIndex() {
+  if (memoryOpenIndex && memoryOpenIndex.expiresAt > Date.now()) {
+    return memoryOpenIndex.value;
   }
+
+  const parsed = await readOpenIndexFromRedis();
+  if (parsed) {
+    rememberOpenIndex(parsed);
+  }
+
   return parsed;
 }
 
+async function readOpenRaceDetails(sourceRaceIds: string[]) {
+  if (sourceRaceIds.length === 0) return [] as RaceDetailItem[];
+
+  const details = new Map<string, RaceDetailItem>();
+  const missingIds: string[] = [];
+
+  sourceRaceIds.forEach((sourceRaceId) => {
+    const cached = getRememberedDetail(sourceRaceId);
+    if (cached) {
+      details.set(sourceRaceId, cached);
+    } else {
+      missingIds.push(sourceRaceId);
+    }
+  });
+
+  if (missingIds.length > 0) {
+    const redis = getUpstashRedisClient();
+    if (!redis) return [...details.values()];
+
+    const values = await redis.mget(missingIds.map(detailKey));
+    missingIds.forEach((sourceRaceId, index) => {
+      const parsed = readJson<RaceDetailItem>(values[index]);
+      if (!parsed) return;
+      details.set(sourceRaceId, parsed);
+      rememberDetail(parsed);
+    });
+  }
+
+  return sourceRaceIds
+    .map((sourceRaceId) => details.get(sourceRaceId))
+    .filter(Boolean) as RaceDetailItem[];
+}
+
 export async function getCachedRaceList(filters: RaceFilters = {}) {
-  const dataset = await readRaceCacheDataset();
-  if (!dataset) return null;
-  return applyRaceFilters(dataset.list, filters);
+  if (filters.registrationStatus !== 'open') {
+    return null;
+  }
+
+  const index = await readOpenIndex();
+  if (!index) return null;
+
+  const details = await readOpenRaceDetails(index.sourceRaceIds);
+  if (details.length === 0) return null;
+
+  return applyRaceFilters(details.map(mapDetailToList), filters);
 }
 
 export async function getCachedRaceDetail(sourceRaceId: string) {
-  const dataset = await readRaceCacheDataset();
-  if (!dataset) return null;
-  return dataset.detailsBySourceId[sourceRaceId] ?? null;
-}
+  const remembered = getRememberedDetail(sourceRaceId);
+  if (remembered) {
+    return remembered;
+  }
 
-export async function getCachedRecentlySyncedRaces(limit = 6) {
-  const dataset = await readRaceCacheDataset();
-  if (!dataset) return null;
+  const redis = getUpstashRedisClient();
+  if (!redis) return null;
 
-  return [...dataset.list]
-    .sort((a, b) => {
-      const left = a.lastSyncedAt ? new Date(a.lastSyncedAt).getTime() : 0;
-      const right = b.lastSyncedAt ? new Date(b.lastSyncedAt).getTime() : 0;
-      if (right !== left) return right - left;
-      return (a.eventDate ?? '9999-12-31').localeCompare(b.eventDate ?? '9999-12-31');
-    })
-    .slice(0, limit);
+  const raw = await redis.get(detailKey(sourceRaceId));
+  const parsed = readJson<RaceDetailItem>(raw);
+  if (!parsed) return null;
+
+  rememberDetail(parsed);
+  return parsed;
 }
 
 export async function getCachedRelatedRaces(input: {
@@ -161,11 +240,14 @@ export async function getCachedRelatedRaces(input: {
   region?: string | null;
   limit?: number;
 }) {
-  const dataset = await readRaceCacheDataset();
-  if (!dataset) return null;
+  const index = await readOpenIndex();
+  if (!index) return null;
 
   const limit = input.limit ?? 3;
-  const base = dataset.list.filter((item) => item.sourceRaceId !== input.excludeSourceRaceId);
+  const details = await readOpenRaceDetails(index.sourceRaceIds);
+  const base = details
+    .map(mapDetailToList)
+    .filter((item) => item.sourceRaceId !== input.excludeSourceRaceId);
 
   if (input.region) {
     const regional = base.filter((item) => item.region === input.region).slice(0, limit);
@@ -174,56 +256,26 @@ export async function getCachedRelatedRaces(input: {
     }
   }
 
+  if (base.length === 0) return null;
   return base.slice(0, limit);
 }
 
 export async function getCachedRegions() {
-  const dataset = await readRaceCacheDataset();
-  if (!dataset) return null;
+  const index = await readOpenIndex();
+  if (!index) return null;
 
-  return [...new Set(dataset.list.map((item) => item.region).filter(Boolean))] as string[];
+  const details = await readOpenRaceDetails(index.sourceRaceIds);
+  if (details.length === 0) return null;
+
+  return [...new Set(details.map((item) => item.region).filter(Boolean))] as string[];
 }
 
-export async function getCachedRaceExplorerSummary(limitRegions = 4) {
-  const dataset = await readRaceCacheDataset();
-  if (!dataset) return null;
+export async function getCachedRecentlySyncedRaces() {
+  return null;
+}
 
-  const regionCounts = new Map<string, number>();
-  let latestSyncAt: string | null = null;
-  let openCount = 0;
-  let closedCount = 0;
-  let unknownCount = 0;
-
-  dataset.list.forEach((item) => {
-    if (item.registrationStatus === 'open') openCount += 1;
-    else if (item.registrationStatus === 'closed') closedCount += 1;
-    else unknownCount += 1;
-
-    if (item.region) {
-      regionCounts.set(item.region, (regionCounts.get(item.region) ?? 0) + 1);
-    }
-
-    if (item.lastSyncedAt && (!latestSyncAt || new Date(item.lastSyncedAt) > new Date(latestSyncAt))) {
-      latestSyncAt = item.lastSyncedAt;
-    }
-  });
-
-  const topRegions: RaceRegionSummary[] = [...regionCounts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, limitRegions)
-    .map(([region, count]) => ({ region, count }));
-
-  const summary: RaceExplorerSummary = {
-    totalCount: dataset.list.length,
-    openCount,
-    closedCount,
-    unknownCount,
-    regionCount: regionCounts.size,
-    latestSyncAt,
-    topRegions,
-  };
-
-  return summary;
+export async function getCachedRaceExplorerSummary() {
+  return null;
 }
 
 export async function warmRaceCacheFromDatabase(): Promise<RaceCacheWarmResult> {
@@ -241,28 +293,59 @@ export async function warmRaceCacheFromDatabase(): Promise<RaceCacheWarmResult> 
   const { data, error } = await admin
     .from('races')
     .select(raceCacheSelectColumns)
+    .eq('registration_status', 'open')
     .order('event_date', { ascending: true, nullsFirst: false })
     .order('title', { ascending: true });
 
   if (error) {
-    throw new Error(`Redis 캐시용 race 조회 실패: ${error.message}`);
+    throw new Error(`Redis 캐시용 진행중 race 조회 실패: ${error.message}`);
   }
 
   const rows = (data ?? []) as RawRace[];
-  const dataset: RaceCacheDataset = {
-    version: 'v1',
-    warmedAt: new Date().toISOString(),
-    list: rows.map(mapRace),
-    detailsBySourceId: Object.fromEntries(rows.map((row) => [row.source_race_id, mapRaceDetail(row)])),
+  const warmedAt = new Date().toISOString();
+  const index: OpenRaceIndex = {
+    version: 'v2',
+    warmedAt,
+    sourceRaceIds: rows.map((row) => row.source_race_id),
   };
 
-  await redis.set(RACE_CACHE_KEY, JSON.stringify(dataset), { ex: RACE_CACHE_TTL_SECONDS });
-  rememberDataset(dataset);
+  const previousIndex = await readOpenIndexFromRedis();
+  const previousIds = previousIndex?.sourceRaceIds ?? [];
+  const nextIds = new Set(index.sourceRaceIds);
+  const staleIds = previousIds.filter((sourceRaceId) => !nextIds.has(sourceRaceId));
+  const expireAtCandidates: number[] = [];
+  const pipeline = redis.pipeline();
+
+  pipeline.del(LEGACY_DATASET_KEY);
+
+  rows.forEach((row) => {
+    const detail = mapRaceDetail(row);
+    const ttlSeconds = getRaceCacheTtlSeconds(detail.registrationCloseAt);
+    expireAtCandidates.push(ttlSeconds);
+    pipeline.set(detailKey(detail.sourceRaceId), JSON.stringify(detail), { ex: ttlSeconds });
+    rememberDetail(detail);
+  });
+
+  if (staleIds.length > 0) {
+    pipeline.del(...staleIds.map(detailKey));
+    staleIds.forEach((sourceRaceId) => memoryOpenDetails.delete(sourceRaceId));
+  }
+
+  if (index.sourceRaceIds.length > 0) {
+    const indexTtlSeconds = Math.min(...expireAtCandidates);
+    pipeline.set(OPEN_RACE_INDEX_KEY, JSON.stringify(index), { ex: indexTtlSeconds });
+    rememberOpenIndex(index);
+  } else {
+    pipeline.del(OPEN_RACE_INDEX_KEY);
+    memoryOpenIndex = null;
+  }
+
+  await pipeline.exec({ keepErrors: true });
 
   return {
     enabled: true,
     refreshed: true,
-    count: dataset.list.length,
-    warmedAt: dataset.warmedAt,
+    count: index.sourceRaceIds.length,
+    warmedAt,
   };
 }

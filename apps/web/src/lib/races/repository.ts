@@ -9,11 +9,8 @@ import {
 } from './types';
 import {
   getCachedRaceDetail,
-  getCachedRaceExplorerSummary,
   getCachedRaceList,
-  getCachedRecentlySyncedRaces,
   getCachedRegions,
-  getCachedRelatedRaces,
 } from './cache';
 import { normalizeMonthFilter } from './formatters';
 
@@ -153,11 +150,6 @@ export async function getRaceBySourceRaceId(sourceRaceId: string): Promise<RaceD
 }
 
 export async function listRecentlySyncedRaces(limit = 6): Promise<RaceListItem[]> {
-  const cached = await getCachedRecentlySyncedRaces(limit);
-  if (cached) {
-    return cached;
-  }
-
   const supabase = await getSupabaseServerClient();
   const { data, error } = await supabase
     .from('races')
@@ -178,11 +170,6 @@ export async function listRelatedRaces(input: {
   region?: string | null;
   limit?: number;
 }): Promise<RaceListItem[]> {
-  const cached = await getCachedRelatedRaces(input);
-  if (cached) {
-    return cached;
-  }
-
   const supabase = await getSupabaseServerClient();
   const limit = input.limit ?? 3;
 
@@ -216,11 +203,6 @@ export async function listRelatedRaces(input: {
 }
 
 export async function getRaceExplorerSummary(limitRegions = 4): Promise<RaceExplorerSummary> {
-  const cached = await getCachedRaceExplorerSummary(limitRegions);
-  if (cached) {
-    return cached;
-  }
-
   const supabase = await getSupabaseServerClient();
   const { data, error } = await supabase
     .from('races')

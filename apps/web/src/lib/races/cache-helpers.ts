@@ -13,6 +13,8 @@ type FilterableRaceFilters = {
   limit?: number;
 };
 
+const DEFAULT_RACE_CACHE_TTL_SECONDS = 60 * 60 * 24;
+
 function normalizeMonthFilter(value?: string | null) {
   if (!value) return null;
   const normalized = value.replace(/월/g, '').trim();
@@ -32,6 +34,16 @@ function matchesMonthFilter(eventDate: string | null, value?: string) {
   const endYear = month === 12 ? currentYear + 1 : currentYear;
   const end = `${endYear}-${String(endMonth).padStart(2, '0')}-01`;
   return eventDate >= start && eventDate < end;
+}
+
+export function getRaceCacheTtlSeconds(closeAt: string | null, now = new Date()) {
+  if (!closeAt) {
+    return DEFAULT_RACE_CACHE_TTL_SECONDS;
+  }
+
+  const expiresAt = new Date(`${closeAt}T23:59:59+09:00`);
+  const ttl = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
+  return ttl > 0 ? ttl : 1;
 }
 
 export function applyRaceFilters<T extends FilterableRace>(items: T[], filters: FilterableRaceFilters = {}) {

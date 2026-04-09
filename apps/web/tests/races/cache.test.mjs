@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { applyRaceFilters } = require('../../src/lib/races/cache-helpers.ts');
+const { applyRaceFilters, getRaceCacheTtlSeconds } = require('../../src/lib/races/cache-helpers.ts');
 
 const sampleRaces = [
   {
@@ -72,4 +72,12 @@ test('월 필터와 limit를 동일하게 적용한다', () => {
 
   assert.equal(january.length, 1);
   assert.equal(january[0].sourceRaceId, '41182');
+});
+
+test('접수 종료일 기준으로 TTL을 계산한다', () => {
+  const ttl = getRaceCacheTtlSeconds('2099-12-31', new Date('2099-12-30T12:00:00+09:00'));
+  assert.ok(ttl > 60 * 60 * 30);
+
+  const expired = getRaceCacheTtlSeconds('2020-01-01', new Date('2020-01-02T00:00:00+09:00'));
+  assert.equal(expired, 1);
 });
