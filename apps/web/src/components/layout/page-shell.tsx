@@ -17,7 +17,7 @@ export async function PageShell({ title, description, children }: { title: strin
             <Link href="/" className="text-base font-bold tracking-tight text-slate-950">
               모두의 러닝
             </Link>
-            <div className="text-sm text-slate-500">모바일 우선 러닝 웹앱</div>
+            <div className="text-sm text-slate-500">러너를 위한 일정 · 기록 공간</div>
           </div>
 
           {viewer ? (

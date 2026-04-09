@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
 import {
-  formatLastSyncedAt,
   formatRaceDate,
   getRaceStatusLabel,
   getRaceStatusTone,
@@ -15,7 +14,7 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 const distanceOptions = ['5km', '10km', '하프', '풀'];
 const monthOptions = Array.from({ length: 12 }, (_, index) => `${index + 1}월`);
 const statusOptions: Array<{ label: string; value: RaceStatus | 'all' }> = [
-  { label: '전체', value: 'all' },
+  { label: '전체 보기', value: 'all' },
   { label: '접수중', value: 'open' },
   { label: '접수마감', value: 'closed' },
 ];
@@ -56,7 +55,7 @@ function FilterChip({
   return (
     <Link
       href={href}
-      className={`rounded-full px-3 py-2 text-sm font-medium transition ${
+      className={`rounded-full px-3 py-1.5 text-xs font-medium transition sm:text-sm ${
         active
           ? 'bg-[var(--brand)] text-white'
           : 'bg-[var(--surface-muted)] text-slate-700 hover:bg-[var(--brand-soft)]'
@@ -65,6 +64,10 @@ function FilterChip({
       {children}
     </Link>
   );
+}
+
+function FilterLabel({ children }: { children: React.ReactNode }) {
+  return <p className="mb-2 text-xs font-semibold text-slate-400">{children}</p>;
 }
 
 export default async function RacesPage({ searchParams }: { searchParams: SearchParams }) {
@@ -104,26 +107,87 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
       filters.distance || null,
     ].filter(Boolean);
 
+    const renderAdvancedFilters = () => (
+      <>
+        <div>
+          <FilterLabel>지역</FilterLabel>
+          <div className="flex flex-wrap gap-2">
+            <FilterChip active={!filters.region} href={createFilterHref(normalizedQuery, 'region', 'all')}>
+              전체
+            </FilterChip>
+            {regions.map((region) => (
+              <FilterChip
+                key={region}
+                active={filters.region === region}
+                href={createFilterHref(normalizedQuery, 'region', region)}
+              >
+                {region}
+              </FilterChip>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <FilterLabel>월</FilterLabel>
+          <div className="flex flex-wrap gap-2">
+            <FilterChip active={!filters.month} href={createFilterHref(normalizedQuery, 'month', 'all')}>
+              전체
+            </FilterChip>
+            {monthOptions.map((month) => (
+              <FilterChip
+                key={month}
+                active={filters.month === month}
+                href={createFilterHref(normalizedQuery, 'month', month)}
+              >
+                {month}
+              </FilterChip>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <FilterLabel>거리</FilterLabel>
+          <div className="flex flex-wrap gap-2">
+            <FilterChip active={!filters.distance} href={createFilterHref(normalizedQuery, 'distance', 'all')}>
+              전체
+            </FilterChip>
+            {distanceOptions.map((distance) => (
+              <FilterChip
+                key={distance}
+                active={filters.distance === distance}
+                href={createFilterHref(normalizedQuery, 'distance', distance)}
+              >
+                {distance}
+              </FilterChip>
+            ))}
+          </div>
+        </div>
+      </>
+    );
+
     return (
       <PageShell
-        title="대회 둘러보기"
-        description="지금 열려 있는 대회부터 지역별 대회까지, 필요한 정보만 골라 편하게 둘러보세요."
+        title="대회 일정"
+        description="지금 신청 가능한 대회를 가까운 일정부터 보여드려요. 필요한 조건만 골라 편하게 살펴보세요."
       >
-        <section className="mt-2 rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-          <div className="space-y-5">
+        <section className="mt-2 rounded-[1.5rem] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[1.75rem] sm:p-6">
+          <div className="space-y-4">
             <div>
-              <p className="text-sm font-semibold text-slate-500">지금 보고 있는 조건</p>
-              <p className="mt-1 text-sm text-slate-700">
-                {activeLabels.length > 0 ? activeLabels.join(' · ') : '전체 대회를 넓게 보고 있어요.'}
+              <p className="text-sm font-semibold text-slate-900">
+                {filters.registrationStatus === 'open'
+                  ? '접수중인 대회를 먼저 보여드려요'
+                  : '원하는 조건으로 대회를 골라보세요'}
               </p>
-              <p className="mt-1 text-sm text-slate-500">
-                가까운 일정 순으로 정리했어요. 지금 {races.length}개의 대회를 볼 수 있어요.
+              <p className="mt-1 text-sm text-slate-600">
+                {activeLabels.length > 0
+                  ? `${activeLabels.join(' · ')} 조건으로 가까운 일정부터 정리했어요.`
+                  : '지역과 거리만 고르면 가까운 일정부터 바로 볼 수 있어요.'}
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">접수 상태</p>
+                <FilterLabel>접수 상태</FilterLabel>
                 <div className="flex flex-wrap gap-2">
                   {statusOptions.map((option) => (
                     <FilterChip
@@ -137,59 +201,14 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                 </div>
               </div>
 
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">지역</p>
-                <div className="flex flex-wrap gap-2">
-                  <FilterChip active={!filters.region} href={createFilterHref(normalizedQuery, 'region', 'all')}>
-                    전체
-                  </FilterChip>
-                  {regions.map((region) => (
-                    <FilterChip
-                      key={region}
-                      active={filters.region === region}
-                      href={createFilterHref(normalizedQuery, 'region', region)}
-                    >
-                      {region}
-                    </FilterChip>
-                  ))}
-                </div>
-              </div>
+              <div className="hidden space-y-4 sm:block">{renderAdvancedFilters()}</div>
 
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">월</p>
-                <div className="flex flex-wrap gap-2">
-                  <FilterChip active={!filters.month} href={createFilterHref(normalizedQuery, 'month', 'all')}>
-                    전체
-                  </FilterChip>
-                  {monthOptions.map((month) => (
-                    <FilterChip
-                      key={month}
-                      active={filters.month === month}
-                      href={createFilterHref(normalizedQuery, 'month', month)}
-                    >
-                      {month}
-                    </FilterChip>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">거리</p>
-                <div className="flex flex-wrap gap-2">
-                  <FilterChip active={!filters.distance} href={createFilterHref(normalizedQuery, 'distance', 'all')}>
-                    전체
-                  </FilterChip>
-                  {distanceOptions.map((distance) => (
-                    <FilterChip
-                      key={distance}
-                      active={filters.distance === distance}
-                      href={createFilterHref(normalizedQuery, 'distance', distance)}
-                    >
-                      {distance}
-                    </FilterChip>
-                  ))}
-                </div>
-              </div>
+              <details className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-3 sm:hidden">
+                <summary className="cursor-pointer list-none text-sm font-semibold text-slate-800">
+                  지역 · 월 · 거리 더 고르기
+                </summary>
+                <div className="mt-4 space-y-4">{renderAdvancedFilters()}</div>
+              </details>
             </div>
           </div>
         </section>
@@ -199,7 +218,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             <article className="rounded-[1.75rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
               <p className="text-base font-semibold text-slate-950">조건에 맞는 대회가 없습니다.</p>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                필터를 조금 넓히거나, 접수 상태를 전체로 바꿔 다른 대회도 함께 살펴보세요.
+                필터를 조금 넓히거나 접수 상태를 전체 보기로 바꿔 다른 일정도 함께 살펴보세요.
               </p>
               <Link
                 href="/races"
@@ -213,33 +232,33 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
               <Link
                 key={race.id}
                 href={`/races/${race.sourceRaceId}`}
-                className="block rounded-[1.25rem] bg-white p-4 shadow-sm ring-1 ring-black/5 transition hover:ring-blue-200 sm:rounded-[1.75rem] sm:p-5"
+                className="block rounded-[1rem] bg-white p-3 shadow-sm ring-1 ring-black/5 transition hover:ring-blue-200 sm:rounded-[1.75rem] sm:p-5"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-base font-semibold text-slate-950 sm:text-lg">{race.title}</h2>
+                      <p className="text-[11px] font-semibold text-[var(--brand)] sm:text-xs">
+                        {formatRaceDate(race.eventDate, race.eventDateLabel)}
+                      </p>
                       {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
                     </div>
-                    <p className="mt-1 text-xs text-slate-500 sm:text-sm">
-                      {formatRaceDate(race.eventDate, race.eventDateLabel)}
-                    </p>
+                    <h2 className="mt-1 line-clamp-2 text-sm font-semibold text-slate-950 sm:text-lg">
+                      {race.title}
+                    </h2>
                   </div>
                   <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
                     {getRaceStatusLabel(race.registrationStatus)}
                   </StatusBadge>
                 </div>
 
-                <div className="mt-3 space-y-2 sm:hidden">
-                  <p className="text-sm text-slate-700">
-                    {race.location ?? '장소 정보 없음'}
+                <div className="mt-2 grid gap-1 sm:hidden">
+                  <p className="line-clamp-1 text-xs text-slate-700">{race.location ?? '장소 정보는 상세에서 확인해보세요.'}</p>
+                  <p className="line-clamp-1 text-xs text-slate-600">
+                    {race.courseSummary ?? '종목 정보는 상세 화면에서 확인할 수 있어요.'}
                   </p>
-                  <p className="text-sm text-slate-600">
-                    {race.courseSummary ?? '종목 정보 없음'}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {race.organizer ?? '주최 정보 없음'} · 최근 업데이트 {formatLastSyncedAt(race.lastSyncedAt)}
-                  </p>
+                  {race.registrationPeriodLabel ? (
+                    <p className="line-clamp-1 text-[11px] text-slate-500">접수 {race.registrationPeriodLabel}</p>
+                  ) : null}
                 </div>
 
                 <div className="mt-4 hidden gap-3 sm:grid sm:grid-cols-3">
@@ -259,11 +278,8 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                   </div>
                 </div>
 
-                <div className="mt-3 hidden flex-col gap-2 text-sm text-slate-600 sm:flex sm:flex-row sm:items-center sm:justify-between">
-                  <div className="space-y-1">
-                    <p>{race.organizer ?? '주최 정보 없음'}</p>
-                    <p>최근 업데이트: {formatLastSyncedAt(race.lastSyncedAt)}</p>
-                  </div>
+                <div className="mt-3 hidden items-center justify-between text-sm text-slate-600 sm:flex">
+                  <p>{race.organizer ?? '주최 정보는 상세 화면에서 확인할 수 있어요.'}</p>
                   <span className="font-semibold text-[var(--brand)]">자세히 보기</span>
                 </div>
 
@@ -280,8 +296,8 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
     const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
     return (
       <PageShell
-        title="대회 둘러보기"
-        description="대회 목록을 불러오지 못했을 때도 다음 행동이 바로 보이도록 안내합니다."
+        title="대회 일정"
+        description="대회 목록을 바로 다시 살펴볼 수 있도록 간단히 안내합니다."
       >
         <article className="rounded-[1.75rem] bg-white p-8 shadow-sm ring-1 ring-black/5">
           <p className="text-base font-semibold text-slate-950">대회 목록을 불러오지 못했습니다.</p>
