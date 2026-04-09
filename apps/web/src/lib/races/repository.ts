@@ -178,6 +178,7 @@ export async function listRelatedRaces(input: {
       .from('races')
       .select(raceListColumns)
       .neq('source_race_id', input.excludeSourceRaceId)
+      .eq('registration_status', 'open')
       .order('event_date', { ascending: true, nullsFirst: false })
       .limit(limit);
 
