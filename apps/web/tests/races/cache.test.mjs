@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { applyRaceFilters, getRaceCacheTtlSeconds } = require('../../src/lib/races/cache-helpers.ts');
+const { applyRaceFilters, getRaceCacheTtlSeconds, groupHashFieldsByTtl } = require('../../src/lib/races/cache-helpers.ts');
 
 const sampleRaces = [
   {
@@ -94,4 +94,27 @@ test('접수 종료일 기준으로 TTL을 계산한다', () => {
 
   const expired = getRaceCacheTtlSeconds('2020-01-01', new Date('2020-01-02T00:00:00+09:00'));
   assert.equal(expired, 1);
+});
+
+test('같은 TTL을 가진 hash field를 묶어 hsetex payload로 만든다', () => {
+  const grouped = groupHashFieldsByTtl([
+    { field: '40317', ttlSeconds: 100, value: '{"title":"a"}' },
+    { field: '40318', ttlSeconds: 100, value: '{"title":"b"}' },
+    { field: '50001', ttlSeconds: 200, value: '{"title":"c"}' },
+  ]);
+
+  assert.equal(grouped.length, 2);
+  assert.deepEqual(grouped[0], {
+    ttlSeconds: 100,
+    fields: {
+      '40317': '{"title":"a"}',
+      '40318': '{"title":"b"}',
+    },
+  });
+  assert.deepEqual(grouped[1], {
+    ttlSeconds: 200,
+    fields: {
+      '50001': '{"title":"c"}',
+    },
+  });
 });

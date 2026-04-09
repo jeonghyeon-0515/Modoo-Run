@@ -1,6 +1,6 @@
 import { getUpstashRedisClient } from '@/lib/cache/upstash';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
-import { applyRaceFilters, getRaceCacheTtlSeconds } from './cache-helpers';
+import { applyRaceFilters, getRaceCacheTtlSeconds, groupHashFieldsByTtl } from './cache-helpers';
 import {
   RaceDetailItem,
   RaceFilters,
@@ -34,7 +34,7 @@ type RawRace = {
 };
 
 type OpenRaceIndex = {
-  version: 'v2';
+  version: 'v3';
   warmedAt: string;
   sourceRaceIds: string[];
 };
@@ -47,9 +47,12 @@ type RaceCacheWarmResult = {
   message?: string;
 };
 
-const OPEN_RACE_INDEX_KEY = 'races:v2:open:ids';
-const OPEN_RACE_DETAIL_PREFIX = 'races:v2:detail:';
+const OPEN_RACE_INDEX_KEY = 'races:v3:open:order';
+const OPEN_RACE_DETAIL_HASH_KEY = 'races:v3:open:details';
+const LEGACY_OPEN_RACE_INDEX_KEY = 'races:v2:open:ids';
+const LEGACY_OPEN_RACE_DETAIL_PREFIX = 'races:v2:detail:';
 const LEGACY_DATASET_KEY = 'races:v1:dataset';
+const OPEN_RACE_INDEX_TTL_SECONDS = 60 * 60 * 48;
 const MEMORY_TTL_MS = 60 * 1000;
 const raceCacheSelectColumns =
   'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, last_synced_at, representative_name, phone, homepage_url, summary, description, source_detail_url, source_list_url, registration_open_at, registration_close_at';
@@ -57,8 +60,8 @@ const raceCacheSelectColumns =
 let memoryOpenIndex: { expiresAt: number; value: OpenRaceIndex } | null = null;
 const memoryOpenDetails = new Map<string, { expiresAt: number; value: RaceDetailItem }>();
 
-function detailKey(sourceRaceId: string) {
-  return `${OPEN_RACE_DETAIL_PREFIX}${sourceRaceId}`;
+function legacyDetailKey(sourceRaceId: string) {
+  return `${LEGACY_OPEN_RACE_DETAIL_PREFIX}${sourceRaceId}`;
 }
 
 function mapRace(row: RawRace): RaceListItem {
@@ -158,6 +161,14 @@ async function readOpenIndexFromRedis() {
   return readJson<OpenRaceIndex>(raw);
 }
 
+async function readLegacyOpenIndexFromRedis() {
+  const redis = getUpstashRedisClient();
+  if (!redis) return null;
+
+  const raw = await redis.get(LEGACY_OPEN_RACE_INDEX_KEY);
+  return readJson<{ sourceRaceIds: string[] }>(raw);
+}
+
 async function readOpenIndex() {
   if (memoryOpenIndex && memoryOpenIndex.expiresAt > Date.now()) {
     return memoryOpenIndex.value;
@@ -190,7 +201,7 @@ async function readOpenRaceDetails(sourceRaceIds: string[]) {
     const redis = getUpstashRedisClient();
     if (!redis) return [...details.values()];
 
-    const values = await redis.mget(missingIds.map(detailKey));
+    const values = ((await redis.hmget(OPEN_RACE_DETAIL_HASH_KEY, ...missingIds)) ?? []) as Array<string | null>;
     missingIds.forEach((sourceRaceId, index) => {
       const parsed = readJson<RaceDetailItem>(values[index]);
       if (!parsed) return;
@@ -227,7 +238,7 @@ export async function getCachedRaceDetail(sourceRaceId: string) {
   const redis = getUpstashRedisClient();
   if (!redis) return null;
 
-  const raw = await redis.get(detailKey(sourceRaceId));
+  const raw = await redis.hget(OPEN_RACE_DETAIL_HASH_KEY, sourceRaceId);
   const parsed = readJson<RaceDetailItem>(raw);
   if (!parsed) return null;
 
@@ -309,39 +320,59 @@ export async function warmRaceCacheFromDatabase(): Promise<RaceCacheWarmResult> 
     .filter(({ ttlSeconds, row }) => row.registration_status === 'open' && ttlSeconds > 1);
   const warmedAt = new Date().toISOString();
   const index: OpenRaceIndex = {
-    version: 'v2',
+    version: 'v3',
     warmedAt,
     sourceRaceIds: rows.map(({ row }) => row.source_race_id),
   };
 
   const previousIndex = await readOpenIndexFromRedis();
+  const legacyIndex = await readLegacyOpenIndexFromRedis();
   const previousIds = previousIndex?.sourceRaceIds ?? [];
   const nextIds = new Set(index.sourceRaceIds);
   const staleIds = previousIds.filter((sourceRaceId) => !nextIds.has(sourceRaceId));
-  const expireAtCandidates: number[] = [];
+  const groupedDetails = groupHashFieldsByTtl(
+    rows.map(({ row, ttlSeconds }) => {
+      const detail = mapRaceDetail(row);
+      rememberDetail(detail);
+      return {
+        field: detail.sourceRaceId,
+        ttlSeconds,
+        value: JSON.stringify(detail),
+      };
+    }),
+  );
   const pipeline = redis.pipeline();
 
   pipeline.del(LEGACY_DATASET_KEY);
+  pipeline.del(LEGACY_OPEN_RACE_INDEX_KEY);
 
-  rows.forEach(({ row, ttlSeconds }) => {
-    const detail = mapRaceDetail(row);
-    expireAtCandidates.push(ttlSeconds);
-    pipeline.set(detailKey(detail.sourceRaceId), JSON.stringify(detail), { ex: ttlSeconds });
-    rememberDetail(detail);
-  });
+  if (legacyIndex?.sourceRaceIds?.length) {
+    pipeline.del(...legacyIndex.sourceRaceIds.map(legacyDetailKey));
+  }
 
   if (staleIds.length > 0) {
-    pipeline.del(...staleIds.map(detailKey));
+    pipeline.hdel(OPEN_RACE_DETAIL_HASH_KEY, ...staleIds);
     staleIds.forEach((sourceRaceId) => memoryOpenDetails.delete(sourceRaceId));
   }
 
   if (index.sourceRaceIds.length > 0) {
-    const indexTtlSeconds = Math.min(...expireAtCandidates);
-    pipeline.set(OPEN_RACE_INDEX_KEY, JSON.stringify(index), { ex: indexTtlSeconds });
+    groupedDetails.forEach((group) => {
+      pipeline.hsetex(
+        OPEN_RACE_DETAIL_HASH_KEY,
+        {
+          expiration: {
+            ex: group.ttlSeconds,
+          },
+        },
+        group.fields,
+      );
+    });
+    pipeline.set(OPEN_RACE_INDEX_KEY, JSON.stringify(index), { ex: OPEN_RACE_INDEX_TTL_SECONDS });
     rememberOpenIndex(index);
   } else {
-    pipeline.del(OPEN_RACE_INDEX_KEY);
+    pipeline.del(OPEN_RACE_INDEX_KEY, OPEN_RACE_DETAIL_HASH_KEY);
     memoryOpenIndex = null;
+    memoryOpenDetails.clear();
   }
 
   await pipeline.exec({ keepErrors: true });

@@ -15,6 +15,12 @@ type FilterableRaceFilters = {
 
 const DEFAULT_RACE_CACHE_TTL_SECONDS = 60 * 60 * 24;
 
+type HashFieldWithTtl<T> = {
+  field: string;
+  ttlSeconds: number;
+  value: T;
+};
+
 function normalizeMonthFilter(value?: string | null) {
   if (!value) return null;
   const normalized = value.replace(/월/g, '').trim();
@@ -106,4 +112,19 @@ export function summarizeActiveRaceFilters(filters: FilterableRaceFilters) {
     ...months,
     ...distances,
   ];
+}
+
+export function groupHashFieldsByTtl<T>(items: HashFieldWithTtl<T>[]) {
+  const groups = new Map<number, Record<string, T>>();
+
+  items.forEach((item) => {
+    const group = groups.get(item.ttlSeconds) ?? {};
+    group[item.field] = item.value;
+    groups.set(item.ttlSeconds, group);
+  });
+
+  return [...groups.entries()].map(([ttlSeconds, fields]) => ({
+    ttlSeconds,
+    fields,
+  }));
 }
