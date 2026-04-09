@@ -109,7 +109,8 @@ export default async function Home() {
                 <Link
                   key={race.id}
                   href={`/races/${race.sourceRaceId}`}
-                  className="interactive-card rounded-[1.125rem] border border-slate-200 p-3 sm:rounded-[1.5rem] sm:p-4"
+                  aria-label={`${race.title} 상세 보기`}
+                  className="interactive-card group rounded-[1.125rem] border border-slate-200 p-3 transition hover:-translate-y-0.5 hover:border-[var(--brand-soft)] sm:rounded-[1.5rem] sm:p-4"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
@@ -133,6 +134,11 @@ export default async function Home() {
                     {race.registrationPeriodLabel ? (
                       <p className="line-clamp-1 text-slate-500">접수 {race.registrationPeriodLabel}</p>
                     ) : null}
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3 text-[11px] font-semibold text-slate-500 sm:text-xs">
+                    <span>카드 어디를 눌러도 상세로 이동해요</span>
+                    <span className="text-[var(--brand)] transition group-hover:translate-x-0.5">상세 보기 →</span>
                   </div>
                 </Link>
               ))

@@ -254,7 +254,8 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             <Link
               key={race.id}
               href={`/races/${race.sourceRaceId}`}
-              className="block rounded-[1rem] bg-white p-3 shadow-sm ring-1 ring-black/5 transition hover:ring-blue-200 sm:rounded-[1.25rem] sm:p-4"
+              aria-label={`${race.title} 상세 보기`}
+              className="group block rounded-[1rem] bg-white p-3 shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:ring-[var(--brand-soft)] sm:rounded-[1.25rem] sm:p-4"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
@@ -281,7 +282,9 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                   <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
                     {getRaceStatusLabel(race.registrationStatus)}
                   </StatusBadge>
-                  <span className="text-[11px] font-semibold text-[var(--brand)] sm:text-xs">자세히 보기</span>
+                  <span className="text-[11px] font-semibold text-[var(--brand)] transition group-hover:translate-x-0.5 sm:text-xs">
+                    자세히 보기 →
+                  </span>
                 </div>
               </div>
             </Link>

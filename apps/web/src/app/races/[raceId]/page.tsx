@@ -58,7 +58,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
 
       <section className="rounded-[1.6rem] bg-white p-5 shadow-sm ring-1 ring-black/5 sm:rounded-[1.9rem] sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-5">
-          <div className="max-w-3xl">
+          <div className="max-w-3xl flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
                 {getRaceStatusLabel(race.registrationStatus)}
@@ -73,15 +73,44 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
             <p className="mt-3 text-sm leading-7 text-slate-600">
               {race.summary ?? race.description ?? '대회 이야기가 아직 충분히 들어오지 않았어요.'}
             </p>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {informationCards.map(([label, value]) => (
+                <div key={label} className="rounded-[1.1rem] bg-slate-50 px-4 py-3">
+                  <p className="text-[11px] font-semibold text-slate-400">{label}</p>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-slate-900">{value}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="flex min-w-56 flex-col gap-3 sm:min-w-64">
+          <div className="flex min-w-56 flex-col gap-3 sm:min-w-72">
             <Link
               href="/plan"
               className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
             >
               이 대회로 계획 세우기
             </Link>
+            {race.sourceDetailUrl ? (
+              <a
+                href={race.sourceDetailUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                주최 측 안내 보기
+              </a>
+            ) : null}
+            {race.homepageUrl ? (
+              <a
+                href={race.homepageUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                공식 홈페이지 바로가기
+              </a>
+            ) : null}
             {viewer ? (
               <form action={toggleRaceBookmarkAction}>
                 <input type="hidden" name="sourceRaceId" value={race.sourceRaceId} />
@@ -109,19 +138,15 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
       <section className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <article className="space-y-6">
           <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h3 className="text-lg font-semibold text-slate-950">참가 전에 볼 정보</h3>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {informationCards.map(([label, value]) => (
-                <div key={label} className="rounded-2xl bg-slate-50 p-4">
-                  <p className="text-xs font-semibold text-slate-400">{label}</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-700">{value}</p>
-                </div>
-              ))}
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-950">대회 소개</h3>
+                <p className="mt-1 text-sm text-slate-500">참가 전에 읽어두면 좋은 핵심 안내를 먼저 정리했어요.</p>
+              </div>
+              <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
+                {getRaceStatusLabel(race.registrationStatus)}
+              </StatusBadge>
             </div>
-          </section>
-
-          <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h3 className="text-lg font-semibold text-slate-950">대회 소개</h3>
             <p className="mt-3 text-sm leading-7 text-slate-600">
               {race.description ?? race.summary ?? '대회 이야기가 아직 충분히 들어오지 않았어요.'}
             </p>
@@ -156,7 +181,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
                   <Link
                     key={item.id}
                     href={`/races/${item.sourceRaceId}`}
-                    className="interactive-card rounded-[1.25rem] border border-slate-200 p-4"
+                    className="interactive-card group rounded-[1.25rem] border border-slate-200 p-4 transition hover:-translate-y-0.5 hover:border-[var(--brand-soft)]"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -172,6 +197,9 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
                     <p className="mt-3 text-sm text-slate-600">
                       {item.location ?? '장소 정보 없음'} · {item.courseSummary ?? '종목 정보 없음'}
                     </p>
+                    <div className="mt-3 text-right text-xs font-semibold text-[var(--brand)] transition group-hover:translate-x-0.5">
+                      이 대회 보기 →
+                    </div>
                   </Link>
                 ))}
               </div>
@@ -185,26 +213,37 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
 
         <aside className="space-y-6">
           <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h3 className="text-lg font-semibold text-slate-950">참가 링크</h3>
+            <h3 className="text-lg font-semibold text-slate-950">빠르게 확인할 것</h3>
             <div className="mt-4 space-y-4 text-sm text-slate-600">
               <div>
+                <p className="text-xs font-semibold text-slate-400">체크 포인트</p>
+                <p className="mt-1">
+                  {race.registrationStatus === 'open'
+                    ? '접수 마감 전인지 확인하고, 바로 계획에 담아두세요.'
+                    : '접수 상태를 먼저 확인한 뒤 비슷한 다른 대회도 함께 살펴보세요.'}
+                </p>
+              </div>
+              <div>
                 <p className="text-xs font-semibold text-slate-400">주최 측 안내</p>
-                {race.sourceDetailUrl ? (
+                <p className="mt-1">
+                  {race.sourceDetailUrl ? '아래 링크에서 모집 요강과 준비물을 바로 확인할 수 있어요.' : '주최 측 링크가 아직 정리되지 않았어요.'}
+                </p>
+              </div>
+              {race.sourceDetailUrl ? (
+                <div>
                   <a
                     href={race.sourceDetailUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-1 inline-flex text-[var(--brand)] underline-offset-4 hover:underline"
+                    className="inline-flex text-[var(--brand)] underline-offset-4 hover:underline"
                   >
-                    주최 측 안내 보기
+                    주최 측 안내 바로가기
                   </a>
-                ) : (
-                  <p className="mt-1">주최 측 안내 없음</p>
-                )}
-              </div>
+                </div>
+              ) : null}
               {race.homepageUrl ? (
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">대회 홈페이지</p>
+                  <p className="text-xs font-semibold text-slate-400">대회 홈페이지</p>
                   <a
                     href={race.homepageUrl}
                     target="_blank"
