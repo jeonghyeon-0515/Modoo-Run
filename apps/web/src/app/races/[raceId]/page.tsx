@@ -45,11 +45,12 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
     location: race.location,
   });
   const mapEmbedUrl = mapQuery
-    ? `https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=15&output=embed`
+    ? `https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=17&output=embed`
     : null;
   const mapLinkUrl = mapQuery
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`
     : null;
+  const primaryApplyUrl = race.homepageUrl ?? race.sourceDetailUrl ?? null;
 
   const informationCards = [
     ['일정', formatRaceDate(race.eventDate, race.eventDateLabel)],
@@ -100,6 +101,16 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-semibold text-slate-100">
+            {primaryApplyUrl ? (
+              <a
+                href={primaryApplyUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_38px_rgba(255,107,87,0.28)] transition hover:bg-[var(--brand-strong)]"
+              >
+                바로 지원하기
+              </a>
+            ) : null}
             {race.sourceDetailUrl ? (
               <a href={race.sourceDetailUrl} target="_blank" rel="noreferrer" className="underline-offset-4 hover:underline">
                 주최 측 안내 보기
