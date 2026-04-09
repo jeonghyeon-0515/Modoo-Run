@@ -83,7 +83,7 @@ export async function signupAction(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/login?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent(error.message)}`);
+    redirect(`/signup?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent(error.message)}`);
   }
 
   if (data.session && data.user) {
@@ -97,7 +97,7 @@ export async function signupAction(formData: FormData) {
   }
 
   redirect(
-    `/login?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent(
+    `/signup?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent(
       '회원가입은 생성됐지만 세션이 열리지 않았어요. Supabase에서 Confirm Email 설정이 꺼져 있는지 확인해 주세요.',
     )}`,
   );
