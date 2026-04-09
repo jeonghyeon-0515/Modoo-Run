@@ -214,7 +214,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">
               <span className="inline-flex items-center gap-2">
                 조건 초기화
-                <LinkPendingCue mode="badge" label="이동 중" />
+                <LinkPendingCue mode="badge" label="이동" />
               </span>
             </Link>
           ) : null}
@@ -253,7 +253,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             >
               <span className="inline-flex items-center gap-2">
                 필터 초기화
-                <LinkPendingCue mode="badge" label="이동 중" />
+                <LinkPendingCue mode="badge" label="이동" />
               </span>
             </Link>
           </article>
@@ -265,7 +265,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
               aria-label={`${race.title} 상세 보기`}
               className="group relative block overflow-hidden rounded-[1rem] bg-white p-3 shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:ring-[var(--brand-soft)] sm:rounded-[1.25rem] sm:p-4"
             >
-              <LinkPendingOverlay label="대회 정보 여는 중…" />
+              <LinkPendingOverlay label="대회 여는 중…" />
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -293,7 +293,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                   </StatusBadge>
                   <span className="inline-flex items-center gap-2 text-[11px] font-semibold text-[var(--brand)] transition group-hover:translate-x-0.5 sm:text-xs">
                     자세히 보기 →
-                    <LinkPendingCue mode="badge" label="여는 중" />
+                    <LinkPendingCue mode="badge" label="열기" />
                   </span>
                 </div>
               </div>

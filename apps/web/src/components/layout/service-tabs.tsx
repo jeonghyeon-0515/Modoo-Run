@@ -27,7 +27,7 @@ export function ServiceTabs() {
             <Link
               key={item.href}
               href={item.href}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
+              className={`relative overflow-hidden whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
                 active
                   ? 'bg-[var(--brand)] text-white shadow-[0_12px_28px_rgba(255,107,87,0.22)]'
                   : 'bg-[var(--surface-muted)] text-slate-700 hover:bg-[var(--brand-soft)]'
@@ -35,8 +35,9 @@ export function ServiceTabs() {
             >
               <span className="inline-flex items-center gap-2">
                 {item.label}
-                <LinkPendingCue mode="badge" label="이동 중" />
+                <LinkPendingCue mode="badge" label="이동" />
               </span>
+              <LinkPendingCue mode="bar" />
             </Link>
           );
         })}

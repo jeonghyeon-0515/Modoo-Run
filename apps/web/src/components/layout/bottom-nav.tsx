@@ -29,14 +29,15 @@ export function BottomNav() {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex flex-col items-center justify-center rounded-2xl px-2 py-3 text-[11px] font-medium transition ${
+            className={`relative overflow-hidden flex flex-col items-center justify-center rounded-2xl px-2 py-3 text-[11px] font-medium transition ${
               isActive(pathname, item.href)
                 ? 'bg-[var(--surface-muted)] text-[var(--brand-strong)]'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
             }`}
           >
             <span>{item.label}</span>
-            <LinkPendingCue mode="badge" label="로딩" className="mt-1" />
+            <LinkPendingCue mode="badge" label="이동" className="mt-1" />
+            <LinkPendingCue mode="bar" className="bottom-1" />
           </Link>
         ))}
       </div>
