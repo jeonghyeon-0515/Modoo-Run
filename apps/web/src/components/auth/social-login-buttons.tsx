@@ -30,7 +30,7 @@ const providers: SocialProviderConfig[] = [
 
 function GoogleLogo() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-7 w-7">
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-8 w-8">
       <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.3-1.6 3.9-5.5 3.9-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5A9.5 9.5 0 0 0 2.5 12 9.5 9.5 0 0 0 12 21.5c5.5 0 9.1-3.9 9.1-9.3 0-.6-.1-1.1-.2-1.5z" />
       <path fill="#FBBC05" d="M3.6 7.6 6.8 10A5.7 5.7 0 0 1 12 6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5A9.5 9.5 0 0 0 3.6 7.6z" />
       <path fill="#34A853" d="M12 21.5c2.5 0 4.7-.8 6.3-2.4l-2.9-2.4c-.8.6-1.9 1.1-3.4 1.1A5.9 5.9 0 0 1 6.8 14l-3.1 2.4A9.5 9.5 0 0 0 12 21.5z" />
@@ -41,7 +41,7 @@ function GoogleLogo() {
 
 function NaverLogo() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-7 w-7">
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-8 w-8">
       <rect width="24" height="24" rx="6" fill="#03C75A" />
       <path fill="#fff" d="M8 6.5h3.1l4.1 6V6.5H18v11h-3.1l-4.1-6v6H8z" />
     </svg>
@@ -50,7 +50,7 @@ function NaverLogo() {
 
 function KakaoLogo() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-7 w-7">
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-8 w-8">
       <rect width="24" height="24" rx="6" fill="#FEE500" />
       <path
         fill="#181600"
@@ -132,7 +132,7 @@ export function SocialLoginButtons({ nextPath }: { nextPath: string }) {
                 disabled={disabled}
                 title={title}
                 aria-label={title}
-                className={`flex h-16 w-16 items-center justify-center rounded-2xl border shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
+                className={`flex h-14 w-14 items-center justify-center rounded-2xl border shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
               >
                 <span className={isActiveProvider ? 'animate-pulse' : ''}>
                   <ProviderLogo provider={item.provider} />
