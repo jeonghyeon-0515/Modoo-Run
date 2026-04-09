@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
 import { LinkPendingCue } from '@/components/ui/link-pending-cue';
 import { getOptionalViewer } from '@/lib/auth/session';
 import { listCommunityPosts } from '@/lib/community/repository';
@@ -123,8 +124,9 @@ export default async function Home() {
                   key={race.id}
                   href={`/races/${race.sourceRaceId}`}
                   aria-label={`${race.title} 상세 보기`}
-                  className="interactive-card group rounded-[1.125rem] border border-slate-200 p-3 transition hover:-translate-y-0.5 hover:border-[var(--brand-soft)] sm:rounded-[1.5rem] sm:p-4"
+                  className="interactive-card group relative overflow-hidden rounded-[1.125rem] border border-slate-200 p-3 transition hover:-translate-y-0.5 hover:border-[var(--brand-soft)] sm:rounded-[1.5rem] sm:p-4"
                 >
+                  <LinkPendingOverlay label="상세 여는 중…" />
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <p className="text-[11px] font-semibold text-[var(--brand)] sm:text-xs">

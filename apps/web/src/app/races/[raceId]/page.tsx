@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageShell } from '@/components/layout/page-shell';
+import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { LinkPendingCue } from '@/components/ui/link-pending-cue';
 import { getOptionalViewer } from '@/lib/auth/session';
@@ -196,8 +197,9 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
                 <Link
                   key={item.id}
                   href={`/races/${item.sourceRaceId}`}
-                  className="interactive-card group rounded-[1.25rem] border border-slate-200 p-4 transition hover:-translate-y-0.5 hover:border-[var(--brand-soft)]"
+                  className="interactive-card group relative overflow-hidden rounded-[1.25rem] border border-slate-200 p-4 transition hover:-translate-y-0.5 hover:border-[var(--brand-soft)]"
                 >
+                  <LinkPendingOverlay label="추천 대회 여는 중…" />
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-[11px] font-semibold text-[var(--brand)]">

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
 import { LinkPendingCue } from '@/components/ui/link-pending-cue';
 import {
   formatRaceDate,
@@ -262,8 +263,9 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
               key={race.id}
               href={`/races/${race.sourceRaceId}`}
               aria-label={`${race.title} 상세 보기`}
-              className="group block rounded-[1rem] bg-white p-3 shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:ring-[var(--brand-soft)] sm:rounded-[1.25rem] sm:p-4"
+              className="group relative block overflow-hidden rounded-[1rem] bg-white p-3 shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:ring-[var(--brand-soft)] sm:rounded-[1.25rem] sm:p-4"
             >
+              <LinkPendingOverlay label="대회 정보 여는 중…" />
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">

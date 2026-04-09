@@ -167,6 +167,30 @@ a {
   animation: route-loading-shimmer 1.2s infinite;
 }
 
+.route-link-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(24, 38, 61, 0.24);
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  backdrop-filter: blur(2px);
+}
+
+.route-link-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  border-top-color: white;
+  animation: route-link-spin 0.7s linear infinite;
+}
+
 @keyframes route-progress-slide {
   0% {
     transform: scaleX(0.08);
@@ -198,5 +222,14 @@ a {
   }
   100% {
     transform: translateX(100%);
+  }
+}
+
+@keyframes route-link-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
