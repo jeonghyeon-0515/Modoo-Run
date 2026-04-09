@@ -59,23 +59,23 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
   return (
     <PageShell
       title="러너들의 이야기"
-      description="대회 준비, 훈련 기록, 완주 후기까지 러너들의 실제 이야기를 편하게 둘러보고 나눠보세요."
+      description="대회 준비, 훈련 기록, 완주 후기를 읽고 작성할 수 있습니다."
     >
       <section className="grid gap-4 sm:grid-cols-3">
         <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-sm font-medium text-slate-500">지금 보이는 글</p>
           <p className="mt-3 text-3xl font-bold text-slate-950">{posts.length.toLocaleString('ko-KR')}개</p>
-          <p className="mt-2 text-sm text-slate-500">선택한 주제에 맞는 글만 모아봤어요.</p>
+          <p className="mt-2 text-sm text-slate-500">선택한 주제의 글만 표시합니다.</p>
         </article>
         <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-sm font-medium text-slate-500">활성 카테고리</p>
           <p className="mt-3 text-3xl font-bold text-slate-950">{activeCategoryCount}개</p>
-          <p className="mt-2 text-sm text-slate-500">읽고 싶은 분위기에 맞게 골라볼 수 있어요.</p>
+          <p className="mt-2 text-sm text-slate-500">읽을 주제를 골라 볼 수 있습니다.</p>
         </article>
         <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-sm font-medium text-slate-500">글 남기기</p>
           <p className="mt-3 text-3xl font-bold text-slate-950">{viewer ? '가능' : '로그인 필요'}</p>
-          <p className="mt-2 text-sm text-slate-500">보러 가기는 자유롭게, 글 쓰기는 로그인 후 할 수 있어요.</p>
+          <p className="mt-2 text-sm text-slate-500">읽기는 자유롭게, 작성은 로그인 후 가능합니다.</p>
         </article>
       </section>
 
@@ -163,7 +163,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             </form>
           ) : (
             <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-              로그인하면 글을 남기고 댓글도 달 수 있어요.{' '}
+              로그인하면 글과 댓글을 작성할 수 있습니다.{' '}
               <Link href="/login?next=/community" className="font-semibold text-[var(--brand)]">
                 로그인하기
               </Link>
@@ -189,9 +189,9 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
       <section className="mt-6 space-y-4">
         {posts.length === 0 ? (
           <article className="rounded-[1.75rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
-            <p className="text-base font-semibold text-slate-950">아직 올라온 글이 많지 않아요.</p>
+            <p className="text-base font-semibold text-slate-950">등록된 글이 아직 없습니다.</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              첫 이야기를 남겨서 다른 러너와 준비 과정을 나눠보세요.
+              첫 글을 작성해 보세요.
             </p>
           </article>
         ) : (
@@ -209,7 +209,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                   </div>
                   <h2 className="mt-3 text-lg font-semibold text-slate-950">{post.title}</h2>
                 </div>
-                <span className="text-sm font-semibold text-[var(--brand)]">보러 가기</span>
+                <span className="text-sm font-semibold text-[var(--brand)]">보기</span>
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-600 line-clamp-2">{post.content}</p>
               <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-500">

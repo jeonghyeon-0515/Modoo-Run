@@ -93,26 +93,26 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
   return (
     <PageShell
       title="이번 달 러닝 계획"
-      description="이번 달에 어떻게 달릴지 가볍게 정하고, 달린 날마다 체크하면서 내 페이스를 만들어보세요."
+      description="이번 달 계획을 정하고 실행 기록을 남길 수 있습니다."
     >
       {!viewer ? (
         <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
-          <p className="text-lg font-semibold text-slate-950">로그인하면 내 계획을 이어서 볼 수 있어요.</p>
+          <p className="text-lg font-semibold text-slate-950">로그인하면 내 계획을 볼 수 있습니다.</p>
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            대회는 계속 둘러볼 수 있고, 로그인하면 이번 달 계획과 달린 기록이 내 계정에 저장돼요.
+            로그인하면 이번 달 계획과 실행 기록을 계정에 저장할 수 있습니다.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href={`/login?next=${encodeURIComponent(`/plan?year=${year}&month=${month}`)}`}
               className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
             >
-              로그인하고 계획 시작하기
+              로그인하고 계획 보기
             </Link>
             <Link
               href="/races"
               className="inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
-              먼저 대회 둘러보기
+              대회 일정 보기
             </Link>
           </div>
 
@@ -147,7 +147,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold text-slate-950">{monthTitle}</h2>
-                <p className="mt-2 text-sm text-slate-600">가볍게 적어두고, 달린 날마다 체크해가며 조금씩 다듬어보세요.</p>
+                <p className="mt-2 text-sm text-slate-600">계획을 적고 실행 상태를 기록할 수 있습니다.</p>
               </div>
               <div className="flex items-center gap-2">
                 <Link href={monthHref(prevMonth.year, prevMonth.month)} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
@@ -253,17 +253,17 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-950">이번 달 달리기 일정</h3>
-                  <p className="mt-2 text-sm text-slate-600">날짜별로 가볍게 적어두고, 끝난 뒤에는 상태만 눌러 기록해보세요.</p>
+                  <p className="mt-2 text-sm text-slate-600">날짜별 일정과 실행 상태를 기록합니다.</p>
                 </div>
               </div>
 
               {!plan ? (
                 <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
-                  아직 이번 달 계획이 없어요. 위에서 먼저 이번 달 계획을 만들어보세요.
+                  이번 달 계획이 아직 없습니다. 위에서 계획을 먼저 만들어 주세요.
                 </div>
               ) : items.length === 0 ? (
                 <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
-                  아직 일정이 없어요. 오른쪽에서 첫 달리기 일정을 추가해보세요.
+                  등록된 일정이 없습니다. 오른쪽에서 일정을 추가해 주세요.
                 </div>
               ) : (
                 <div className="mt-6 space-y-4">
@@ -380,7 +380,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
             <aside className="space-y-6">
               <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
                 <h3 className="text-lg font-semibold text-slate-950">새 일정 추가</h3>
-                <p className="mt-2 text-sm text-slate-600">복잡하게 생각하지 말고, 먼저 한 번 달릴 일정을 적어보세요.</p>
+                <p className="mt-2 text-sm text-slate-600">달릴 일정 한 개부터 추가할 수 있습니다.</p>
                 {plan ? (
                   <form action={createPlanItemAction} className="mt-5 space-y-3">
                     <input type="hidden" name="planId" value={plan.id} />
@@ -404,7 +404,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     <input
                       name="title"
                       className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                      placeholder="예: 퇴근 후 가볍게 5km"
+                      placeholder="예: 퇴근 후 5km"
                     />
                     <textarea
                       name="description"
@@ -434,8 +434,8 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     </button>
                   </form>
                 ) : (
-                  <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-                    먼저 이번 달 계획을 만든 뒤 일정을 추가할 수 있어요.
+                    <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
+                    먼저 이번 달 계획을 만든 뒤 일정을 추가할 수 있습니다.
                   </div>
                 )}
               </section>
@@ -452,7 +452,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
 
           {!plan || items.length === 0 ? (
             <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-              <h3 className="text-lg font-semibold text-slate-950">처음 시작할 때 참고해보세요</h3>
+              <h3 className="text-lg font-semibold text-slate-950">시작 예시</h3>
               <div className="mt-4 space-y-3">
                 {starterTemplates.map((template) => (
                   <article key={template.id} className="rounded-[1.25rem] border border-slate-200 p-4">

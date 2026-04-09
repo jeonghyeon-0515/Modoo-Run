@@ -66,8 +66,8 @@ export function buildCommunityTopicSuggestions(races: RaceInsightInput[]) {
     id: `topic-${race.sourceRaceId}-${index}`,
     href: `/races/${race.sourceRaceId}`,
     badge: race.region ?? '러닝 토픽',
-    title: `${race.title} 준비 같이 해요`,
-    description: `${race.courseSummary ?? '종목 정보'} · ${race.eventDateLabel ?? '일정 확인'} · 체크리스트와 훈련 팁을 나눠보세요.`,
+    title: `${race.title} 준비 정보`,
+    description: `${race.courseSummary ?? '종목 정보'} · ${race.eventDateLabel ?? '일정 확인'} · 체크리스트와 훈련 팁`,
   }));
 }
 
@@ -84,14 +84,14 @@ export function buildPlanStarterTemplates(races: RaceInsightInput[]) {
     {
       id: 'starter-half',
       title: '하프 대비 주 4회 템플릿',
-      description: '주간 강도 분배와 회복일을 함께 보여주는 중간 난이도 루틴',
+      description: '주간 강도 분배와 회복일을 포함한 중간 난이도 루틴',
       accent: highlightedRace ? `${highlightedRace.title} 대비` : '추천 루틴',
     },
     {
       id: 'starter-checklist',
       title: '첫 달 체크리스트',
-      description: '목표 대회 선택 → 주간 빈도 설정 → 완료 체크까지 빠르게 시작',
-      accent: '바로 시작',
+      description: '목표 대회 선택 → 주간 빈도 설정 → 완료 체크 순서',
+      accent: '기본 순서',
     },
   ];
 }

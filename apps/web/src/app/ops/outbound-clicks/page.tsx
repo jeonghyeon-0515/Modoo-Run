@@ -107,7 +107,7 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
   return (
     <PageShell
       title="외부 신청 흐름"
-      description="운영자/관리자가 최근 외부 이동 흐름을 빠르게 확인할 수 있게 핵심 숫자만 모아두었습니다."
+      description="최근 외부 이동 흐름을 확인할 수 있는 운영 화면입니다."
       compactIntro
     >
       <section className="rounded-[1.5rem] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:p-5">
@@ -115,7 +115,7 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
           <div>
             <p className="text-sm font-semibold text-slate-900">조회 기간</p>
             <p className="mt-1 text-sm text-slate-600">대회 상세에서 외부로 나간 클릭만 집계합니다.</p>
-            <p className="mt-1 text-xs text-slate-400">전환율은 상세 조회 로그를 기준으로 100%를 넘지 않게 보정해 보여줍니다.</p>
+            <p className="mt-1 text-xs text-slate-400">전환율은 상세 조회 로그 기준으로 100%를 넘지 않게 보정합니다.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {[7, 30, 90].map((value) => (
@@ -133,15 +133,15 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
           <p className="mt-2 text-3xl font-bold text-slate-950">{summary.totalViewCount}</p>
         </article>
         <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">바로 지원 클릭</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">지원 클릭</p>
           <p className="mt-2 text-3xl font-bold text-slate-950">{summary.applyClickCount}</p>
         </article>
         <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">바로 지원 전환율</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">지원 전환율</p>
           <p className="mt-2 text-lg font-bold text-slate-950">
             {summary.totalViewCount > 0 ? formatRate(summary.applyConversionRate) : '데이터 없음'}
           </p>
-          <p className="mt-1 text-xs text-slate-500">상세 조회 대비 바로 지원 클릭 비율</p>
+          <p className="mt-1 text-xs text-slate-500">상세 조회 대비 지원 클릭 비율</p>
         </article>
       </section>
 
@@ -183,7 +183,7 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
 
         <article className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold text-slate-950">대회별 바로 지원 전환율</h2>
+            <h2 className="text-lg font-semibold text-slate-950">대회별 지원 전환율</h2>
             <p className="text-xs text-slate-500">상세 조회 대비</p>
           </div>
           <div className="mt-4 space-y-3">
@@ -206,7 +206,7 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
                       <p className="mt-1 text-sm font-semibold text-slate-900">{item.viewCount}회</p>
                     </div>
                     <div className="rounded-2xl bg-slate-50 px-3 py-3">
-                      <p className="text-[11px] font-semibold text-slate-400">바로 지원</p>
+                      <p className="text-[11px] font-semibold text-slate-400">지원 클릭</p>
                       <p className="mt-1 text-sm font-semibold text-slate-900">{item.boundedApplyClickCount}회</p>
                     </div>
                     <div className="rounded-2xl bg-[var(--brand-soft)] px-3 py-3">
@@ -262,7 +262,7 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
         <div className="flex items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-slate-950">최근 클릭 로그</h2>
-            <p className="mt-1 text-sm text-slate-500">최근에 어떤 대회에서 어떤 외부 액션이 눌렸는지 시간순으로 보여줍니다.</p>
+            <p className="mt-1 text-sm text-slate-500">최근 외부 클릭 로그를 시간순으로 표시합니다.</p>
           </div>
         </div>
         <div className="mt-4 overflow-x-auto">
