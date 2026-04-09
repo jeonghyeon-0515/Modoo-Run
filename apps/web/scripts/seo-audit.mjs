@@ -25,6 +25,7 @@ function run() {
   const layout = read('src/app/layout.tsx');
   assert(layout.includes('metadataBase'), 'layout metadataBase 설정이 없습니다.');
   assert(layout.includes('openGraph'), 'layout openGraph 설정이 없습니다.');
+  assert(layout.includes('verification'), 'layout verification 설정이 없습니다.');
 
   const raceDetail = read('src/app/races/[raceId]/page.tsx');
   assert(raceDetail.includes('generateMetadata'), '대회 상세 generateMetadata 가 없습니다.');
@@ -33,6 +34,8 @@ function run() {
 
   const strategyDoc = path.join(root, '..', '..', 'docs', 'strategy', 'growth-backlog-90d.md');
   assert(fs.existsSync(strategyDoc), '성장 백로그 문서가 없습니다.');
+  const onboardingDoc = path.join(root, '..', '..', 'docs', 'ops', 'search-portal-onboarding.md');
+  assert(fs.existsSync(onboardingDoc), '검색 포털 등록 가이드 문서가 없습니다.');
 
   console.log('SEO audit passed');
 }

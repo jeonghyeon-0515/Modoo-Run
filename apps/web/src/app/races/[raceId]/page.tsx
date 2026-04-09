@@ -12,6 +12,14 @@ import {
   getRaceStatusTone,
 } from '@/lib/races/formatters';
 import {
+  getRaceCalendarDownloadPath,
+  getRaceGoogleCalendarUrl,
+  getRaceMapEmbedUrl,
+  getRaceMapLinkUrl,
+  getRaceOutboundPath,
+  getRacePrimaryApplyUrl,
+} from '@/lib/races/outbound';
+import {
   getRaceBySourceRaceId,
   listBookmarkedRaceIds,
   listRelatedRaces,
@@ -19,10 +27,6 @@ import {
 import { buildAbsoluteUrl } from '@/lib/site';
 
 type Params = Promise<{ raceId: string }>;
-
-function buildMapQuery(input: { title: string; region?: string | null; location?: string | null }) {
-  return [input.region, input.location, input.title].filter(Boolean).join(' ');
-}
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { raceId } = await params;
@@ -80,18 +84,11 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
   ]);
 
   const isBookmarked = bookmarkedRaceIds.has(race.id);
-  const mapQuery = buildMapQuery({
-    title: race.title,
-    region: race.region,
-    location: race.location,
-  });
-  const mapEmbedUrl = mapQuery
-    ? `https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=17&output=embed`
-    : null;
-  const mapLinkUrl = mapQuery
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`
-    : null;
-  const primaryApplyUrl = race.homepageUrl ?? race.sourceDetailUrl ?? null;
+  const mapEmbedUrl = getRaceMapEmbedUrl(race);
+  const primaryApplyUrl = getRacePrimaryApplyUrl(race);
+  const mapLinkUrl = getRaceMapLinkUrl(race);
+  const googleCalendarUrl = getRaceGoogleCalendarUrl(race);
+  const calendarDownloadPath = race.eventDate ? getRaceCalendarDownloadPath(race.sourceRaceId) : null;
 
   const informationCards = [
     ['일정', formatRaceDate(race.eventDate, race.eventDateLabel)],
@@ -193,7 +190,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
           <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-semibold text-slate-100">
             {primaryApplyUrl ? (
               <a
-                href={primaryApplyUrl}
+                href={getRaceOutboundPath(race.sourceRaceId, 'apply')}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_38px_rgba(255,107,87,0.28)] transition hover:bg-[var(--brand-strong)]"
@@ -202,18 +199,48 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
               </a>
             ) : null}
             {race.sourceDetailUrl ? (
-              <a href={race.sourceDetailUrl} target="_blank" rel="noreferrer" className="underline-offset-4 hover:underline">
+              <a
+                href={getRaceOutboundPath(race.sourceRaceId, 'source_detail')}
+                target="_blank"
+                rel="noreferrer"
+                className="underline-offset-4 hover:underline"
+              >
                 주최 측 안내 보기
               </a>
             ) : null}
             {race.homepageUrl ? (
-              <a href={race.homepageUrl} target="_blank" rel="noreferrer" className="underline-offset-4 hover:underline">
+              <a
+                href={getRaceOutboundPath(race.sourceRaceId, 'homepage')}
+                target="_blank"
+                rel="noreferrer"
+                className="underline-offset-4 hover:underline"
+              >
                 공식 홈페이지 바로가기
               </a>
             ) : null}
             {mapLinkUrl ? (
-              <a href={mapLinkUrl} target="_blank" rel="noreferrer" className="underline-offset-4 hover:underline">
+              <a
+                href={getRaceOutboundPath(race.sourceRaceId, 'map')}
+                target="_blank"
+                rel="noreferrer"
+                className="underline-offset-4 hover:underline"
+              >
                 지도에서 보기
+              </a>
+            ) : null}
+            {googleCalendarUrl ? (
+              <a
+                href={getRaceOutboundPath(race.sourceRaceId, 'calendar_google')}
+                target="_blank"
+                rel="noreferrer"
+                className="underline-offset-4 hover:underline"
+              >
+                Google 캘린더 담기
+              </a>
+            ) : null}
+            {calendarDownloadPath ? (
+              <a href={calendarDownloadPath} className="underline-offset-4 hover:underline">
+                ICS 저장
               </a>
             ) : null}
           </div>
@@ -229,7 +256,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
             </div>
             {mapLinkUrl ? (
               <a
-                href={mapLinkUrl}
+                href={getRaceOutboundPath(race.sourceRaceId, 'map')}
                 target="_blank"
                 rel="noreferrer"
                 className="text-sm font-semibold text-[var(--brand)] underline-offset-4 hover:underline"

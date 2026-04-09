@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/auth/utils.test.mjs tests/internal/request-auth.test.mjs tests/races/roadrun.test.mjs tests/races/formatters.test.mjs tests/races/cache.test.mjs tests/plans/stats.test.mjs"
+    "test": "node --test tests/auth/utils.test.mjs tests/internal/request-auth.test.mjs tests/races/roadrun.test.mjs tests/races/formatters.test.mjs tests/races/cache.test.mjs tests/races/outbound.test.mjs tests/plans/stats.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.0",

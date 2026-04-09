@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { getSiteUrl } from '@/lib/site';
+import { getSiteUrl, getSiteVerification } from '@/lib/site';
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
@@ -18,6 +18,7 @@ export const metadata: Metadata = {
     locale: 'ko_KR',
     type: 'website',
   },
+  verification: getSiteVerification(),
 };
 
 export default function RootLayout({

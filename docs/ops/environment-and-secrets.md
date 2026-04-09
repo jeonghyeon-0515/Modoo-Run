@@ -47,6 +47,9 @@
 |---|---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Public | Supabase 프로젝트 URL | 브라우저 사용 가능 |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public | Supabase anon key | 브라우저 사용 가능 |
+| `NEXT_PUBLIC_APP_URL` | Public | canonical / sitemap / metadata 기준 URL | `https://modoo-run.vercel.app` 권장 |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Public | Search Console 메타 검증 토큰 | 선택 |
+| `NEXT_PUBLIC_NAVER_SITE_VERIFICATION` | Public | Naver Search Advisor 메타 검증 토큰 | 선택 |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | 서버 측 upsert, 관리자 수준 DB 작업 | 절대 클라이언트 노출 금지 |
 | `RACE_SYNC_SHARED_SECRET` | Server only | 내부 sync endpoint 보호용 shared secret | GitHub Actions와 동일 값 사용 |
 | `UPSTASH_REDIS_REST_URL` | Server only | Upstash Redis REST 엔드포인트 | 대회 캐시용 |
@@ -54,7 +57,6 @@
 
 ### 현재 단계에서 아직 선택하지 않은 값
 아래 값은 구현 범위가 커질 때 추가할 수 있습니다.
-- `NEXT_PUBLIC_APP_URL`
 - `ROADRUN_LIST_URL`
 - `ROADRUN_DETAIL_BASE_URL`
 - `SYNC_SCHEDULE_TIMEZONE`
@@ -71,6 +73,9 @@ Vercel Project Settings → Environment Variables 에 아래를 넣습니다.
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Preview / Production | 클라이언트 Supabase 연결 |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Preview / Production | 클라이언트 Supabase 연결 |
+| `NEXT_PUBLIC_APP_URL` | Preview / Production | canonical / metadata 기준 URL |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Preview / Production | Google Search Console 메타 검증 |
+| `NEXT_PUBLIC_NAVER_SITE_VERIFICATION` | Preview / Production | Naver Search Advisor 메타 검증 |
 | `SUPABASE_SERVICE_ROLE_KEY` | Preview / Production | 서버 측 DB upsert |
 | `RACE_SYNC_SHARED_SECRET` | Preview / Production | GitHub Actions가 호출하는 sync endpoint 검증 |
 | `UPSTASH_REDIS_REST_URL` | Preview / Production | 대회 캐시 저장/조회 |
@@ -92,6 +97,9 @@ GitHub Repository Settings → Secrets and variables → Actions
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | 러너에서 실행되는 Next.js 앱의 Supabase URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | 러너에서 실행되는 Next.js 앱의 공개 키 |
+| `NEXT_PUBLIC_APP_URL` | metadata / sitemap 기준 URL |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Search Console 메타 검증이 필요한 경우 |
+| `NEXT_PUBLIC_NAVER_SITE_VERIFICATION` | Search Advisor 메타 검증이 필요한 경우 |
 | `SUPABASE_SERVICE_ROLE_KEY` | 서버 측 upsert 및 sync 실행 |
 | `RACE_SYNC_SHARED_SECRET` | 로컬 sync endpoint 인증용 secret |
 | `UPSTASH_REDIS_REST_URL` | 캐시 warm 테스트가 필요할 때 사용 |
@@ -153,6 +161,7 @@ cp apps/web/.env.example apps/web/.env.local
 ### 로컬에서 필요한 최소 값
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_APP_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `RACE_SYNC_SHARED_SECRET`
 - `UPSTASH_REDIS_REST_URL`
@@ -163,13 +172,15 @@ cp apps/web/.env.example apps/web/.env.local
 ## 9. 운영 체크리스트
 
 ### 앱 배포 전
-- [ ] Vercel에 6개 환경변수 입력
+- [ ] Vercel에 필수 환경변수 입력
+- [ ] Search Console / Naver 검증 토큰이 있으면 public env 추가
 - [ ] Supabase 값 확인
 - [ ] `RACE_SYNC_SHARED_SECRET` 랜덤값 생성
 
 ### GitHub Actions 연결 전
 - [ ] `NEXT_PUBLIC_SUPABASE_URL` 입력
 - [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY` 입력
+- [ ] `NEXT_PUBLIC_APP_URL` 입력
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` 입력
 - [ ] `RACE_SYNC_SHARED_SECRET` 입력
 - [ ] `UPSTASH_REDIS_REST_URL` 입력
