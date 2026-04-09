@@ -32,7 +32,8 @@
 ```
 
 ## 2-1. 소셜 로그인 / 이메일 인증 생략
-- 현재 웹앱은 `Google`, `카카오` 소셜 로그인을 로그인 화면에서 바로 시작할 수 있게 구현한다.
+- 현재 웹앱은 `Google`, `네이버`, `카카오` 버튼을 로그인 화면에 노출한다.
+- 실제 즉시 연동은 현재 `Google`, `카카오` 기준으로 구현돼 있고, `네이버`는 준비용 버튼만 먼저 노출한다.
 - 소셜 로그인 콜백 경로:
   - 로컬: `http://localhost:3000/auth/callback`
   - 운영: `https://modoo-run.vercel.app/auth/callback`
@@ -44,6 +45,8 @@
 이 설정이 안 되어 있으면
 - 소셜 로그인 버튼은 보여도 provider disabled 오류가 날 수 있고
 - 이메일 회원가입 후 세션이 바로 열리지 않을 수 있다.
+- 참고:
+  - `네이버`는 현재 Supabase 기본 provider 목록에 없어, 실제 연동하려면 별도 커스텀 OAuth 흐름 또는 외부 auth broker 검토가 필요하다.
 
 ## 3. 크론/내부 동기화 시크릿
 - `CRON_SECRET`: Vercel Cron의 Bearer 인증에 사용

@@ -25,7 +25,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
 
         <div className="mt-2">
           <h2 className="text-base font-semibold text-slate-950">소셜 로그인</h2>
-          <p className="mt-1 text-sm text-slate-500">Google 또는 카카오 계정으로 이메일 인증 없이 바로 시작할 수 있게 준비해뒀어요.</p>
+          <p className="mt-1 text-sm text-slate-500">Google · 네이버 · 카카오 버튼을 가장 단순하게 두고, 바로 이어서 시작할 수 있게 정리했어요.</p>
           <div className="mt-4">
             <SocialLoginButtons nextPath={nextPath} />
           </div>
