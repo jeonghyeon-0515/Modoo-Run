@@ -49,6 +49,8 @@
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public | Supabase anon key | 브라우저 사용 가능 |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | 서버 측 upsert, 관리자 수준 DB 작업 | 절대 클라이언트 노출 금지 |
 | `RACE_SYNC_SHARED_SECRET` | Server only | 내부 sync endpoint 보호용 shared secret | GitHub Actions와 동일 값 사용 |
+| `UPSTASH_REDIS_REST_URL` | Server only | Upstash Redis REST 엔드포인트 | 대회 캐시용 |
+| `UPSTASH_REDIS_REST_TOKEN` | Server only | Upstash Redis REST 토큰 | 절대 클라이언트 노출 금지 |
 
 ### 현재 단계에서 아직 선택하지 않은 값
 아래 값은 구현 범위가 커질 때 추가할 수 있습니다.
@@ -71,6 +73,8 @@ Vercel Project Settings → Environment Variables 에 아래를 넣습니다.
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Preview / Production | 클라이언트 Supabase 연결 |
 | `SUPABASE_SERVICE_ROLE_KEY` | Preview / Production | 서버 측 DB upsert |
 | `RACE_SYNC_SHARED_SECRET` | Preview / Production | GitHub Actions가 호출하는 sync endpoint 검증 |
+| `UPSTASH_REDIS_REST_URL` | Preview / Production | 대회 캐시 저장/조회 |
+| `UPSTASH_REDIS_REST_TOKEN` | Preview / Production | 대회 캐시 저장/조회 |
 
 ### 주의
 - `SUPABASE_SERVICE_ROLE_KEY`는 **절대 `NEXT_PUBLIC_`로 시작하면 안 됩니다.**
@@ -90,6 +94,8 @@ GitHub Repository Settings → Secrets and variables → Actions
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | 러너에서 실행되는 Next.js 앱의 공개 키 |
 | `SUPABASE_SERVICE_ROLE_KEY` | 서버 측 upsert 및 sync 실행 |
 | `RACE_SYNC_SHARED_SECRET` | 로컬 sync endpoint 인증용 secret |
+| `UPSTASH_REDIS_REST_URL` | 캐시 warm 테스트가 필요할 때 사용 |
+| `UPSTASH_REDIS_REST_TOKEN` | 캐시 warm 테스트가 필요할 때 사용 |
 
 ### 왜 GitHub Actions에 service role key가 필요한가
 현재 기본안에서는 GitHub Actions 러너가 **앱을 직접 실행**하고, 그 앱 서버가 Supabase에 upsert 합니다.
@@ -149,13 +155,15 @@ cp apps/web/.env.example apps/web/.env.local
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `RACE_SYNC_SHARED_SECRET`
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
 
 ---
 
 ## 9. 운영 체크리스트
 
 ### 앱 배포 전
-- [ ] Vercel에 4개 환경변수 입력
+- [ ] Vercel에 6개 환경변수 입력
 - [ ] Supabase 값 확인
 - [ ] `RACE_SYNC_SHARED_SECRET` 랜덤값 생성
 
@@ -164,6 +172,8 @@ cp apps/web/.env.example apps/web/.env.local
 - [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY` 입력
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` 입력
 - [ ] `RACE_SYNC_SHARED_SECRET` 입력
+- [ ] `UPSTASH_REDIS_REST_URL` 입력
+- [ ] `UPSTASH_REDIS_REST_TOKEN` 입력
 - [ ] sync endpoint가 인증 헤더를 검사하도록 구현
 
 ### 운영 중
@@ -183,8 +193,14 @@ cp apps/web/.env.example apps/web/.env.local
 2. **Supabase anon key**
 3. **Supabase service_role key**
 4. **RACE_SYNC_SHARED_SECRET로 사용할 랜덤 문자열**
+5. **UPSTASH_REDIS_REST_URL**
+6. **UPSTASH_REDIS_REST_TOKEN**
 
 이 값이 준비되면 바로
 - #6 sync endpoint 구현
 - #5 GitHub Actions 일일 동기화
 로 이어갈 수 있습니다.
+
+### Upstash Redis 참고
+- 현재 구현은 `@upstash/redis`의 **REST URL + REST TOKEN** 조합을 사용합니다.
+- 사용자가 가진 Redis 포트 `6379` 정보는 TCP 연결용이며, 이번 Next.js 서버리스 캐시 구현에서는 직접 사용하지 않습니다.

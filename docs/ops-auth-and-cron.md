@@ -46,6 +46,14 @@
   1. Vercel Pro 이상으로 업그레이드
   2. Supabase 스케줄러/pg_cron 기반으로 수집 주기를 이전
 
+## 3-2. 일일 sync 이후 캐시 갱신
+- daily race sync가 성공하면 서버는 최신 `races` 데이터를 기준으로 Upstash Redis 캐시를 다시 채운다.
+- 조회 경로(`/`, `/races`, `/races/[raceId]`)는 Redis 캐시를 먼저 읽고, 캐시가 없거나 실패하면 Supabase DB로 fallback한다.
+- 필요한 환경변수
+  - `UPSTASH_REDIS_REST_URL`
+  - `UPSTASH_REDIS_REST_TOKEN`
+- 현재 구현은 REST SDK를 사용하므로 Redis 포트(`6379`)는 앱 코드에서 직접 사용하지 않는다.
+
 ## 4. 배포 후 확인 체크리스트
 1. `apps/web/vercel.json`의 cron이 배포 프로젝트 루트 기준으로 반영됐는지 확인
 2. `/api/internal/race-sync` 무인증 호출이 401인지 확인

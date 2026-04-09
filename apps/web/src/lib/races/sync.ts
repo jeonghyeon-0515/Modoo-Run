@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
+import { warmRaceCacheFromDatabase } from '@/lib/races/cache';
 import { fetchRoadrunRaceDetail, fetchRoadrunRaceList, roadrunSource } from '@/lib/races/source/roadrun-fetch';
 import { parseRoadrunDetail, parseRoadrunList } from '@/lib/races/source/roadrun.js';
 
@@ -50,6 +51,13 @@ type SyncSummary = {
   failedCount: number;
   warningCount: number;
   durationMs: number;
+  cache?: {
+    enabled: boolean;
+    refreshed: boolean;
+    count?: number;
+    warmedAt?: string;
+    message?: string;
+  };
 };
 
 const ROADRUN_SOURCE_SITE = 'roadrun';
@@ -310,6 +318,7 @@ export async function runRoadrunSync(options: SyncOptions = {}): Promise<SyncSum
   let skippedCount = 0;
   let failedCount = 0;
   let warningCount = 0;
+  let cacheResult: SyncSummary['cache'];
 
   try {
     const disabledSourceIds = await getDisabledSourceIds();
@@ -354,6 +363,17 @@ export async function runRoadrunSync(options: SyncOptions = {}): Promise<SyncSum
       });
     }
 
+    try {
+      cacheResult = await warmRaceCacheFromDatabase();
+    } catch (error) {
+      warningCount += 1;
+      cacheResult = {
+        enabled: true,
+        refreshed: false,
+        message: error instanceof Error ? error.message : String(error),
+      };
+    }
+
     const status = failedCount > 0 ? (upsertedCount > 0 ? 'partial' : 'failed') : 'success';
     await finishSyncRun(syncRunId, {
       status,
@@ -377,6 +397,7 @@ export async function runRoadrunSync(options: SyncOptions = {}): Promise<SyncSum
       failedCount,
       warningCount,
       durationMs: Date.now() - startedAt,
+      cache: cacheResult,
     };
   } catch (error) {
     await finishSyncRun(syncRunId, {

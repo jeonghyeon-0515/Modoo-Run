@@ -41,3 +41,15 @@ export function getRaceSyncSharedSecret() {
 export function getRaceSyncSecrets() {
   return [...new Set([readOptionalEnv('RACE_SYNC_SHARED_SECRET'), readOptionalEnv('CRON_SECRET')].filter(Boolean))] as string[];
 }
+
+export function hasUpstashRedisEnv() {
+  return Boolean(readOptionalEnv('UPSTASH_REDIS_REST_URL') && readOptionalEnv('UPSTASH_REDIS_REST_TOKEN'));
+}
+
+export function getUpstashRedisRestUrl() {
+  return requireEnv('UPSTASH_REDIS_REST_URL');
+}
+
+export function getUpstashRedisRestToken() {
+  return requireEnv('UPSTASH_REDIS_REST_TOKEN');
+}

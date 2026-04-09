@@ -1,0 +1,75 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { applyRaceFilters } = require('../../src/lib/races/cache-helpers.ts');
+
+const sampleRaces = [
+  {
+    id: '1',
+    sourceRaceId: '41182',
+    title: '새해 일출런',
+    eventDate: `${new Date().getFullYear()}-01-01`,
+    eventDateLabel: '1/1',
+    weekdayLabel: '목',
+    region: '서울',
+    location: '한강공원',
+    courseSummary: '하프,10km,5km',
+    organizer: '모두의 러닝',
+    registrationStatus: 'open',
+    registrationPeriodLabel: `${new Date().getFullYear()}년1월1일~${new Date().getFullYear()}년1월7일`,
+    lastSyncedAt: '2026-04-09T00:00:00.000Z',
+  },
+  {
+    id: '2',
+    sourceRaceId: '41183',
+    title: '봄꽃 마라톤',
+    eventDate: `${new Date().getFullYear()}-04-20`,
+    eventDateLabel: '4/20',
+    weekdayLabel: '일',
+    region: '부산',
+    location: '시민공원',
+    courseSummary: '10km,5km',
+    organizer: '모두의 러닝',
+    registrationStatus: 'open',
+    registrationPeriodLabel: `${new Date().getFullYear()}년3월1일~${new Date().getFullYear()}년3월20일`,
+    lastSyncedAt: '2026-04-09T00:00:00.000Z',
+  },
+  {
+    id: '3',
+    sourceRaceId: '41184',
+    title: '가을 하프런',
+    eventDate: `${new Date().getFullYear()}-09-14`,
+    eventDateLabel: '9/14',
+    weekdayLabel: '일',
+    region: '서울',
+    location: '올림픽공원',
+    courseSummary: '하프',
+    organizer: '모두의 러닝',
+    registrationStatus: 'closed',
+    registrationPeriodLabel: `${new Date().getFullYear()}년8월1일~${new Date().getFullYear()}년8월20일`,
+    lastSyncedAt: '2026-04-09T00:00:00.000Z',
+  },
+];
+
+test('캐시된 대회 목록에 접수 상태/지역/거리 필터를 적용한다', () => {
+  const filtered = applyRaceFilters(sampleRaces, {
+    registrationStatus: 'open',
+    region: '부산',
+    distance: '10km',
+  });
+
+  assert.equal(filtered.length, 1);
+  assert.equal(filtered[0].sourceRaceId, '41183');
+});
+
+test('월 필터와 limit를 동일하게 적용한다', () => {
+  const january = applyRaceFilters(sampleRaces, {
+    month: '1월',
+    limit: 1,
+  });
+
+  assert.equal(january.length, 1);
+  assert.equal(january[0].sourceRaceId, '41182');
+});
