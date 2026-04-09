@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { PageShell } from '@/components/layout/page-shell';
 import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -15,11 +16,49 @@ import {
   listBookmarkedRaceIds,
   listRelatedRaces,
 } from '@/lib/races/repository';
+import { buildAbsoluteUrl } from '@/lib/site';
 
 type Params = Promise<{ raceId: string }>;
 
 function buildMapQuery(input: { title: string; region?: string | null; location?: string | null }) {
   return [input.region, input.location, input.title].filter(Boolean).join(' ');
+}
+
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { raceId } = await params;
+  const race = await getRaceBySourceRaceId(raceId);
+
+  if (!race) {
+    return {
+      title: '대회를 찾을 수 없습니다 | 모두의 러닝',
+      description: '요청한 대회 정보를 찾을 수 없습니다.',
+    };
+  }
+
+  const description =
+    race.summary ??
+    `${race.title} · ${race.region ?? '지역 미정'} · ${race.location ?? '장소 정보 없음'} · ${race.courseSummary ?? '종목 정보 없음'} · ${race.registrationPeriodLabel ?? '접수기간 정보 없음'}`;
+
+  return {
+    title: `${race.title} | 모두의 러닝`,
+    description,
+    alternates: {
+      canonical: `/races/${race.sourceRaceId}`,
+    },
+    openGraph: {
+      title: race.title,
+      description,
+      url: `/races/${race.sourceRaceId}`,
+      type: 'article',
+      locale: 'ko_KR',
+      siteName: '모두의 러닝',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: race.title,
+      description,
+    },
+  };
 }
 
 export default async function RaceDetailPage({ params }: { params: Params }) {
@@ -60,6 +99,46 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
     ['장소', race.location ?? '장소 정보 없음'],
     ['종목', race.courseSummary ?? '종목 정보 없음'],
   ];
+  const detailUrl = buildAbsoluteUrl(`/races/${race.sourceRaceId}`);
+  const eventSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: race.title,
+    startDate: race.eventDate ? `${race.eventDate}T09:00:00+09:00` : undefined,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    description: race.summary ?? race.description ?? undefined,
+    url: detailUrl,
+    location: {
+      '@type': 'Place',
+      name: race.location ?? race.title,
+      address: {
+        '@type': 'PostalAddress',
+        addressRegion: race.region ?? undefined,
+        streetAddress: race.location ?? undefined,
+        addressCountry: 'KR',
+      },
+    },
+    organizer: race.organizer
+      ? {
+          '@type': 'Organization',
+          name: race.organizer,
+        }
+      : undefined,
+    offers: primaryApplyUrl
+      ? {
+          '@type': 'Offer',
+          url: primaryApplyUrl,
+          availability:
+            race.registrationStatus === 'open'
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/SoldOut',
+          validFrom: race.registrationOpenAt
+            ? `${race.registrationOpenAt}T00:00:00+09:00`
+            : undefined,
+        }
+      : undefined,
+  };
 
   return (
     <PageShell
@@ -67,6 +146,10 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
       description="참가 전에 필요한 일정과 장소부터 먼저 볼 수 있게 정리했어요."
       compactIntro
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}
+      />
       <div className="mb-4">
         <Link
           href="/races"
