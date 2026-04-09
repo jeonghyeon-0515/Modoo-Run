@@ -4,7 +4,6 @@ import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { getOptionalViewer } from '@/lib/auth/session';
 import {
-  formatLastSyncedAt,
   formatRaceDate,
   getRaceStatusLabel,
   getRaceStatusTone,
@@ -41,16 +40,15 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
   const informationCards = [
     ['일정', formatRaceDate(race.eventDate, race.eventDateLabel)],
     ['접수기간', race.registrationPeriodLabel ?? '접수기간 정보 없음'],
-    ['지역', race.region ?? '지역 정보 없음'],
     ['장소', race.location ?? '장소 정보 없음'],
     ['종목', race.courseSummary ?? '종목 정보 없음'],
-    ['주최', race.organizer ?? '주최 정보 없음'],
   ];
 
   return (
     <PageShell
       title={race.title}
-      description="참가 전에 궁금한 정보부터 먼저 보고, 더 자세한 내용은 아래에서 천천히 살펴보세요."
+      description="참가 전에 필요한 일정과 장소부터 먼저 볼 수 있게 정리했어요."
+      compactIntro
     >
       <div className="mb-4">
         <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">
@@ -58,8 +56,8 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
         </Link>
       </div>
 
-      <section className="hero-shell overflow-hidden rounded-[1.9rem] p-6 text-white sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <section className="rounded-[1.6rem] bg-white p-5 shadow-sm ring-1 ring-black/5 sm:rounded-[1.9rem] sm:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-5">
           <div className="max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
@@ -68,19 +66,42 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
               {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
               {isBookmarked ? <StatusBadge tone="success">찜한 대회</StatusBadge> : null}
             </div>
-            <p className="mt-4 text-sm text-slate-300">{formatRaceDate(race.eventDate, race.eventDateLabel)}</p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{race.title}</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-200">
+            <p className="mt-4 text-sm font-semibold text-[var(--brand)]">
+              {formatRaceDate(race.eventDate, race.eventDateLabel)}
+            </p>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">{race.title}</h2>
+            <p className="mt-3 text-sm leading-7 text-slate-600">
               {race.summary ?? race.description ?? '대회 이야기가 아직 충분히 들어오지 않았어요.'}
             </p>
           </div>
 
-          <div className="min-w-56 rounded-[1.5rem] bg-white/10 p-4 ring-1 ring-white/10 backdrop-blur">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-300">최근 업데이트</p>
-            <p className="mt-2 text-lg font-semibold text-white">{formatLastSyncedAt(race.lastSyncedAt)}</p>
-            <p className="mt-3 text-sm text-slate-300">
-              정보가 언제 바뀌었는지 바로 알 수 있도록 최근 업데이트 시각을 함께 보여드려요.
-            </p>
+          <div className="flex min-w-56 flex-col gap-3 sm:min-w-64">
+            <Link
+              href="/plan"
+              className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+            >
+              이 대회로 계획 세우기
+            </Link>
+            {viewer ? (
+              <form action={toggleRaceBookmarkAction}>
+                <input type="hidden" name="sourceRaceId" value={race.sourceRaceId} />
+                <input type="hidden" name="raceId" value={race.id} />
+                <input type="hidden" name="enabled" value={isBookmarked ? 'false' : 'true'} />
+                <button
+                  type="submit"
+                  className="w-full rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  {isBookmarked ? '찜한 대회 해제' : '찜한 대회 저장'}
+                </button>
+              </form>
+            ) : (
+              <Link
+                href={`/login?next=${encodeURIComponent(`/races/${race.sourceRaceId}`)}`}
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                로그인하고 저장하기
+              </Link>
+            )}
           </div>
         </div>
       </section>
@@ -88,11 +109,11 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
       <section className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <article className="space-y-6">
           <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h3 className="text-lg font-semibold text-slate-950">먼저 보면 좋은 정보</h3>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <h3 className="text-lg font-semibold text-slate-950">참가 전에 볼 정보</h3>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {informationCards.map(([label, value]) => (
                 <div key={label} className="rounded-2xl bg-slate-50 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</p>
+                  <p className="text-xs font-semibold text-slate-400">{label}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-700">{value}</p>
                 </div>
               ))}
@@ -100,26 +121,30 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
           </section>
 
           <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h3 className="text-lg font-semibold text-slate-950">대회 이야기</h3>
+            <h3 className="text-lg font-semibold text-slate-950">대회 소개</h3>
             <p className="mt-3 text-sm leading-7 text-slate-600">
               {race.description ?? race.summary ?? '대회 이야기가 아직 충분히 들어오지 않았어요.'}
             </p>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">대표자</p>
-                <p className="mt-2 text-sm text-slate-700">{race.representativeName ?? '정보 없음'}</p>
+            {race.organizer || race.representativeName || race.phone ? (
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-slate-200 p-4">
+                  <p className="text-xs font-semibold text-slate-400">주최</p>
+                  <p className="mt-2 text-sm text-slate-700">{race.organizer ?? '정보 없음'}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 p-4">
+                  <p className="text-xs font-semibold text-slate-400">문의</p>
+                  <p className="mt-2 text-sm text-slate-700">
+                    {[race.representativeName, race.phone].filter(Boolean).join(' · ') || '정보 없음'}
+                  </p>
+                </div>
               </div>
-              <div className="rounded-2xl border border-slate-200 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">전화번호</p>
-                <p className="mt-2 text-sm text-slate-700">{race.phone ?? '정보 없음'}</p>
-              </div>
-            </div>
+            ) : null}
           </section>
 
           <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-slate-950">같이 둘러보기 좋은 대회</h3>
+              <h3 className="text-lg font-semibold text-slate-950">비슷한 지역의 다른 대회</h3>
               <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">
                 전체 보기
               </Link>
@@ -160,14 +185,10 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
 
         <aside className="space-y-6">
           <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h3 className="text-lg font-semibold text-slate-950">공식 링크와 업데이트</h3>
+            <h3 className="text-lg font-semibold text-slate-950">참가 링크</h3>
             <div className="mt-4 space-y-4 text-sm text-slate-600">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">최근 업데이트</p>
-                <p className="mt-1">{formatLastSyncedAt(race.lastSyncedAt)}</p>
-              </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">주최 측 안내</p>
+                <p className="text-xs font-semibold text-slate-400">주최 측 안내</p>
                 {race.sourceDetailUrl ? (
                   <a
                     href={race.sourceDetailUrl}
@@ -197,37 +218,31 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
             </div>
           </section>
 
-          <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h3 className="text-lg font-semibold text-slate-950">이 대회를 저장해둘까요?</h3>
-            <div className="mt-4 flex flex-col gap-3">
-              <Link
-                href="/plan"
-                className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
-              >
-                이 대회로 계획 세우기
-              </Link>
-              {viewer ? (
-                <form action={toggleRaceBookmarkAction}>
-                  <input type="hidden" name="sourceRaceId" value={race.sourceRaceId} />
-                  <input type="hidden" name="raceId" value={race.id} />
-                  <input type="hidden" name="enabled" value={isBookmarked ? 'false' : 'true'} />
-                  <button
-                    type="submit"
-                    className="w-full rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                  >
-                    {isBookmarked ? '찜한 대회 해제' : '찜한 대회 저장'}
-                  </button>
-                </form>
-              ) : (
-                <Link
-                  href={`/login?next=${encodeURIComponent(`/races/${race.sourceRaceId}`)}`}
-                  className="inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                >
-                  로그인하고 찜한 대회 저장
-                </Link>
-              )}
-            </div>
-          </section>
+          {race.organizer || race.representativeName || race.phone ? (
+            <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <h3 className="text-lg font-semibold text-slate-950">주최 정보</h3>
+              <div className="mt-4 space-y-3 text-sm text-slate-600">
+                {race.organizer ? (
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">주최</p>
+                    <p className="mt-1">{race.organizer}</p>
+                  </div>
+                ) : null}
+                {race.representativeName ? (
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">대표자</p>
+                    <p className="mt-1">{race.representativeName}</p>
+                  </div>
+                ) : null}
+                {race.phone ? (
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">전화번호</p>
+                    <p className="mt-1">{race.phone}</p>
+                  </div>
+                ) : null}
+              </div>
+            </section>
+          ) : null}
         </aside>
       </section>
     </PageShell>

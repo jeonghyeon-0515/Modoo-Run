@@ -45,40 +45,40 @@ export default async function Home() {
 
   return (
     <PageShell
-      title="대회 찾기부터 기록까지 한 번에"
-      description="지금 신청할 수 있는 대회를 먼저 보고, 마음에 드는 일정은 계획으로 이어서 차근차근 준비해보세요."
+      title="지금 달릴 대회부터 골라보세요"
+      description="접수중인 대회를 먼저 보고, 마음에 드는 일정은 저장하거나 계획으로 이어가세요."
+      compactIntro
     >
-      <section className="hero-shell overflow-hidden rounded-[2rem] p-5 text-white sm:p-8">
+      <section className="hero-shell overflow-hidden rounded-[1.6rem] p-4 text-white sm:rounded-[2rem] sm:p-6">
         <div className="max-w-3xl">
           <p className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-[var(--brand-soft-strong)] ring-1 ring-white/10">
-            달리기 준비, 여기서 시작해요
+            접수중 대회 먼저 보기
           </p>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+          <h2 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">
             가까운 일정부터
-            <br className="hidden sm:block" /> 지금 신청할 수 있는 대회를 살펴보세요
+            <br className="hidden sm:block" /> 빠르게 훑어보세요
           </h2>
-          <p className="mt-4 text-sm leading-7 text-slate-200 sm:text-base">
-            당장 살펴보기 좋은 대회를 날짜 순으로 먼저 보여드려요. 복잡한 요약보다
-            참가에 필요한 핵심 정보만 가볍게 담았습니다.
+          <p className="mt-3 text-sm leading-6 text-slate-200 sm:text-base">
+            러너가 바로 판단할 수 있도록 일정, 장소, 종목, 접수기간만 먼저 보여드려요.
           </p>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:flex">
+        <div className="mt-5 flex flex-wrap items-center gap-3">
           <Link
             href="/races"
-            className="col-span-2 inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(255,107,87,0.24)] transition hover:bg-[var(--brand-strong)] sm:col-auto"
+            className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(255,107,87,0.24)] transition hover:bg-[var(--brand-strong)]"
           >
             지금 대회 보러 가기
           </Link>
           <Link
             href="/plan"
-            className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
+            className="text-sm font-semibold text-slate-100 underline-offset-4 hover:underline"
           >
             이번 달 계획 세우기
           </Link>
           <Link
             href="/community"
-            className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
+            className="text-sm font-semibold text-slate-100 underline-offset-4 hover:underline"
           >
             러너 이야기 보러 가기
           </Link>
@@ -92,9 +92,9 @@ export default async function Home() {
               <h2 className="text-xl font-semibold text-slate-950">
                 {openRaces.length > 0 ? '지금 신청 가능한 대회' : '최근 올라온 대회'}
               </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
+              <p className="mt-1 text-sm leading-6 text-slate-600">
                 {openRaces.length > 0
-                  ? '가까운 일정 순으로 모았어요. 카드마다 꼭 필요한 정보만 빠르게 볼 수 있어요.'
+                  ? '가까운 일정 순으로 정리했어요.'
                   : '지금 열려 있는 대회가 적을 때는 최근 올라온 대회를 함께 보여드려요.'}
               </p>
             </div>
@@ -148,10 +148,8 @@ export default async function Home() {
           <article className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-slate-950">이번 달 러닝 계획</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
-                  이번 달에 어떻게 달릴지 정하고, 달린 날마다 차근차근 체크해보세요.
-                </p>
+                <h2 className="text-xl font-semibold text-slate-950">이번 달 계획</h2>
+                <p className="mt-1 text-sm leading-6 text-slate-600">달릴 날짜를 정하고, 완료한 날만 체크해보세요.</p>
               </div>
               <Link href="/plan" className="text-sm font-semibold text-[var(--brand)]">
                 보기
@@ -180,9 +178,7 @@ export default async function Home() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-slate-950">러너들의 이야기</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
-                  요즘 올라온 이야기와 바로 써볼 만한 주제를 함께 보여드려요.
-                </p>
+                <p className="mt-1 text-sm leading-6 text-slate-600">후기와 준비 팁만 가볍게 둘러보세요.</p>
               </div>
               <Link href="/community" className="text-sm font-semibold text-[var(--brand)]">
                 더 보기

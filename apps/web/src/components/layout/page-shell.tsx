@@ -5,7 +5,17 @@ import { logoutAction } from '@/app/login/actions';
 import { BottomNav } from './bottom-nav';
 import { ServiceTabs } from './service-tabs';
 
-export async function PageShell({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+export async function PageShell({
+  title,
+  description,
+  children,
+  compactIntro = false,
+}: {
+  title: string;
+  description?: string;
+  children: ReactNode;
+  compactIntro?: boolean;
+}) {
   const viewer = await getOptionalViewer();
   const roleLabel = viewer?.role === 'admin' ? '관리자' : viewer?.role === 'moderator' ? '운영자' : '러너';
 
@@ -47,10 +57,28 @@ export async function PageShell({ title, description, children }: { title: strin
         <ServiceTabs />
       </header>
 
-      <main className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8">
-        <section className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">{title}</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">{description}</p>
+      <main className={`mx-auto w-full max-w-5xl px-5 ${compactIntro ? 'py-5 sm:py-6' : 'py-8'} sm:px-8`}>
+        <section className={compactIntro ? 'mb-5 sm:mb-6' : 'mb-8'}>
+          <h1
+            className={
+              compactIntro
+                ? 'text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl'
+                : 'text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl'
+            }
+          >
+            {title}
+          </h1>
+          {description ? (
+            <p
+              className={
+                compactIntro
+                  ? 'mt-2 max-w-3xl text-sm leading-6 text-slate-600'
+                  : 'mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base'
+              }
+            >
+              {description}
+            </p>
+          ) : null}
         </section>
         {children}
       </main>
