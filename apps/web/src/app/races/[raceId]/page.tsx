@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { PageShell } from '@/components/layout/page-shell';
+import { RaceDetailViewTracker } from '@/components/races/race-detail-view-tracker';
 import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { LinkPendingCue } from '@/components/ui/link-pending-cue';
@@ -143,6 +144,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
       description="참가 전에 필요한 일정과 장소부터 먼저 볼 수 있게 정리했어요."
       compactIntro
     >
+      <RaceDetailViewTracker sourceRaceId={race.sourceRaceId} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}

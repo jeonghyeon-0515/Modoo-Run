@@ -7,6 +7,14 @@ export type OutboundClickEventRow = {
   createdAt: string;
 };
 
+export type RaceDetailViewEventRow = {
+  sourceRaceId: string;
+  raceTitle: string;
+  sourcePath: string;
+  viewerRole: string;
+  createdAt: string;
+};
+
 export type OutboundTargetSummary = {
   targetKind: string;
   count: number;
@@ -20,9 +28,25 @@ export type OutboundRaceSummary = {
 
 export type OutboundClickSummary = {
   totalCount: number;
+  totalViewCount: number;
   uniqueRaceCount: number;
+  applyClickCount: number;
+  applyConversionRate: number;
   targetSummaries: OutboundTargetSummary[];
   topRaces: OutboundRaceSummary[];
+  topConversionRaces: Array<
+    OutboundRaceSummary & {
+      viewCount: number;
+      applyClickCount: number;
+      conversionRate: number;
+    }
+  >;
+  dailyTrend: Array<{
+    dateLabel: string;
+    viewCount: number;
+    applyClickCount: number;
+    otherClickCount: number;
+  }>;
   recentEvents: OutboundClickEventRow[];
 };
 
@@ -36,15 +60,37 @@ export function getOutboundTargetLabel(targetKind: string) {
   return targetKind;
 }
 
+function formatDateLabel(value: string) {
+  return new Intl.DateTimeFormat('ko-KR', {
+    month: 'numeric',
+    day: 'numeric',
+    timeZone: 'Asia/Seoul',
+  }).format(new Date(value));
+}
+
+function toDateKey(value: string) {
+  return new Date(value).toISOString().slice(0, 10);
+}
+
 export function summarizeOutboundClicks(
   rows: OutboundClickEventRow[],
-  options: { topRaceLimit?: number; recentLimit?: number } = {},
+  viewRows: RaceDetailViewEventRow[] = [],
+  options: { topRaceLimit?: number; recentLimit?: number; trendLimit?: number } = {},
 ): OutboundClickSummary {
   const targetCounts = new Map<string, number>();
   const raceCounts = new Map<string, { raceTitle: string; count: number }>();
+  const raceViewCounts = new Map<string, { raceTitle: string; count: number }>();
+  const dailyTrend = new Map<
+    string,
+    { dateLabel: string; viewCount: number; applyClickCount: number; otherClickCount: number }
+  >();
+  let applyClickCount = 0;
 
   rows.forEach((row) => {
     targetCounts.set(row.targetKind, (targetCounts.get(row.targetKind) ?? 0) + 1);
+    if (row.targetKind === 'apply') {
+      applyClickCount += 1;
+    }
 
     const existing = raceCounts.get(row.sourceRaceId);
     if (existing) {
@@ -55,6 +101,42 @@ export function summarizeOutboundClicks(
         count: 1,
       });
     }
+
+    const dateKey = toDateKey(row.createdAt);
+    const trend = dailyTrend.get(dateKey) ?? {
+      dateLabel: formatDateLabel(row.createdAt),
+      viewCount: 0,
+      applyClickCount: 0,
+      otherClickCount: 0,
+    };
+    if (row.targetKind === 'apply') {
+      trend.applyClickCount += 1;
+    } else {
+      trend.otherClickCount += 1;
+    }
+    dailyTrend.set(dateKey, trend);
+  });
+
+  viewRows.forEach((row) => {
+    const existing = raceViewCounts.get(row.sourceRaceId);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      raceViewCounts.set(row.sourceRaceId, {
+        raceTitle: row.raceTitle,
+        count: 1,
+      });
+    }
+
+    const dateKey = toDateKey(row.createdAt);
+    const trend = dailyTrend.get(dateKey) ?? {
+      dateLabel: formatDateLabel(row.createdAt),
+      viewCount: 0,
+      applyClickCount: 0,
+      otherClickCount: 0,
+    };
+    trend.viewCount += 1;
+    dailyTrend.set(dateKey, trend);
   });
 
   const targetSummaries = [...targetCounts.entries()]
@@ -70,12 +152,44 @@ export function summarizeOutboundClicks(
       count: value.count,
     }));
 
+  const topConversionRaces = [...raceViewCounts.entries()]
+    .map(([sourceRaceId, value]) => {
+      const applyClicks = rows.filter((row) => row.sourceRaceId === sourceRaceId && row.targetKind === 'apply').length;
+      const conversionRate = value.count > 0 ? (applyClicks / value.count) * 100 : 0;
+      return {
+        sourceRaceId,
+        raceTitle: value.raceTitle,
+        count: applyClicks,
+        viewCount: value.count,
+        applyClickCount: applyClicks,
+        conversionRate,
+      };
+    })
+    .sort((a, b) => {
+      if (b.conversionRate === a.conversionRate) {
+        return b.viewCount - a.viewCount;
+      }
+      return b.conversionRate - a.conversionRate;
+    })
+    .slice(0, options.topRaceLimit ?? 10);
+
+  const totalViewCount = viewRows.length;
+  const applyConversionRate = totalViewCount > 0 ? (applyClickCount / totalViewCount) * 100 : 0;
+  const sortedTrend = [...dailyTrend.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .slice(-(options.trendLimit ?? 14))
+    .map(([, value]) => value);
+
   return {
     totalCount: rows.length,
-    uniqueRaceCount: raceCounts.size,
+    totalViewCount,
+    uniqueRaceCount: new Set([...raceCounts.keys(), ...raceViewCounts.keys()]).size,
+    applyClickCount,
+    applyConversionRate,
     targetSummaries,
     topRaces,
+    topConversionRaces,
+    dailyTrend: sortedTrend,
     recentEvents: rows.slice(0, options.recentLimit ?? 20),
   };
 }
-

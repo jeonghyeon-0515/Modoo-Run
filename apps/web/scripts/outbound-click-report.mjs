@@ -65,7 +65,19 @@ if (error) {
   throw error;
 }
 
+const { data: viewData, error: viewError } = await supabase
+  .from('race_detail_view_events')
+  .select('source_race_id,created_at')
+  .gte('created_at', sinceIso)
+  .order('created_at', { ascending: false })
+  .limit(5000);
+
+if (viewError) {
+  throw viewError;
+}
+
 const rows = data ?? [];
+const viewRows = viewData ?? [];
 const byTarget = new Map();
 const byRace = new Map();
 
@@ -87,7 +99,9 @@ const summary = [
   `# 외부 신청 클릭 리포트 (${reportDays}일)`,
   '',
   `- 기준 시작 시각: ${sinceIso}`,
+  `- 총 상세 조회 수: ${viewRows.length}`,
   `- 총 클릭 수: ${rows.length}`,
+  `- 바로 지원 전환율: ${viewRows.length > 0 ? ((byTarget.get('apply') ?? 0) / viewRows.length * 100).toFixed(1) : '0.0'}%`,
   '',
   '## 대상별 클릭 수',
   markdownTable(targetRows),
@@ -103,4 +117,3 @@ console.log(text);
 if (process.env.GITHUB_STEP_SUMMARY) {
   fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${text}\n`, 'utf8');
 }
-

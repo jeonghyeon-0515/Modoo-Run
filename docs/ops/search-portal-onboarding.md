@@ -131,3 +131,4 @@
 ### 선택
 5. Preview 환경에도 같은 verification env 반영
 6. 커스텀 도메인을 붙일 계획이면 이후 Domain property로 재등록
+7. 토큰 입력 후 GitHub Actions `Search Portal Verify` 수동 실행

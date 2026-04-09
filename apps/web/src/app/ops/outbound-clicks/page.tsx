@@ -28,6 +28,53 @@ function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
+function formatRate(value: number) {
+  return `${value.toFixed(1)}%`;
+}
+
+function TrendBars({
+  points,
+}: {
+  points: Array<{ dateLabel: string; viewCount: number; applyClickCount: number; otherClickCount: number }>;
+}) {
+  const maxValue = Math.max(...points.map((point) => Math.max(point.viewCount, point.applyClickCount + point.otherClickCount)), 1);
+
+  return (
+    <div className="mt-4">
+      <div className="grid grid-cols-7 gap-2 sm:grid-cols-14">
+        {points.map((point) => {
+          const viewHeight = Math.max(8, Math.round((point.viewCount / maxValue) * 120));
+          const clickHeight = Math.max(4, Math.round(((point.applyClickCount + point.otherClickCount) / maxValue) * 120));
+          return (
+            <div key={point.dateLabel} className="flex flex-col items-center gap-2">
+              <div className="flex h-32 w-full items-end justify-center gap-1 rounded-2xl bg-slate-50 px-1 py-2">
+                <div
+                  className="w-3 rounded-full bg-slate-300"
+                  style={{ height: `${viewHeight}px` }}
+                  title={`${point.dateLabel} 상세 조회 ${point.viewCount}회`}
+                />
+                <div
+                  className="w-3 rounded-full bg-[var(--brand)]"
+                  style={{ height: `${clickHeight}px` }}
+                  title={`${point.dateLabel} 외부 클릭 ${point.applyClickCount + point.otherClickCount}회`}
+                />
+              </div>
+              <div className="text-center">
+                <p className="text-[11px] font-semibold text-slate-500">{point.dateLabel}</p>
+                <p className="text-[10px] text-slate-400">조회 {point.viewCount} · 클릭 {point.applyClickCount + point.otherClickCount}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-4 text-xs text-slate-500">
+        <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-slate-300" />상세 조회</span>
+        <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[var(--brand)]" />외부 클릭</span>
+      </div>
+    </div>
+  );
+}
+
 function FilterChip({
   href,
   active,
@@ -81,21 +128,37 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
 
       <section className="mt-4 grid gap-3 sm:grid-cols-3">
         <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">총 외부 클릭</p>
-          <p className="mt-2 text-3xl font-bold text-slate-950">{summary.totalCount}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">총 상세 조회</p>
+          <p className="mt-2 text-3xl font-bold text-slate-950">{summary.totalViewCount}</p>
         </article>
         <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">클릭 발생 대회 수</p>
-          <p className="mt-2 text-3xl font-bold text-slate-950">{summary.uniqueRaceCount}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">바로 지원 클릭</p>
+          <p className="mt-2 text-3xl font-bold text-slate-950">{summary.applyClickCount}</p>
         </article>
         <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">가장 많이 눌린 액션</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">바로 지원 전환율</p>
           <p className="mt-2 text-lg font-bold text-slate-950">
-            {summary.targetSummaries[0]
-              ? `${getOutboundTargetLabel(summary.targetSummaries[0].targetKind)} · ${summary.targetSummaries[0].count}회`
-              : '데이터 없음'}
+            {summary.totalViewCount > 0 ? formatRate(summary.applyConversionRate) : '데이터 없음'}
           </p>
+          <p className="mt-1 text-xs text-slate-500">상세 조회 대비 바로 지원 클릭 비율</p>
         </article>
+      </section>
+
+      <section className="mt-4 rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-950">날짜별 추이</h2>
+            <p className="mt-1 text-sm text-slate-500">회색은 상세 조회, 주황색은 외부 클릭입니다.</p>
+          </div>
+          <p className="text-xs text-slate-500">최근 {days}일</p>
+        </div>
+        {summary.dailyTrend.length > 0 ? (
+          <TrendBars points={summary.dailyTrend} />
+        ) : (
+          <div className="mt-4 rounded-2xl border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+            아직 추이를 그릴 데이터가 없습니다.
+          </div>
+        )}
       </section>
 
       <section className="mt-4 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
@@ -119,12 +182,12 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
 
         <article className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold text-slate-950">많이 눌린 대회</h2>
-            <p className="text-xs text-slate-500">sourceRaceId 기준</p>
+            <h2 className="text-lg font-semibold text-slate-950">대회별 바로 지원 전환율</h2>
+            <p className="text-xs text-slate-500">상세 조회 대비</p>
           </div>
           <div className="mt-4 space-y-3">
-            {summary.topRaces.length > 0 ? (
-              summary.topRaces.map((item, index) => (
+            {summary.topConversionRaces.length > 0 ? (
+              summary.topConversionRaces.map((item, index) => (
                 <div key={item.sourceRaceId} className="rounded-2xl border border-slate-200 px-4 py-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -136,16 +199,62 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
                       대회 보기
                     </Link>
                   </div>
-                  <p className="mt-3 text-sm text-slate-600">최근 {days}일 동안 {item.count}회 외부 이동이 발생했습니다.</p>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                    <div className="rounded-2xl bg-slate-50 px-3 py-3">
+                      <p className="text-[11px] font-semibold text-slate-400">상세 조회</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-900">{item.viewCount}회</p>
+                    </div>
+                    <div className="rounded-2xl bg-slate-50 px-3 py-3">
+                      <p className="text-[11px] font-semibold text-slate-400">바로 지원</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-900">{item.applyClickCount}회</p>
+                    </div>
+                    <div className="rounded-2xl bg-[var(--brand-soft)] px-3 py-3">
+                      <p className="text-[11px] font-semibold text-[var(--brand-strong)]">전환율</p>
+                      <p className="mt-1 text-sm font-semibold text-[var(--brand-strong)]">{formatRate(item.conversionRate)}</p>
+                    </div>
+                  </div>
                 </div>
               ))
             ) : (
               <div className="rounded-2xl border border-dashed border-slate-300 p-4 text-sm text-slate-600">
-                아직 많이 눌린 대회를 계산할 데이터가 없습니다.
+                아직 전환율을 계산할 상세 조회 데이터가 없습니다.
               </div>
             )}
           </div>
         </article>
+      </section>
+
+      <section className="mt-4 rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-950">많이 눌린 대회</h2>
+            <p className="mt-1 text-sm text-slate-500">외부 클릭 총량이 많은 대회를 봅니다.</p>
+          </div>
+          <p className="text-xs text-slate-500">sourceRaceId 기준</p>
+        </div>
+        <div className="mt-4 space-y-3">
+          {summary.topRaces.length > 0 ? (
+            summary.topRaces.map((item, index) => (
+              <div key={item.sourceRaceId} className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-4">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-[var(--brand)]">#{index + 1}</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-950">{item.raceTitle}</p>
+                  <p className="mt-1 text-xs text-slate-500">sourceRaceId {item.sourceRaceId}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-slate-950">{item.count}회</p>
+                  <Link href={`/races/${item.sourceRaceId}`} className="mt-1 inline-flex text-xs font-semibold text-[var(--brand)]">
+                    대회 보기
+                  </Link>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="rounded-2xl border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+              아직 클릭량이 많은 대회를 계산할 데이터가 없습니다.
+            </div>
+          )}
+        </div>
       </section>
 
       <section className="mt-4 rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">

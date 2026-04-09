@@ -35,15 +35,48 @@ const sampleRows = [
   },
 ];
 
+const sampleViewRows = [
+  {
+    sourceRaceId: '40317',
+    raceTitle: '부산 이기대트레일런',
+    sourcePath: '/races/40317',
+    viewerRole: 'anon',
+    createdAt: '2026-04-09T11:57:00.000Z',
+  },
+  {
+    sourceRaceId: '40317',
+    raceTitle: '부산 이기대트레일런',
+    sourcePath: '/races/40317',
+    viewerRole: 'user',
+    createdAt: '2026-04-09T11:56:00.000Z',
+  },
+  {
+    sourceRaceId: '50001',
+    raceTitle: '서울 벚꽃런',
+    sourcePath: '/races/50001',
+    viewerRole: 'user',
+    createdAt: '2026-04-08T11:56:00.000Z',
+  },
+];
+
 test('외부 클릭 로그를 대상/대회 기준으로 요약한다', () => {
-  const summary = summarizeOutboundClicks(sampleRows, { topRaceLimit: 5, recentLimit: 2 });
+  const summary = summarizeOutboundClicks(sampleRows, sampleViewRows, {
+    topRaceLimit: 5,
+    recentLimit: 2,
+    trendLimit: 7,
+  });
 
   assert.equal(summary.totalCount, 3);
+  assert.equal(summary.totalViewCount, 3);
+  assert.equal(summary.applyClickCount, 2);
   assert.equal(summary.uniqueRaceCount, 2);
   assert.equal(summary.targetSummaries[0].targetKind, 'apply');
   assert.equal(summary.targetSummaries[0].count, 2);
   assert.equal(summary.topRaces[0].sourceRaceId, '40317');
   assert.equal(summary.topRaces[0].count, 2);
+  assert.equal(summary.topConversionRaces[0].sourceRaceId, '50001');
+  assert.equal(summary.topConversionRaces[0].conversionRate, 100);
+  assert.equal(summary.dailyTrend.length, 2);
   assert.equal(summary.recentEvents.length, 2);
 });
 
@@ -52,4 +85,3 @@ test('외부 클릭 대상 라벨을 사용자 친화적으로 바꾼다', () =>
   assert.equal(getOutboundTargetLabel('calendar_ics'), 'ICS 저장');
   assert.equal(getOutboundTargetLabel('unknown_kind'), 'unknown_kind');
 });
-
