@@ -109,8 +109,8 @@ export function SocialLoginButtons({ nextPath }: { nextPath: string }) {
   };
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap gap-3">
+    <div>
+      <div className="flex flex-wrap items-start gap-5">
         {providers.map((item) => {
           const isActiveProvider = activeProvider === item.provider && isPending;
           const disabled = !item.enabled || isPending;
@@ -125,35 +125,29 @@ export function SocialLoginButtons({ nextPath }: { nextPath: string }) {
             : `${item.label} (현재 준비 중)`;
 
           return (
-            <button
-              key={item.provider}
-              type="button"
-              onClick={item.enabled ? () => handleSocialLogin(item.provider as Provider) : undefined}
-              disabled={disabled}
-              title={title}
-              aria-label={title}
-              className={`flex h-14 w-14 items-center justify-center rounded-2xl border shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
-            >
-              <span className={isActiveProvider ? 'animate-pulse' : ''}>
-                <ProviderLogo provider={item.provider} />
+            <div key={item.provider} className="flex w-[84px] flex-col items-center gap-3 text-center">
+              <button
+                type="button"
+                onClick={item.enabled ? () => handleSocialLogin(item.provider as Provider) : undefined}
+                disabled={disabled}
+                title={title}
+                aria-label={title}
+                className={`flex h-14 w-14 items-center justify-center rounded-2xl border shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
+              >
+                <span className={isActiveProvider ? 'animate-pulse' : ''}>
+                  <ProviderLogo provider={item.provider} />
+                </span>
+              </button>
+              <span className="text-xs font-medium text-slate-600">
+                {item.provider === 'naver' ? '네이버' : item.provider === 'google' ? 'Google' : '카카오'}
               </span>
-            </button>
+            </div>
           );
         })}
       </div>
 
-      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
-        <span>Google</span>
-        <span>네이버(준비중)</span>
-        <span>카카오</span>
-      </div>
-
-      <p className="text-xs text-slate-500">
-        네이버 로그인은 현재 Supabase 기본 소셜 provider 미지원이라 버튼만 먼저 배치했고, Google/카카오는 바로 연동할 수 있어요.
-      </p>
-
       {errorMessage ? (
-        <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{errorMessage}</div>
+        <div className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{errorMessage}</div>
       ) : null}
     </div>
   );

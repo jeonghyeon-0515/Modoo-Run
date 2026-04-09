@@ -83,12 +83,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
         </form>
 
         <div className="mt-8 border-t border-slate-100 pt-6">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h2 className="text-sm font-semibold text-slate-900">소셜 로그인</h2>
-              <p className="mt-1 text-xs text-slate-500">로고만 눌러 빠르게 시작할 수 있게 아래에 모아뒀어요.</p>
-            </div>
-          </div>
+          <h2 className="text-sm font-semibold text-slate-900">소셜 로그인</h2>
           <div className="mt-4">
             <SocialLoginButtons nextPath={nextPath} />
           </div>
