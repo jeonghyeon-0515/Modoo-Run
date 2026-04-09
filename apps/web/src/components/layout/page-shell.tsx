@@ -32,6 +32,14 @@ export async function PageShell({
 
           {viewer ? (
             <div className="flex items-center gap-3">
+              {viewer.isStaff ? (
+                <Link
+                  href="/ops/outbound-clicks"
+                  className="rounded-full border border-[var(--brand-soft)] px-4 py-2 text-sm font-semibold text-[var(--brand-strong)] transition hover:bg-[var(--brand-soft)]"
+                >
+                  운영 흐름
+                </Link>
+              ) : null}
               <div className="text-right">
                 <p className="text-sm font-semibold text-slate-900">{viewer.displayName}</p>
                 <p className="text-xs text-slate-500">{roleLabel}</p>
