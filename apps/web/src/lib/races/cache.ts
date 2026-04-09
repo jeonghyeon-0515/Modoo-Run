@@ -301,12 +301,17 @@ export async function warmRaceCacheFromDatabase(): Promise<RaceCacheWarmResult> 
     throw new Error(`Redis 캐시용 진행중 race 조회 실패: ${error.message}`);
   }
 
-  const rows = (data ?? []) as RawRace[];
+  const rows = ((data ?? []) as RawRace[])
+    .map((row) => ({
+      row,
+      ttlSeconds: getRaceCacheTtlSeconds(row.registration_close_at ?? null),
+    }))
+    .filter(({ ttlSeconds, row }) => row.registration_status === 'open' && ttlSeconds > 1);
   const warmedAt = new Date().toISOString();
   const index: OpenRaceIndex = {
     version: 'v2',
     warmedAt,
-    sourceRaceIds: rows.map((row) => row.source_race_id),
+    sourceRaceIds: rows.map(({ row }) => row.source_race_id),
   };
 
   const previousIndex = await readOpenIndexFromRedis();
@@ -318,9 +323,8 @@ export async function warmRaceCacheFromDatabase(): Promise<RaceCacheWarmResult> 
 
   pipeline.del(LEGACY_DATASET_KEY);
 
-  rows.forEach((row) => {
+  rows.forEach(({ row, ttlSeconds }) => {
     const detail = mapRaceDetail(row);
-    const ttlSeconds = getRaceCacheTtlSeconds(detail.registrationCloseAt);
     expireAtCandidates.push(ttlSeconds);
     pipeline.set(detailKey(detail.sourceRaceId), JSON.stringify(detail), { ex: ttlSeconds });
     rememberDetail(detail);
