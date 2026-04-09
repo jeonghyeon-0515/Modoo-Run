@@ -23,15 +23,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
           <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{message}</div>
         ) : null}
 
-        <div className="mt-2">
-          <h2 className="text-base font-semibold text-slate-950">소셜 로그인</h2>
-          <p className="mt-1 text-sm text-slate-500">Google · 네이버 · 카카오 버튼을 가장 단순하게 두고, 바로 이어서 시작할 수 있게 정리했어요.</p>
-          <div className="mt-4">
-            <SocialLoginButtons nextPath={nextPath} />
-          </div>
-        </div>
-
-        <div className="my-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <div className="my-2 flex items-center gap-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
           <span className="h-px flex-1 bg-slate-200" />
           또는 이메일로
           <span className="h-px flex-1 bg-slate-200" />
@@ -89,6 +81,18 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
             </button>
           </div>
         </form>
+
+        <div className="mt-8 border-t border-slate-100 pt-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold text-slate-900">소셜 로그인</h2>
+              <p className="mt-1 text-xs text-slate-500">로고만 눌러 빠르게 시작할 수 있게 아래에 모아뒀어요.</p>
+            </div>
+          </div>
+          <div className="mt-4">
+            <SocialLoginButtons nextPath={nextPath} />
+          </div>
+        </div>
       </section>
     </PageShell>
   );

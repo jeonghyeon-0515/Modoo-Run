@@ -110,15 +110,19 @@ export function SocialLoginButtons({ nextPath }: { nextPath: string }) {
 
   return (
     <div className="space-y-3">
-      <div className="grid gap-3">
+      <div className="flex flex-wrap gap-3">
         {providers.map((item) => {
           const isActiveProvider = activeProvider === item.provider && isPending;
           const disabled = !item.enabled || isPending;
-          const pendingLabel = isActiveProvider ? '로그인 창 여는 중…' : item.enabled ? item.label : `${item.label} · 준비 중`;
           const className =
             item.provider === 'kakao'
               ? 'border-[#FEE500] bg-[#FEE500] text-slate-900 hover:bg-[#f8db00]'
-              : 'border-slate-200 bg-white text-slate-900 hover:bg-slate-50';
+              : item.provider === 'naver'
+                ? 'border-[#03C75A]/20 bg-white text-slate-900 hover:bg-[#03C75A]/5'
+                : 'border-slate-200 bg-white text-slate-900 hover:bg-slate-50';
+          const title = item.enabled
+            ? item.label
+            : `${item.label} (현재 준비 중)`;
 
           return (
             <button
@@ -126,19 +130,26 @@ export function SocialLoginButtons({ nextPath }: { nextPath: string }) {
               type="button"
               onClick={item.enabled ? () => handleSocialLogin(item.provider as Provider) : undefined}
               disabled={disabled}
-              className={`rounded-2xl border px-4 py-4 text-left shadow-sm transition disabled:cursor-not-allowed disabled:opacity-70 ${className}`}
+              title={title}
+              aria-label={title}
+              className={`flex h-14 w-14 items-center justify-center rounded-2xl border shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
             >
-              <span className="flex items-center gap-3">
+              <span className={isActiveProvider ? 'animate-pulse' : ''}>
                 <ProviderLogo provider={item.provider} />
-                <span className="text-sm font-semibold">{pendingLabel}</span>
               </span>
             </button>
           );
         })}
       </div>
 
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+        <span>Google</span>
+        <span>네이버(준비중)</span>
+        <span>카카오</span>
+      </div>
+
       <p className="text-xs text-slate-500">
-        네이버 로그인은 현재 Supabase 기본 소셜 provider 미지원이라 버튼만 먼저 준비했고, Google/카카오는 바로 연동할 수 있어요.
+        네이버 로그인은 현재 Supabase 기본 소셜 provider 미지원이라 버튼만 먼저 배치했고, Google/카카오는 바로 연동할 수 있어요.
       </p>
 
       {errorMessage ? (
