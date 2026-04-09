@@ -1,4 +1,5 @@
 import { PageShell } from '@/components/layout/page-shell';
+import { SocialLoginButtons } from '@/components/auth/social-login-buttons';
 import { loginAction, signupAction } from './actions';
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -15,12 +16,26 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
   return (
     <PageShell
       title="로그인하고 이어서 달려요"
-      description="계획 저장, 찜한 대회, 글쓰기 같은 기능은 로그인 후 바로 이어서 쓸 수 있어요."
+      description="계획 저장, 찜한 대회, 글쓰기 같은 기능은 로그인 후 바로 이어서 쓸 수 있어요. 소셜 로그인도 바로 쓸 수 있습니다."
     >
       <section className="mx-auto max-w-2xl rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
         {message ? (
           <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{message}</div>
         ) : null}
+
+        <div className="mt-2">
+          <h2 className="text-base font-semibold text-slate-950">소셜 로그인</h2>
+          <p className="mt-1 text-sm text-slate-500">Google 또는 카카오 계정으로 이메일 인증 없이 바로 시작할 수 있게 준비해뒀어요.</p>
+          <div className="mt-4">
+            <SocialLoginButtons nextPath={nextPath} />
+          </div>
+        </div>
+
+        <div className="my-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
+          <span className="h-px flex-1 bg-slate-200" />
+          또는 이메일로
+          <span className="h-px flex-1 bg-slate-200" />
+        </div>
 
         <form className="mt-6 space-y-4">
           <input type="hidden" name="next" value={nextPath} />

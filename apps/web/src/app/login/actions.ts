@@ -96,7 +96,11 @@ export async function signupAction(formData: FormData) {
     redirect(nextPath);
   }
 
-  redirect(`/login?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent('회원가입이 완료되었습니다. 이메일 인증 후 다시 로그인해 주세요.')}`);
+  redirect(
+    `/login?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent(
+      '회원가입은 생성됐지만 세션이 열리지 않았어요. Supabase에서 Confirm Email 설정이 꺼져 있는지 확인해 주세요.',
+    )}`,
+  );
 }
 
 export async function logoutAction() {
