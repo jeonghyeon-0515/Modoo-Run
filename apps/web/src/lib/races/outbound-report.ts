@@ -38,6 +38,7 @@ export type OutboundClickSummary = {
     OutboundRaceSummary & {
       viewCount: number;
       applyClickCount: number;
+      boundedApplyClickCount: number;
       conversionRate: number;
     }
   >;
@@ -155,13 +156,15 @@ export function summarizeOutboundClicks(
   const topConversionRaces = [...raceViewCounts.entries()]
     .map(([sourceRaceId, value]) => {
       const applyClicks = rows.filter((row) => row.sourceRaceId === sourceRaceId && row.targetKind === 'apply').length;
-      const conversionRate = value.count > 0 ? (applyClicks / value.count) * 100 : 0;
+      const boundedApplyClicks = Math.min(applyClicks, value.count);
+      const conversionRate = value.count > 0 ? (boundedApplyClicks / value.count) * 100 : 0;
       return {
         sourceRaceId,
         raceTitle: value.raceTitle,
         count: applyClicks,
         viewCount: value.count,
         applyClickCount: applyClicks,
+        boundedApplyClickCount: boundedApplyClicks,
         conversionRate,
       };
     })
@@ -174,7 +177,7 @@ export function summarizeOutboundClicks(
     .slice(0, options.topRaceLimit ?? 10);
 
   const totalViewCount = viewRows.length;
-  const applyConversionRate = totalViewCount > 0 ? (applyClickCount / totalViewCount) * 100 : 0;
+  const applyConversionRate = totalViewCount > 0 ? (Math.min(applyClickCount, totalViewCount) / totalViewCount) * 100 : 0;
   const sortedTrend = [...dailyTrend.entries()]
     .sort((a, b) => a[0].localeCompare(b[0]))
     .slice(-(options.trendLimit ?? 14))

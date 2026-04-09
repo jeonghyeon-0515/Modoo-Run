@@ -115,6 +115,7 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
           <div>
             <p className="text-sm font-semibold text-slate-900">조회 기간</p>
             <p className="mt-1 text-sm text-slate-600">대회 상세에서 외부로 나간 클릭만 집계합니다.</p>
+            <p className="mt-1 text-xs text-slate-400">전환율은 상세 조회 로그를 기준으로 100%를 넘지 않게 보정해 보여줍니다.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {[7, 30, 90].map((value) => (
@@ -206,7 +207,7 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
                     </div>
                     <div className="rounded-2xl bg-slate-50 px-3 py-3">
                       <p className="text-[11px] font-semibold text-slate-400">바로 지원</p>
-                      <p className="mt-1 text-sm font-semibold text-slate-900">{item.applyClickCount}회</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-900">{item.boundedApplyClickCount}회</p>
                     </div>
                     <div className="rounded-2xl bg-[var(--brand-soft)] px-3 py-3">
                       <p className="text-[11px] font-semibold text-[var(--brand-strong)]">전환율</p>

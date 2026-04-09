@@ -101,7 +101,7 @@ const summary = [
   `- 기준 시작 시각: ${sinceIso}`,
   `- 총 상세 조회 수: ${viewRows.length}`,
   `- 총 클릭 수: ${rows.length}`,
-  `- 바로 지원 전환율: ${viewRows.length > 0 ? ((byTarget.get('apply') ?? 0) / viewRows.length * 100).toFixed(1) : '0.0'}%`,
+  `- 바로 지원 전환율: ${viewRows.length > 0 ? (Math.min(byTarget.get('apply') ?? 0, viewRows.length) / viewRows.length * 100).toFixed(1) : '0.0'}%`,
   '',
   '## 대상별 클릭 수',
   markdownTable(targetRows),
