@@ -24,7 +24,7 @@ export async function PageShell({
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8">
           <div>
-            <Link href="/" className="text-base font-bold tracking-tight text-slate-950">
+            <Link href="/races" className="text-base font-bold tracking-tight text-slate-950">
               모두의 러닝
             </Link>
             <div className="text-sm text-slate-500">러너를 위한 일정 · 기록 공간</div>
