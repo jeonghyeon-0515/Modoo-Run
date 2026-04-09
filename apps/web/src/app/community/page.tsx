@@ -140,7 +140,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                   <input
                     name="title"
                     className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                    placeholder="예: 10km 첫 참가 전날 체크리스트 공유합니다"
+                    placeholder="10km 첫 참가 전날 체크리스트"
                   />
                 </label>
 
@@ -149,7 +149,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                   <textarea
                     name="content"
                     className="mt-2 min-h-32 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                    placeholder="준비 과정, 훈련 기록, 후기와 팁을 자유롭게 남겨보세요."
+                    placeholder="준비 과정, 훈련 기록, 후기와 팁"
                   />
                 </label>
 
@@ -163,7 +163,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             </form>
           ) : (
             <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-              로그인하면 글과 댓글을 작성할 수 있습니다.{' '}
+              로그인 후 글과 댓글을 작성할 수 있습니다.{' '}
               <Link href="/login?next=/community" className="font-semibold text-[var(--brand)]">
                 로그인하기
               </Link>
@@ -191,7 +191,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
           <article className="rounded-[1.75rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
             <p className="text-base font-semibold text-slate-950">등록된 글이 아직 없습니다.</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              첫 글을 작성해 보세요.
+              첫 글을 작성하세요.
             </p>
           </article>
         ) : (

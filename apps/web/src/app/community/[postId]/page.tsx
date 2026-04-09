@@ -90,7 +90,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
             <textarea
               name="content"
               className="min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-              placeholder="공감한 점이나 직접 해본 팁을 편하게 남겨보세요."
+              placeholder="공감한 점이나 팁"
             />
             <button
               type="submit"
@@ -112,7 +112,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
       <section className="mt-6 space-y-4">
         {post.comments.length === 0 ? (
           <article className="rounded-[1.75rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
-            <p className="text-base font-semibold text-slate-950">아직 댓글이 없어요.</p>
+            <p className="text-base font-semibold text-slate-950">댓글이 아직 없습니다.</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">첫 댓글로 준비 경험이나 팁을 남겨보세요.</p>
           </article>
         ) : (

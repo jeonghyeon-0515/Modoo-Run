@@ -93,7 +93,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
   return (
     <PageShell
       title="이번 달 러닝 계획"
-      description="이번 달 계획을 정하고 실행 기록을 남길 수 있습니다."
+      description="이번 달 계획과 실행 기록을 관리합니다."
     >
       {!viewer ? (
         <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
@@ -167,9 +167,9 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                   <span className="text-sm font-semibold text-slate-700">계획 이름</span>
                   <input
                     name="title"
-                    defaultValue={plan?.title ?? `${monthTitle} 러닝 플랜`}
+                    defaultValue={plan?.title ?? `${monthTitle} 플랜`}
                     className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none ring-0 transition focus:border-blue-400"
-                    placeholder="예: 10km 완주 준비"
+                    placeholder="10km 완주 준비"
                   />
                 </label>
                 <label className="block">
@@ -178,7 +178,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     name="notes"
                     defaultValue={plan?.notes ?? ''}
                     className="mt-2 min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                    placeholder="이번 달에 꼭 지키고 싶은 목표나 메모를 적어보세요."
+                    placeholder="목표나 메모"
                   />
                 </label>
               </div>
@@ -259,11 +259,11 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
 
               {!plan ? (
                 <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
-                  이번 달 계획이 아직 없습니다. 위에서 계획을 먼저 만들어 주세요.
+                  이번 달 계획이 없습니다. 위에서 계획을 먼저 만드세요.
                 </div>
               ) : items.length === 0 ? (
                 <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
-                  등록된 일정이 없습니다. 오른쪽에서 일정을 추가해 주세요.
+                  등록된 일정이 없습니다. 오른쪽에서 일정을 추가하세요.
                 </div>
               ) : (
                 <div className="mt-6 space-y-4">
@@ -344,14 +344,14 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                               name="targetDistanceKm"
                               defaultValue={item.target_distance_km ?? ''}
                               className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                              placeholder="예: 8"
+                      placeholder="8"
                             />
                             <input
                               type="number"
                               name="targetDurationMinutes"
                               defaultValue={item.target_duration_minutes ?? ''}
                               className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                              placeholder="예: 50"
+                      placeholder="50"
                             />
                           </div>
                           <div className="flex flex-wrap gap-3">
@@ -404,12 +404,12 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     <input
                       name="title"
                       className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                      placeholder="예: 퇴근 후 5km"
+                      placeholder="퇴근 후 5km"
                     />
                     <textarea
                       name="description"
                       className="min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                      placeholder="훈련 계획 메모나 목표 페이스를 적어두세요."
+                      placeholder="메모 또는 목표 페이스"
                     />
                     <div className="grid gap-3 sm:grid-cols-2">
                       <input
@@ -435,7 +435,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                   </form>
                 ) : (
                     <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-                    먼저 이번 달 계획을 만든 뒤 일정을 추가할 수 있습니다.
+                    먼저 이번 달 계획을 만든 뒤 일정을 추가하세요.
                   </div>
                 )}
               </section>

@@ -31,7 +31,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Searc
             <input
               name="displayName"
               className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-              placeholder="예: 한강러너"
+              placeholder="한강러너"
             />
           </label>
 
@@ -66,7 +66,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Searc
               required
               minLength={8}
               className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-              placeholder="같은 비밀번호를 한 번 더 입력"
+              placeholder="비밀번호 다시 입력"
             />
           </label>
 
