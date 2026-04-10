@@ -40,6 +40,7 @@ function SelectableChip({
 export default async function ProfilePage({ searchParams }: { searchParams: SearchParams }) {
   const resolvedSearchParams = await searchParams;
   const message = readFirstValue(resolvedSearchParams.message);
+  const isErrorMessage = Boolean(message && /문제|실패|오류/.test(message));
   const { viewer, profile, regionOptions, goalRaceOptions } = await getProfileEditorData();
 
   return (
@@ -50,7 +51,16 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
     >
       <section className="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5 sm:p-7">
         {message ? (
-          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">{message}</div>
+          <div
+            aria-live="polite"
+            className={`rounded-xl border px-4 py-3 text-sm ${
+              isErrorMessage
+                ? 'border-amber-200 bg-amber-50 text-amber-800'
+                : 'border-emerald-200 bg-emerald-50 text-emerald-800'
+            }`}
+          >
+            {message}
+          </div>
         ) : null}
 
         <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-5">
@@ -150,7 +160,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
             </Link>
             <div className="flex flex-col items-end gap-2">
               <ProfileSubmitButton />
-              <p className="text-xs text-slate-400">저장 후 새로고침 없이 바로 반영됩니다.</p>
+              <p className="text-xs text-slate-400">저장 후 화면이 새로 갱신됩니다.</p>
             </div>
           </div>
         </form>

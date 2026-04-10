@@ -20,7 +20,10 @@ export async function updateProfileAction(formData: FormData) {
     revalidatePath('/profile');
     revalidatePath('/', 'layout');
   } catch (error) {
-    message = error instanceof Error ? error.message : '프로필 저장 중 오류가 발생했습니다.';
+    message =
+      error instanceof Error && error.message.includes('로그인')
+        ? '로그인 상태를 다시 확인해 주세요.'
+        : '프로필 저장 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.';
   }
 
   redirect('/profile?message=' + encodeURIComponent(message));
