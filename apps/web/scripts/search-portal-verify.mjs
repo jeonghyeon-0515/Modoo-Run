@@ -1,15 +1,40 @@
 const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.SITE_URL || 'https://modoo-run.vercel.app').replace(/\/$/, '');
+const REQUEST_TIMEOUT_MS = Number(process.env.SEARCH_PORTAL_VERIFY_TIMEOUT_MS || '30000');
+const MAX_RETRIES = Number(process.env.SEARCH_PORTAL_VERIFY_RETRIES || '3');
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 async function fetchText(url) {
-  const response = await fetch(url, {
-    redirect: 'follow',
-  });
+  let lastError;
 
-  const text = await response.text();
-  return {
-    status: response.status,
-    text,
-  };
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        redirect: 'follow',
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      });
+
+      const text = await response.text();
+      return {
+        status: response.status,
+        text,
+      };
+    } catch (error) {
+      lastError = error;
+
+      if (attempt < MAX_RETRIES) {
+        await sleep(1000 * attempt);
+      }
+    }
+  }
+
+  throw new Error(
+    `요청 실패: ${url} (${MAX_RETRIES}회 재시도 후) ${
+      lastError instanceof Error ? lastError.message : String(lastError)
+    }`,
+  );
 }
 
 function assert(condition, message) {
@@ -32,6 +57,8 @@ const hasNaverMeta = /naver-site-verification/i.test(home.text);
 console.log(`# Search Portal Verify
 
 - baseUrl: ${baseUrl}
+- timeout(ms): ${REQUEST_TIMEOUT_MS}
+- retries: ${MAX_RETRIES}
 - robots: ${robots.status}
 - sitemap: ${sitemap.status}
 - google verification meta: ${hasGoogleMeta ? 'present' : 'missing'}
@@ -41,4 +68,3 @@ console.log(`# Search Portal Verify
 if (!hasGoogleMeta || !hasNaverMeta) {
   throw new Error('검색 포털 verification meta가 아직 모두 반영되지 않았습니다.');
 }
-
