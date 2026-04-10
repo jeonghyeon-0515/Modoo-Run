@@ -6,17 +6,31 @@ const NAVER_USERINFO_URL = 'https://openapi.naver.com/v1/nid/me';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+function readBearerAccessToken(request: NextRequest) {
   const authorization = request.headers.get('authorization');
 
-  if (!authorization) {
-    console.error('[naver-userinfo] missing authorization header');
-    return NextResponse.json({ message: 'Authorization 헤더가 없습니다.' }, { status: 401 });
+  if (authorization) {
+    const match = authorization.match(/^Bearer\s+(.+)$/i);
+    if (match?.[1]) {
+      return match[1].trim();
+    }
+  }
+
+  const queryToken = request.nextUrl.searchParams.get('access_token')?.trim();
+  return queryToken || null;
+}
+
+export async function GET(request: NextRequest) {
+  const accessToken = readBearerAccessToken(request);
+
+  if (!accessToken) {
+    console.error('[naver-userinfo] missing access token in authorization header or query');
+    return NextResponse.json({ message: 'Access token이 없습니다.' }, { status: 401 });
   }
 
   const providerResponse = await fetch(NAVER_USERINFO_URL, {
     headers: {
-      Authorization: authorization,
+      Authorization: `Bearer ${accessToken}`,
     },
     cache: 'no-store',
   });
