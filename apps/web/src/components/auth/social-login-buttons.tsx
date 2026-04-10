@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import type { Provider } from '@supabase/supabase-js';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
-type SocialProviderId = Provider | 'custom:naver';
+type SocialProviderId = Provider;
 
 type SocialProviderConfig = {
   provider: SocialProviderId;
@@ -16,11 +16,6 @@ const providers: SocialProviderConfig[] = [
   {
     provider: 'google',
     label: 'Google로 계속하기',
-    enabled: true,
-  },
-  {
-    provider: 'custom:naver',
-    label: '네이버로 계속하기',
     enabled: true,
   },
   {
@@ -41,15 +36,6 @@ function GoogleLogo() {
   );
 }
 
-function NaverLogo() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-8 w-8">
-      <rect width="24" height="24" rx="6" fill="#03C75A" />
-      <path fill="#fff" d="M8 6.5h3.1l4.1 6V6.5H18v11h-3.1l-4.1-6v6H8z" />
-    </svg>
-  );
-}
-
 function KakaoLogo() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="h-8 w-8">
@@ -64,13 +50,11 @@ function KakaoLogo() {
 
 function ProviderLogo({ provider }: { provider: SocialProviderId }) {
   if (provider === 'google') return <GoogleLogo />;
-  if (provider === 'custom:naver') return <NaverLogo />;
   return <KakaoLogo />;
 }
 
 function getProviderLabel(provider: SocialProviderId) {
   if (provider === 'google') return 'Google';
-  if (provider === 'custom:naver') return '네이버';
   return '카카오';
 }
 
@@ -129,9 +113,7 @@ export function SocialLoginButtons({ nextPath }: { nextPath: string }) {
           const className =
             item.provider === 'kakao'
               ? 'border-[#FEE500] bg-[#FEE500] text-slate-900 hover:bg-[#f8db00]'
-              : item.provider === 'custom:naver'
-                ? 'border-[#03C75A]/20 bg-white text-slate-900 hover:bg-[#03C75A]/5'
-                : 'border-slate-200 bg-white text-slate-900 hover:bg-slate-50';
+              : 'border-slate-200 bg-white text-slate-900 hover:bg-slate-50';
           const title = item.enabled
             ? item.label
             : `${item.label} (설정 필요)`;
