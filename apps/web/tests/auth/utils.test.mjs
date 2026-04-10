@@ -6,6 +6,7 @@ const require = createRequire(import.meta.url);
 const {
   isStaffRole,
   normalizeNextPath,
+  resolveAuthMetadataDisplayName,
   resolveDisplayName,
   resolveViewerRole,
 } = require('../../src/lib/auth/utils.ts');
@@ -53,4 +54,25 @@ test('표시 이름은 profile -> metadata -> email 순으로 결정한다', () 
     }),
     'runner',
   );
+});
+
+test('소셜 메타데이터에서 표시 이름 후보를 우선순위대로 고른다', () => {
+  assert.equal(
+    resolveAuthMetadataDisplayName({
+      display_name: '',
+      full_name: 'Google Runner',
+      name: 'Ignored Name',
+      nickname: 'ignored-nickname',
+    }),
+    'Google Runner',
+  );
+
+  assert.equal(
+    resolveAuthMetadataDisplayName({
+      nickname: '카카오러너',
+    }),
+    '카카오러너',
+  );
+
+  assert.equal(resolveAuthMetadataDisplayName(null), null);
 });

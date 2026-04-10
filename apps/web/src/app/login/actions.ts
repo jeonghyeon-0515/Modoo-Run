@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { normalizeNextPath } from '@/lib/auth/session';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { resolveDisplayName } from '@/lib/auth/utils';
+import { resolveAuthMetadataDisplayName, resolveDisplayName } from '@/lib/auth/utils';
 import { buildAbsoluteUrl } from '@/lib/site';
 
 function readRequiredString(formData: FormData, key: string) {
@@ -58,7 +58,7 @@ export async function loginAction(formData: FormData) {
     await upsertProfile({
       userId: data.user.id,
       email: data.user.email,
-      displayName: typeof data.user.user_metadata?.display_name === 'string' ? data.user.user_metadata.display_name : null,
+      displayName: resolveAuthMetadataDisplayName(data.user.user_metadata),
     });
   }
 

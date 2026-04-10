@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr';
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { normalizeNextPath } from '@/lib/auth/session';
+import { resolveAuthMetadataDisplayName, resolveDisplayName } from '@/lib/auth/utils';
 import { getSupabaseAnonKey, getSupabaseUrl } from '@/lib/supabase/env';
 
 export async function GET(request: Request) {
@@ -62,6 +64,36 @@ export async function GET(request: Request) {
       ),
     );
   }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const displayName = resolveDisplayName({
+      email: user.email,
+      profileName: resolveAuthMetadataDisplayName(user.user_metadata),
+    });
+
+    const { error: profileError } = await supabase.from('profiles').upsert(
+      {
+        id: user.id,
+        display_name: displayName,
+      },
+      { onConflict: 'id' },
+    );
+
+    if (profileError) {
+      return NextResponse.redirect(
+        new URL(
+          `/login?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent(`프로필 저장 실패: ${profileError.message}`)}`,
+          request.url,
+        ),
+      );
+    }
+  }
+
+  revalidatePath('/', 'layout');
 
   return response;
 }
