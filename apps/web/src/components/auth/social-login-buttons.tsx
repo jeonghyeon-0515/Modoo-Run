@@ -4,8 +4,10 @@ import { useState, useTransition } from 'react';
 import type { Provider } from '@supabase/supabase-js';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
+type SocialProviderId = Provider | 'custom:naver';
+
 type SocialProviderConfig = {
-  provider: Provider | 'naver';
+  provider: SocialProviderId;
   label: string;
   enabled: boolean;
 };
@@ -17,9 +19,9 @@ const providers: SocialProviderConfig[] = [
     enabled: true,
   },
   {
-    provider: 'naver',
+    provider: 'custom:naver',
     label: '네이버로 계속하기',
-    enabled: false,
+    enabled: true,
   },
   {
     provider: 'kakao',
@@ -60,17 +62,27 @@ function KakaoLogo() {
   );
 }
 
-function ProviderLogo({ provider }: { provider: Provider | 'naver' }) {
+function ProviderLogo({ provider }: { provider: SocialProviderId }) {
   if (provider === 'google') return <GoogleLogo />;
-  if (provider === 'naver') return <NaverLogo />;
+  if (provider === 'custom:naver') return <NaverLogo />;
   return <KakaoLogo />;
 }
 
-function getErrorMessage(provider: Provider, error: Error) {
+function getProviderLabel(provider: SocialProviderId) {
+  if (provider === 'google') return 'Google';
+  if (provider === 'custom:naver') return '네이버';
+  return '카카오';
+}
+
+function getErrorMessage(provider: SocialProviderId, error: Error) {
   const message = error.message.toLowerCase();
 
   if (message.includes('provider is not enabled') || message.includes('unsupported provider')) {
-    return `${provider === 'kakao' ? '카카오' : 'Google'} 로그인 설정이 아직 완료되지 않았어요.`;
+    return `${getProviderLabel(provider)} 로그인 설정이 아직 완료되지 않았습니다.`;
+  }
+
+  if (message.includes('oauth')) {
+    return `${getProviderLabel(provider)} 로그인 설정을 다시 확인해 주세요.`;
   }
 
   return error.message;
@@ -79,9 +91,9 @@ function getErrorMessage(provider: Provider, error: Error) {
 export function SocialLoginButtons({ nextPath }: { nextPath: string }) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [activeProvider, setActiveProvider] = useState<Provider | null>(null);
+  const [activeProvider, setActiveProvider] = useState<SocialProviderId | null>(null);
 
-  const handleSocialLogin = (provider: Provider) => {
+  const handleSocialLogin = (provider: SocialProviderId) => {
     setErrorMessage(null);
     setActiveProvider(provider);
 
@@ -90,7 +102,7 @@ export function SocialLoginButtons({ nextPath }: { nextPath: string }) {
         const supabase = getSupabaseBrowserClient();
         const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
         const { error } = await supabase.auth.signInWithOAuth({
-          provider,
+          provider: provider as Provider,
           options: {
             redirectTo,
           },
@@ -113,22 +125,22 @@ export function SocialLoginButtons({ nextPath }: { nextPath: string }) {
       <div className="flex flex-wrap items-start gap-5">
         {providers.map((item) => {
           const isActiveProvider = activeProvider === item.provider && isPending;
-          const disabled = !item.enabled || isPending;
+          const disabled = isPending;
           const className =
             item.provider === 'kakao'
               ? 'border-[#FEE500] bg-[#FEE500] text-slate-900 hover:bg-[#f8db00]'
-              : item.provider === 'naver'
+              : item.provider === 'custom:naver'
                 ? 'border-[#03C75A]/20 bg-white text-slate-900 hover:bg-[#03C75A]/5'
                 : 'border-slate-200 bg-white text-slate-900 hover:bg-slate-50';
           const title = item.enabled
             ? item.label
-            : `${item.label} (현재 준비 중)`;
+            : `${item.label} (설정 필요)`;
 
           return (
             <div key={item.provider} className="flex w-[88px] flex-col items-center gap-3 text-center">
               <button
                 type="button"
-                onClick={item.enabled ? () => handleSocialLogin(item.provider as Provider) : undefined}
+                onClick={item.enabled ? () => handleSocialLogin(item.provider) : undefined}
                 disabled={disabled}
                 title={title}
                 aria-label={title}
@@ -139,7 +151,7 @@ export function SocialLoginButtons({ nextPath }: { nextPath: string }) {
                 </span>
               </button>
               <span className="text-xs font-medium text-slate-600">
-                {item.provider === 'naver' ? '네이버' : item.provider === 'google' ? 'Google' : '카카오'}
+                {getProviderLabel(item.provider)}
               </span>
             </div>
           );
