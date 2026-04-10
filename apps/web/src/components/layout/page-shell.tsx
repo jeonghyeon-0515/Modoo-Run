@@ -30,28 +30,27 @@ export async function PageShell({
           </div>
 
           {viewer ? (
-            <div className="flex flex-col items-end gap-2 text-right sm:flex-row sm:items-center sm:gap-4 sm:text-left">
+            <div className="flex flex-col items-end gap-1.5 text-right sm:flex-row sm:items-center sm:gap-4 sm:text-left">
               <div className="leading-tight">
                 <p className="max-w-[180px] truncate text-base font-semibold text-slate-900">{viewer.displayName}</p>
                 <p className="mt-1 text-xs text-slate-500">{roleLabel}</p>
               </div>
-              <div className="hidden h-8 w-px bg-slate-200 sm:block" />
-              <div className="flex items-center gap-3 text-sm font-medium sm:gap-4">
+              <div className="hidden h-5 w-px bg-slate-200 sm:block" />
+              <div className="flex items-center gap-3 text-sm font-medium text-slate-600 sm:gap-4">
                 <Link
                   href="/profile"
-                  className="text-slate-600 transition hover:text-slate-950"
+                  className="transition hover:text-slate-950"
                 >
                   프로필
                 </Link>
                 {viewer.isStaff ? (
                   <Link
                     href="/ops/outbound-clicks"
-                    className="rounded-full bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--brand-strong)] transition hover:bg-[#ffe5dd]"
+                    className="rounded-full border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--brand-strong)] transition hover:bg-[#ffe5dd]"
                   >
                     운영 흐름
                   </Link>
                 ) : null}
-                <div className="h-4 w-px bg-slate-200" />
               </div>
               <form action="/auth/logout" method="post">
                 <button

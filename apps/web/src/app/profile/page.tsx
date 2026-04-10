@@ -29,7 +29,7 @@ function SelectableChip({
   return (
     <label htmlFor={id} className="cursor-pointer">
       <input id={id} type="checkbox" name={name} value={value} defaultChecked={defaultChecked} className="peer sr-only" />
-      <span className="inline-flex rounded-full bg-[var(--surface-muted)] px-3 py-2 text-sm font-medium text-slate-700 transition peer-checked:bg-[var(--brand)] peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--brand)]">
+      <span className="inline-flex rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition peer-checked:border-slate-900 peer-checked:bg-slate-900 peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-slate-400">
         {label}
       </span>
     </label>
@@ -43,46 +43,48 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
 
   return (
     <PageShell
-      title="프로필 수정"
-      description="표시 이름과 선호 지역/거리, 목표 대회를 관리할 수 있습니다."
+      title="프로필"
+      description="닉네임과 러닝 취향을 간단하게 관리할 수 있습니다."
       compactIntro
     >
-      <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
+      <section className="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5 sm:p-7">
         {message ? (
-          <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{message}</div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">{message}</div>
         ) : null}
 
-        <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-5">
           <div>
-            <p className="text-sm font-semibold text-slate-900">{viewer.displayName}</p>
+            <p className="text-lg font-semibold text-slate-950">{viewer.displayName}</p>
             <p className="mt-1 text-sm text-slate-500">{viewer.email ?? '이메일 정보 없음'}</p>
           </div>
           <Link
             href="/plan"
-            className="inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            className="inline-flex items-center justify-center text-sm font-medium text-slate-500 transition hover:text-slate-900"
           >
             일정 캘린더로 돌아가기
           </Link>
         </div>
 
-        <form action={updateProfileAction} className="mt-8 space-y-8">
+        <form action={updateProfileAction} className="mt-6 space-y-7">
           <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
             <label className="block">
-              <span className="text-sm font-semibold text-slate-700">표시 이름</span>
+              <span className="text-sm font-semibold text-slate-700">닉네임</span>
+              <p className="mt-1 text-xs text-slate-500">서비스에서 보이는 이름입니다.</p>
               <input
                 name="displayName"
                 defaultValue={profile.displayName}
-                className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-                placeholder="러너 이름"
+                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                placeholder="닉네임을 입력하세요"
               />
             </label>
 
             <label className="block">
               <span className="text-sm font-semibold text-slate-700">목표 대회</span>
+              <p className="mt-1 text-xs text-slate-500">준비 중인 대회가 있다면 연결해둘 수 있습니다.</p>
               <select
                 name="goalRaceId"
                 defaultValue={profile.goalRaceId ?? ''}
-                className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
               >
                 <option value="">아직 안 정했어요</option>
                 {goalRaceOptions.map((race) => (
@@ -99,17 +101,15 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
             <textarea
               name="bio"
               defaultValue={profile.bio}
-              className="mt-2 min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
-              placeholder="어떤 러닝을 좋아하는지, 이번 시즌 목표가 무엇인지 적어보세요."
+              className="mt-2 min-h-28 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+              placeholder="러닝 스타일이나 목표를 짧게 적어보세요."
             />
           </label>
 
-          <div>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="text-sm font-semibold text-slate-900">선호 지역</h2>
-                <p className="mt-1 text-xs text-slate-500">복수 선택할 수 있습니다. 보고 싶은 지역만 골라두세요.</p>
-              </div>
+          <div className="space-y-3">
+            <div>
+              <h2 className="text-sm font-semibold text-slate-900">선호 지역</h2>
+              <p className="mt-1 text-xs text-slate-500">복수 선택할 수 있습니다.</p>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               {regionOptions.map((region) => (
@@ -124,9 +124,9 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
             </div>
           </div>
 
-          <div>
+          <div className="space-y-3">
             <h2 className="text-sm font-semibold text-slate-900">선호 거리</h2>
-            <p className="mt-1 text-xs text-slate-500">복수 선택할 수 있습니다. 대회 탐색 화면과 맞춘 거리 기준입니다.</p>
+            <p className="mt-1 text-xs text-slate-500">자주 찾는 거리만 골라두면 됩니다.</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {PROFILE_DISTANCE_OPTIONS.map((distance) => (
                 <SelectableChip
@@ -143,15 +143,15 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
           <div className="flex flex-wrap justify-end gap-3">
             <Link
               href="/races"
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex items-center justify-center text-sm font-medium text-slate-500 transition hover:text-slate-900"
             >
               대회 일정 보기
             </Link>
             <button
               type="submit"
-              className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+              className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
             >
-              프로필 저장
+              저장하기
             </button>
           </div>
         </form>
