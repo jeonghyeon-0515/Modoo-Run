@@ -1,0 +1,43 @@
+name: IndexNow Notify
+
+on:
+  workflow_run:
+    workflows: ['Daily Race Sync']
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  indexnow-notify:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    env:
+      NEXT_PUBLIC_APP_URL: https://modoo-run.vercel.app
+      INDEXNOW_ENDPOINT: https://searchadvisor.naver.com/indexnow
+      INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate required secret
+        run: |
+          if [ -z "$INDEXNOW_KEY" ]; then
+            echo "INDEXNOW_KEY 가 비어 있습니다."
+            exit 1
+          fi
+
+      - name: Notify Naver IndexNow
+        run: node scripts/indexnow-notify.mjs

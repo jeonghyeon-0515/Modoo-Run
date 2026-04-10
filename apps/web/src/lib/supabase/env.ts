@@ -53,3 +53,11 @@ export function getUpstashRedisRestUrl() {
 export function getUpstashRedisRestToken() {
   return requireEnv('UPSTASH_REDIS_REST_TOKEN');
 }
+
+export function hasIndexNowKey() {
+  return Boolean(readOptionalEnv('INDEXNOW_KEY'));
+}
+
+export function getIndexNowKey() {
+  return requireEnv('INDEXNOW_KEY');
+}

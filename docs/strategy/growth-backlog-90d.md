@@ -24,7 +24,7 @@
 | A6 | P0 | SEO Audit workflow 운영 | PR/스케줄 기준 기본 SEO 누락 감지 | 완료 |
 | A7 | P1 | Organization / WebSite schema 추가 | 루트 HTML에 조직/사이트 스키마 노출 | 미구현 |
 | A8 | P1 | Breadcrumb schema 추가 | 대회 상세 breadcrumb schema 노출 | 미구현 |
-| A9 | P1 | 페이지 갱신 요청(IndexNow/Naver) 루틴 | 변경 후 갱신 요청 자동/반자동 가능 | Actions 후보 |
+| A9 | P1 | 페이지 갱신 요청(IndexNow/Naver) 루틴 | 변경 후 갱신 요청 자동/반자동 가능 | 완료 |
 | A10 | P2 | SEO 리포트 자동 요약 | 주간 감사 로그 축적 | Actions 후보 |
 
 ### GitHub Actions 등록 항목
@@ -33,8 +33,8 @@
 - [x] `daily-race-sync.yml`
 - [x] `outbound-click-report.yml`
 - [x] `search-portal-verify.yml`
+- [x] `indexnow-notify.yml`
 - 차기 등록 후보:
-  - [ ] `indexnow-notify.yml` (키/소유권 준비 후)
   - [ ] 주간 Search Console/네이버 리포트 워크플로
 
 ---
@@ -133,11 +133,11 @@
 5. **Search Portal Verify**
    - 파일: `.github/workflows/search-portal-verify.yml`
    - 목적: robots / sitemap / verification meta 점검
+6. **IndexNow Notify**
+   - 파일: `.github/workflows/indexnow-notify.yml`
+   - 목적: daily sync 이후 Naver IndexNow 제출
 
 ### 다음 등록 후보
-6. **IndexNow / Naver 갱신 요청**
-   - 조건: 사이트 소유확인 + key 준비
-   - 트리거: `daily-race-sync.yml` 성공 후
 7. **주간 SEO/성장 리포트**
    - 조건: Search Console / Analytics / Naver 데이터 접근 방식 확정
 8. **콘텐츠 신선도 점검**

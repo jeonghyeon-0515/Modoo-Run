@@ -109,8 +109,32 @@
 
 1. 커스텀 도메인 연결
 2. Google Domain property 전환
-3. Naver IndexNow 자동화 workflow 추가
-4. Search Console / Naver 리포트 주간 자동화
+3. Search Console / Naver 리포트 주간 자동화
+
+---
+
+## 7-1. Naver IndexNow 자동화
+
+현재 저장소에는 아래 자동화가 추가되어 있습니다.
+
+- workflow: `.github/workflows/indexnow-notify.yml`
+- script: `apps/web/scripts/indexnow-notify.mjs`
+
+동작:
+1. `Daily Race Sync` 성공 후 자동 실행
+2. live `sitemap.xml` 에서 URL을 읽음
+3. Naver IndexNow endpoint로 URL 목록을 제출
+
+필요한 값:
+- `INDEXNOW_KEY`
+
+추가로 key 파일은 루트 경로에서 아래처럼 노출됩니다.
+- `https://modoo-run.vercel.app/<INDEXNOW_KEY>.txt`
+
+즉 운영자가 해야 할 일은
+- Naver Search Advisor에서 key 발급
+- Vercel / GitHub Secrets에 `INDEXNOW_KEY` 넣기
+- 이후 workflow가 자동 실행되는지 확인
 
 ---
 
@@ -132,3 +156,4 @@
 5. Preview 환경에도 같은 verification env 반영
 6. 커스텀 도메인을 붙일 계획이면 이후 Domain property로 재등록
 7. 토큰 입력 후 GitHub Actions `Search Portal Verify` 수동 실행
+8. `INDEXNOW_KEY` 를 Vercel / GitHub Actions에 입력

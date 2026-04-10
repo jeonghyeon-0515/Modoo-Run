@@ -54,6 +54,7 @@
 | `RACE_SYNC_SHARED_SECRET` | Server only | 내부 sync endpoint 보호용 shared secret | GitHub Actions와 동일 값 사용 |
 | `UPSTASH_REDIS_REST_URL` | Server only | Upstash Redis REST 엔드포인트 | 대회 캐시용 |
 | `UPSTASH_REDIS_REST_TOKEN` | Server only | Upstash Redis REST 토큰 | 절대 클라이언트 노출 금지 |
+| `INDEXNOW_KEY` | Server only | Naver IndexNow 소유 확인/갱신 요청 키 | 루트 key 파일과 workflow에 사용 |
 
 ### 현재 단계에서 아직 선택하지 않은 값
 아래 값은 구현 범위가 커질 때 추가할 수 있습니다.
@@ -80,6 +81,7 @@ Vercel Project Settings → Environment Variables 에 아래를 넣습니다.
 | `RACE_SYNC_SHARED_SECRET` | Preview / Production | GitHub Actions가 호출하는 sync endpoint 검증 |
 | `UPSTASH_REDIS_REST_URL` | Preview / Production | 대회 캐시 저장/조회 |
 | `UPSTASH_REDIS_REST_TOKEN` | Preview / Production | 대회 캐시 저장/조회 |
+| `INDEXNOW_KEY` | Production | Naver IndexNow key 파일/자동 제출 |
 
 ### 주의
 - `SUPABASE_SERVICE_ROLE_KEY`는 **절대 `NEXT_PUBLIC_`로 시작하면 안 됩니다.**
@@ -104,6 +106,7 @@ GitHub Repository Settings → Secrets and variables → Actions
 | `RACE_SYNC_SHARED_SECRET` | 로컬 sync endpoint 인증용 secret |
 | `UPSTASH_REDIS_REST_URL` | 캐시 warm 테스트가 필요할 때 사용 |
 | `UPSTASH_REDIS_REST_TOKEN` | 캐시 warm 테스트가 필요할 때 사용 |
+| `INDEXNOW_KEY` | IndexNow 자동 제출용 키 |
 
 ### 왜 GitHub Actions에 service role key가 필요한가
 현재 기본안에서는 GitHub Actions 러너가 **앱을 직접 실행**하고, 그 앱 서버가 Supabase에 upsert 합니다.
@@ -166,6 +169,7 @@ cp apps/web/.env.example apps/web/.env.local
 - `RACE_SYNC_SHARED_SECRET`
 - `UPSTASH_REDIS_REST_URL`
 - `UPSTASH_REDIS_REST_TOKEN`
+- `INDEXNOW_KEY`
 
 ---
 
@@ -185,6 +189,7 @@ cp apps/web/.env.example apps/web/.env.local
 - [ ] `RACE_SYNC_SHARED_SECRET` 입력
 - [ ] `UPSTASH_REDIS_REST_URL` 입력
 - [ ] `UPSTASH_REDIS_REST_TOKEN` 입력
+- [ ] `INDEXNOW_KEY` 입력
 - [ ] sync endpoint가 인증 헤더를 검사하도록 구현
 
 ### 운영 중
