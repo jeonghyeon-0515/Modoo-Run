@@ -30,29 +30,33 @@ export async function PageShell({
           </div>
 
           {viewer ? (
-            <div className="flex items-center gap-3">
-              <Link
-                href="/profile"
-                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-              >
-                프로필
-              </Link>
-              {viewer.isStaff ? (
+            <div className="flex flex-col items-end gap-2 text-right sm:flex-row sm:items-center sm:gap-4 sm:text-left">
+              <div className="leading-tight">
+                <p className="max-w-[180px] truncate text-base font-semibold text-slate-900">{viewer.displayName}</p>
+                <p className="mt-1 text-xs text-slate-500">{roleLabel}</p>
+              </div>
+              <div className="hidden h-8 w-px bg-slate-200 sm:block" />
+              <div className="flex items-center gap-3 text-sm font-medium sm:gap-4">
                 <Link
-                  href="/ops/outbound-clicks"
-                  className="rounded-full border border-[var(--brand-soft)] px-4 py-2 text-sm font-semibold text-[var(--brand-strong)] transition hover:bg-[var(--brand-soft)]"
+                  href="/profile"
+                  className="text-slate-600 transition hover:text-slate-950"
                 >
-                  운영 흐름
+                  프로필
                 </Link>
-              ) : null}
-              <div className="text-right">
-                <p className="text-sm font-semibold text-slate-900">{viewer.displayName}</p>
-                <p className="text-xs text-slate-500">{roleLabel}</p>
+                {viewer.isStaff ? (
+                  <Link
+                    href="/ops/outbound-clicks"
+                    className="rounded-full bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--brand-strong)] transition hover:bg-[#ffe5dd]"
+                  >
+                    운영 흐름
+                  </Link>
+                ) : null}
+                <div className="h-4 w-px bg-slate-200" />
               </div>
               <form action="/auth/logout" method="post">
                 <button
                   type="submit"
-                  className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
                 >
                   로그아웃
                 </button>
