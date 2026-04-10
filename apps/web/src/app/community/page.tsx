@@ -62,17 +62,17 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
       description="대회 준비, 훈련 기록, 완주 후기를 읽고 작성할 수 있습니다."
     >
       <section className="grid gap-4 sm:grid-cols-3">
-        <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
+        <article className="rounded-[1.1rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-sm font-medium text-slate-500">지금 보이는 글</p>
           <p className="mt-3 text-3xl font-bold text-slate-950">{posts.length.toLocaleString('ko-KR')}개</p>
           <p className="mt-2 text-sm text-slate-500">선택한 주제의 글만 표시합니다.</p>
         </article>
-        <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
+        <article className="rounded-[1.1rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-sm font-medium text-slate-500">활성 카테고리</p>
           <p className="mt-3 text-3xl font-bold text-slate-950">{activeCategoryCount}개</p>
           <p className="mt-2 text-sm text-slate-500">읽을 주제를 골라 볼 수 있습니다.</p>
         </article>
-        <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
+        <article className="rounded-[1.1rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-sm font-medium text-slate-500">글 남기기</p>
           <p className="mt-3 text-3xl font-bold text-slate-950">{viewer ? '가능' : '로그인 필요'}</p>
           <p className="mt-2 text-sm text-slate-500">읽기는 자유롭게, 작성은 로그인 후 가능합니다.</p>
@@ -80,19 +80,19 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
       </section>
 
       <section className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <div className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <div className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
               <Link
                 key={category.value}
-              href={categoryHref(category.value)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                selectedCategory === category.value
-                  ? 'bg-[var(--brand)] text-white'
-                  : 'bg-[var(--surface-muted)] text-slate-700 hover:bg-[var(--brand-soft)]'
-              }`}
-            >
-              {category.label}
+                href={categoryHref(category.value)}
+                className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                  selectedCategory === category.value
+                    ? 'border-slate-900 bg-slate-900 text-white'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+                }`}
+              >
+                {category.label}
               </Link>
             ))}
           </div>
@@ -105,7 +105,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                   <select
                     name="category"
                     defaultValue={selectedCategory === 'all' ? 'free' : selectedCategory}
-                    className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                    className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
                   >
                     {categories
                       .filter((category) => category.value !== 'all')
@@ -122,7 +122,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                   <select
                     name="linkedRaceId"
                     defaultValue=""
-                    className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                    className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
                   >
                     <option value="">선택 안 함</option>
                     {races.map((race) => (
@@ -139,7 +139,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                   <span className="text-sm font-semibold text-slate-700">제목</span>
                   <input
                     name="title"
-                    className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                    className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
                     placeholder="10km 첫 참가 전날 체크리스트"
                   />
                 </label>
@@ -148,14 +148,14 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                   <span className="text-sm font-semibold text-slate-700">내용</span>
                   <textarea
                     name="content"
-                    className="mt-2 min-h-32 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                    className="mt-2 min-h-32 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
                     placeholder="준비 과정, 훈련 기록, 후기와 팁"
                   />
                 </label>
 
                 <button
                   type="submit"
-                  className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+                  className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
                 >
                   글 작성하기
                 </button>
@@ -172,11 +172,11 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
         </div>
 
         <aside className="space-y-6">
-          <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <section className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
             <h2 className="text-lg font-semibold text-slate-950">지금 나누기 좋은 주제</h2>
             <div className="mt-4 space-y-3">
               {starterPrompts.map((item) => (
-                <div key={item.title} className="rounded-[1.25rem] bg-slate-50 p-4">
+                <div key={item.title} className="rounded-[1rem] bg-slate-50 p-4">
                   <p className="text-sm font-semibold text-slate-900">{item.title}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
                 </div>
@@ -188,7 +188,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
 
       <section className="mt-6 space-y-4">
         {posts.length === 0 ? (
-          <article className="rounded-[1.75rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
+          <article className="rounded-[1.25rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
             <p className="text-base font-semibold text-slate-950">등록된 글이 아직 없습니다.</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               첫 글을 작성하세요.
@@ -199,7 +199,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             <Link
               key={post.id}
               href={`/community/${post.id}`}
-              className="block rounded-[1.75rem] bg-white p-5 shadow-sm ring-1 ring-black/5 transition hover:ring-blue-200"
+              className="block rounded-[1.1rem] border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -209,7 +209,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                   </div>
                   <h2 className="mt-3 text-lg font-semibold text-slate-950">{post.title}</h2>
                 </div>
-                <span className="text-sm font-semibold text-[var(--brand)]">보기</span>
+                <span className="text-sm font-medium text-slate-500">보기</span>
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-600 line-clamp-2">{post.content}</p>
               <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-500">

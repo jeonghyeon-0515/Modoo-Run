@@ -17,9 +17,9 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
       title="비밀번호 재설정"
       description="가입한 이메일로 재설정 링크를 보냅니다."
     >
-      <section className="mx-auto max-w-2xl rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
+      <section className="mx-auto max-w-2xl rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-7">
         {message ? (
-          <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{message}</div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">{message}</div>
         ) : null}
 
         <form className="mt-6 space-y-4">
@@ -29,7 +29,7 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
               name="email"
               type="email"
               required
-              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
               placeholder="runner@modoo.run"
             />
           </label>
@@ -37,7 +37,7 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
           <button
             type="submit"
             formAction={requestPasswordResetAction}
-            className="inline-flex w-full items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+            className="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
           >
             재설정 링크 보내기
           </button>

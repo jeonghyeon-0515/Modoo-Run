@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f7fb;
-  --foreground: #172033;
+  --background: #f4f6f8;
+  --foreground: #1f2937;
   --surface: #ffffff;
-  --surface-muted: #fff3ef;
-  --brand: #ff6b57;
-  --brand-strong: #e45846;
-  --brand-soft: #fff0eb;
-  --brand-soft-strong: #ffd0c6;
-  --hero-start: #18263d;
-  --hero-end: #283c5b;
+  --surface-muted: #f3f4f6;
+  --brand: #f06a55;
+  --brand-strong: #dc5945;
+  --brand-soft: #fff1ec;
+  --brand-soft-strong: #f7cfc5;
+  --hero-start: #1f2937;
+  --hero-end: #334155;
 }
 
 @theme inline {
@@ -30,10 +30,7 @@ html {
 
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at top left, rgba(255, 107, 87, 0.12), transparent 24%),
-    radial-gradient(circle at top right, rgba(24, 38, 61, 0.08), transparent 30%),
-    linear-gradient(180deg, #f7f7fb 0%, #fff8f6 100%);
+  background: linear-gradient(180deg, #f4f6f8 0%, #f7f8fa 100%);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -45,7 +42,7 @@ a {
 
 .hero-shell {
   background: linear-gradient(135deg, var(--hero-start), var(--hero-end));
-  box-shadow: 0 28px 64px rgba(24, 38, 61, 0.18);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
 }
 
 .interactive-card {
@@ -58,9 +55,9 @@ a {
 }
 
 .interactive-card:hover {
-  border-color: var(--brand-soft-strong);
-  background: linear-gradient(180deg, #ffffff 0%, var(--brand-soft) 100%);
-  box-shadow: 0 18px 34px rgba(24, 38, 61, 0.08);
+  border-color: #d7dce2;
+  background: #ffffff;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
   transform: translateY(-1px);
 }
 
@@ -72,10 +69,10 @@ a {
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 70;
-  height: 5px;
+  height: 4px;
   transform-origin: left;
-  background: linear-gradient(90deg, #ff8d7f 0%, var(--brand) 20%, #ffd0c6 50%, var(--brand) 80%, #ff8d7f 100%);
-  box-shadow: 0 12px 26px rgba(255, 107, 87, 0.42);
+  background: linear-gradient(90deg, #f4a08f 0%, var(--brand) 45%, #f4a08f 100%);
+  box-shadow: 0 6px 16px rgba(240, 106, 85, 0.18);
   animation: route-progress-slide 0.9s ease-in-out infinite;
   transition: opacity 180ms ease;
 }
@@ -84,8 +81,8 @@ a {
   position: fixed;
   inset: 0;
   z-index: 65;
-  background: linear-gradient(180deg, rgba(247, 247, 251, 0.68), rgba(255, 248, 246, 0.88));
-  backdrop-filter: blur(3px);
+  background: rgba(244, 246, 248, 0.78);
+  backdrop-filter: blur(2px);
 }
 
 .route-toast {
@@ -96,13 +93,13 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border-radius: 999px;
-  background: rgba(24, 38, 61, 0.94);
+  border-radius: 16px;
+  background: rgba(31, 41, 55, 0.94);
   color: white;
   padding: 12px 16px;
   font-size: 13px;
   font-weight: 700;
-  box-shadow: 0 22px 42px rgba(24, 38, 61, 0.28);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.18);
   transition:
     opacity 180ms ease,
     transform 180ms ease;
@@ -113,7 +110,7 @@ a {
   height: 8px;
   border-radius: 999px;
   background: var(--brand);
-  box-shadow: 0 0 0 6px rgba(255, 107, 87, 0.18);
+  box-shadow: 0 0 0 4px rgba(240, 106, 85, 0.12);
   animation: route-toast-pulse 1s ease-in-out infinite;
 }
 
@@ -129,14 +126,12 @@ a {
   align-items: center;
   gap: 6px;
   border-radius: 999px;
-  background: rgba(255, 107, 87, 0.16);
-  color: var(--brand-strong);
+  background: #eef2f7;
+  color: #475569;
   padding: 4px 8px;
   font-size: 10px;
   font-weight: 800;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 107, 87, 0.22),
-    0 4px 12px rgba(255, 107, 87, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.2);
 }
 
 .route-link-inline {
@@ -146,7 +141,7 @@ a {
 
 .route-link-pill {
   border-radius: 999px;
-  background: rgba(24, 38, 61, 0.12);
+  background: rgba(148, 163, 184, 0.14);
   padding: 4px 9px;
   font-size: 11px;
   font-weight: 700;
@@ -182,7 +177,7 @@ a {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: rgba(24, 38, 61, 0.36);
+  background: rgba(15, 23, 42, 0.28);
   color: white;
   font-size: 14px;
   font-weight: 800;
@@ -205,7 +200,7 @@ a {
   bottom: 6px;
   height: 3px;
   border-radius: 999px;
-  background: linear-gradient(90deg, transparent, var(--brand), transparent);
+  background: linear-gradient(90deg, transparent, #94a3b8, transparent);
   animation: route-progress-slide 0.7s ease-in-out infinite;
 }
 

@@ -53,7 +53,7 @@ export function PasswordResetForm() {
           type="password"
           minLength={8}
           required
-          className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+          className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
           placeholder="8자 이상"
         />
       </label>
@@ -66,7 +66,7 @@ export function PasswordResetForm() {
           type="password"
           minLength={8}
           required
-          className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+          className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
           placeholder="같은 비밀번호를 한 번 더 입력"
         />
       </label>
@@ -74,13 +74,13 @@ export function PasswordResetForm() {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex w-full items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)] disabled:cursor-wait disabled:opacity-70"
+        className="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-wait disabled:opacity-70"
       >
         {pending ? '변경하는 중…' : '비밀번호 바꾸기'}
       </button>
 
       {message ? (
-        <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{message}</div>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">{message}</div>
       ) : null}
     </form>
   );

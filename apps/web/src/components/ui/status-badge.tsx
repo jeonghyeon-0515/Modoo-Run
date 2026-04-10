@@ -3,10 +3,10 @@ import { ReactNode } from 'react';
 type Tone = 'info' | 'success' | 'warning' | 'neutral';
 
 const toneClassMap: Record<Tone, string> = {
-  info: 'bg-[var(--brand-soft)] text-[var(--brand-strong)] ring-[var(--brand-soft-strong)]',
+  info: 'bg-[#fff1ec] text-[var(--brand-strong)] ring-[#f7d7cf]',
   success: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
   warning: 'bg-amber-50 text-amber-700 ring-amber-100',
-  neutral: 'bg-slate-100 text-slate-700 ring-slate-200',
+  neutral: 'bg-slate-100 text-slate-600 ring-slate-200',
 };
 
 export function StatusBadge({ tone, children }: { tone: Tone; children: ReactNode }) {

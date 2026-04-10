@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
-import { LinkPendingCue } from '@/components/ui/link-pending-cue';
 import {
   formatRaceDate,
   getRaceStatusLabel,
@@ -79,10 +78,10 @@ function FilterChip({
   return (
     <Link
       href={href}
-      className={`rounded-full px-3 py-1.5 text-xs font-medium transition sm:text-sm ${
+      className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition sm:text-sm ${
         active
-          ? 'bg-[var(--brand)] text-white'
-          : 'bg-[var(--surface-muted)] text-slate-700 hover:bg-[var(--brand-soft)]'
+          ? 'border-slate-900 bg-slate-900 text-white'
+          : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
       }`}
     >
       {children}
@@ -220,7 +219,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
       description="접수 중인 대회를 가까운 일정 순으로 보여줍니다."
       compactIntro
     >
-      <section className="mt-1 rounded-[1.25rem] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[1.5rem]">
+      <section className="mt-1 rounded-[1.1rem] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[1.25rem]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-sm font-semibold text-slate-900">
@@ -236,11 +235,8 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           </div>
 
           {!isDefaultOpenView ? (
-            <Link href="/races" className="text-sm font-semibold text-[var(--brand)]">
-              <span className="inline-flex items-center gap-2">
-                조건 초기화
-                <LinkPendingCue mode="badge" label="이동" />
-              </span>
+            <Link href="/races" className="text-sm font-medium text-slate-500 transition hover:text-slate-900">
+              조건 초기화
             </Link>
           ) : null}
         </div>
@@ -257,7 +253,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           ))}
         </div>
 
-        <details className="mt-3 rounded-[1.25rem] border border-slate-200 bg-slate-50 p-3">
+        <details className="mt-3 rounded-[1rem] border border-slate-200 bg-slate-50 p-3">
           <summary className="cursor-pointer list-none text-sm font-semibold text-slate-800">
             지역 · 월 · 거리 더 고르기
           </summary>
@@ -268,19 +264,16 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
 
       <section className="mt-4 space-y-3">
         {races.length === 0 ? (
-          <article className="rounded-[1.75rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
+          <article className="rounded-[1.25rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
             <p className="text-base font-semibold text-slate-950">조건에 맞는 대회가 없습니다.</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               필터를 조정하거나 접수 상태를 전체 보기로 바꿔 다른 일정도 확인해 보세요.
             </p>
             <Link
               href="/races"
-              className="mt-5 inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+              className="mt-5 inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
             >
-              <span className="inline-flex items-center gap-2">
-                필터 초기화
-                <LinkPendingCue mode="badge" label="이동" />
-              </span>
+              필터 초기화
             </Link>
           </article>
         ) : (
@@ -289,13 +282,13 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
               key={race.id}
               href={`/races/${race.sourceRaceId}`}
               aria-label={`${race.title} 상세 보기`}
-              className="group relative block overflow-hidden rounded-[1rem] bg-white p-3 shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:ring-[var(--brand-soft)] sm:rounded-[1.25rem] sm:p-4"
+              className="group relative block overflow-hidden rounded-[1rem] border border-slate-200 bg-white p-3 shadow-sm transition hover:border-slate-300 sm:rounded-[1.1rem] sm:p-4"
             >
               <LinkPendingOverlay label="대회 여는 중…" />
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-[11px] font-semibold text-[var(--brand)] sm:text-xs">
+                    <p className="text-[11px] font-semibold text-slate-500 sm:text-xs">
                       {formatRaceDate(race.eventDate, race.eventDateLabel)}
                     </p>
                     {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
@@ -317,9 +310,8 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                   <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
                     {getRaceStatusLabel(race.registrationStatus)}
                   </StatusBadge>
-                  <span className="inline-flex items-center gap-2 text-[11px] font-semibold text-[var(--brand)] transition group-hover:translate-x-0.5 sm:text-xs">
+                  <span className="inline-flex items-center gap-2 text-[11px] font-medium text-slate-500 transition group-hover:text-slate-900 sm:text-xs">
                     자세히 보기 →
-                    <LinkPendingCue mode="badge" label="열기" />
                   </span>
                 </div>
               </div>

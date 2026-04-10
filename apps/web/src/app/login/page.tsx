@@ -19,9 +19,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
       title="로그인"
       description="저장한 대회, 계획, 커뮤니티 활동을 계속 이용하려면 로그인해 주세요."
     >
-      <section className="mx-auto max-w-2xl rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
+      <section className="mx-auto max-w-2xl rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-7">
         {message ? (
-          <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{message}</div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">{message}</div>
         ) : null}
 
         <div className="mt-2">
@@ -38,7 +38,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
               name="email"
               type="email"
               required
-              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
               placeholder="runner@modoo.run"
             />
           </label>
@@ -50,7 +50,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
               type="password"
               required
               minLength={8}
-              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
               placeholder="8자 이상"
             />
           </label>
@@ -65,13 +65,13 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
             <button
               type="submit"
               formAction={loginAction}
-              className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+              className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
             >
               로그인하기
             </button>
             <Link
               href={`/signup?next=${encodeURIComponent(nextPath)}`}
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               회원가입
             </Link>
