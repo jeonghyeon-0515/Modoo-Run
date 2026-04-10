@@ -19,7 +19,7 @@ function exists(file) {
 
 function run() {
   assert(exists('src/app/robots.ts'), 'robots.ts 가 없습니다.');
-  assert(exists('src/app/sitemap.ts'), 'sitemap.ts 가 없습니다.');
+  assert(exists('src/app/sitemap.xml/route.ts'), 'sitemap.xml route 가 없습니다.');
   assert(exists('src/components/ui/route-loading-chrome.tsx'), '공통 route loading chrome 이 없습니다.');
 
   const layout = read('src/app/layout.tsx');
