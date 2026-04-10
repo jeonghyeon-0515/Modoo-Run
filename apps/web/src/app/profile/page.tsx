@@ -3,6 +3,7 @@ import { PageShell } from '@/components/layout/page-shell';
 import { formatRaceDate } from '@/lib/races/formatters';
 import { getProfileEditorData } from '@/lib/profile/repository';
 import { PROFILE_DISTANCE_OPTIONS } from '@/lib/profile/utils';
+import { ProfileSubmitButton } from './profile-submit-button';
 import { updateProfileAction } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -147,12 +148,10 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
             >
               대회 일정 보기
             </Link>
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-            >
-              저장하기
-            </button>
+            <div className="flex flex-col items-end gap-2">
+              <ProfileSubmitButton />
+              <p className="text-xs text-slate-400">저장 후 새로고침 없이 바로 반영됩니다.</p>
+            </div>
           </div>
         </form>
       </section>
