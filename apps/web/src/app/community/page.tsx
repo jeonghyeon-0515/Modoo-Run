@@ -88,7 +88,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                 href={categoryHref(category.value)}
                 className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
                   selectedCategory === category.value
-                    ? 'border-slate-900 bg-slate-900 text-white'
+                    ? 'border-slate-300 bg-slate-100 text-slate-950'
                     : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
