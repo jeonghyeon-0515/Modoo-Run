@@ -16,7 +16,7 @@ export function getSiteUrl() {
   ];
 
   const siteUrl = candidates.find((value) => typeof value === 'string' && value.trim()) as string;
-  return siteUrl.replace(/\/$/, '');
+  return siteUrl.trim().replace(/\/$/, '');
 }
 
 export function buildAbsoluteUrl(pathname = '/') {
