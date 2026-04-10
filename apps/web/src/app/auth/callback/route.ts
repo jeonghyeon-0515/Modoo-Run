@@ -6,7 +6,19 @@ import { getSupabaseAnonKey, getSupabaseUrl } from '@/lib/supabase/env';
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
+  const providerError = requestUrl.searchParams.get('error');
+  const errorDescription = requestUrl.searchParams.get('error_description');
   const nextPath = normalizeNextPath(requestUrl.searchParams.get('next') ?? '/');
+
+  if (providerError) {
+    const message = errorDescription
+      ? `소셜 로그인에 실패했습니다. ${errorDescription} (${providerError})`
+      : `소셜 로그인에 실패했습니다. (${providerError})`;
+
+    return NextResponse.redirect(
+      new URL(`/login?next=${encodeURIComponent(nextPath)}&message=${encodeURIComponent(message)}`, request.url),
+    );
+  }
 
   if (!code) {
     return NextResponse.redirect(

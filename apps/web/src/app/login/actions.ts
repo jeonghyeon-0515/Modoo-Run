@@ -111,13 +111,6 @@ export async function signupAction(formData: FormData) {
   );
 }
 
-export async function logoutAction() {
-  const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
-  revalidatePath('/', 'layout');
-  redirect('/');
-}
-
 export async function requestPasswordResetAction(formData: FormData) {
   const supabase = await createSupabaseServerClient();
   const email = readRequiredString(formData, 'email');

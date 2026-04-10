@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import { getOptionalViewer } from '@/lib/auth/session';
-import { logoutAction } from '@/app/login/actions';
 import { BottomNav } from './bottom-nav';
 import { ServiceTabs } from './service-tabs';
 
@@ -44,7 +43,7 @@ export async function PageShell({
                 <p className="text-sm font-semibold text-slate-900">{viewer.displayName}</p>
                 <p className="text-xs text-slate-500">{roleLabel}</p>
               </div>
-              <form action={logoutAction}>
+              <form action="/auth/logout" method="post">
                 <button
                   type="submit"
                   className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
