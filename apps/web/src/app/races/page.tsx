@@ -5,7 +5,8 @@ import { PartnerInquiryCard } from '@/components/monetization/partner-inquiry-ca
 import { PromoSlotCard } from '@/components/monetization/promo-slot-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
-import { getRacesPagePromoSlots, pickFeaturedRaces } from '@/lib/monetization/public-catalog';
+import { listActiveFeaturedRacePlacements } from '@/lib/monetization/featured-repository';
+import { getRacesPagePromoSlots } from '@/lib/monetization/public-catalog';
 import {
   formatRaceDate,
   getRaceStatusLabel,
@@ -138,7 +139,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
     filters.region.length === 0 &&
     filters.month.length === 0 &&
     filters.distance.length === 0;
-  const featuredRaces = pickFeaturedRaces(races);
+  const featuredRaces = await listActiveFeaturedRacePlacements(races, 2);
   const featuredRaceIds = new Set(featuredRaces.map((item) => item.race.id));
   const promoSlots = getRacesPagePromoSlots();
 

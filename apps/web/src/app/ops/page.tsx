@@ -6,6 +6,11 @@ export const dynamic = 'force-dynamic';
 
 const adminLinks = [
   {
+    href: '/ops/featured',
+    title: 'Featured Listing 편성',
+    description: '대회 목록 상단 featured 노출 대회를 직접 선택하고 문구를 수정합니다.',
+  },
+  {
     href: '/ops/outbound-clicks',
     title: '외부 클릭 · 문의 흐름',
     description: '광고·제휴 문의, 외부 이동, 차단 로그와 추이를 한 화면에서 확인합니다.',
