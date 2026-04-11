@@ -78,6 +78,10 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Se
 
           <form action={createPartnerLeadAction} className="mt-6 space-y-4">
             <input type="hidden" name="sourcePath" value={sourcePath} />
+            <div className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden">
+              <label htmlFor="partner-website">웹사이트</label>
+              <input id="partner-website" name="website" tabIndex={-1} autoComplete="off" />
+            </div>
 
             <label className="block">
               <span className="text-sm font-semibold text-slate-700">이름</span>
