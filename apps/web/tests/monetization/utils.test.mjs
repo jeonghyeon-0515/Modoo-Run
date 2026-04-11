@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const {
+  getPartnerGuardScopeLabel,
   getPartnerClickTargetLabel,
   getPartnerInquiryTypeLabel,
   isPartnerClickTarget,
@@ -20,6 +21,11 @@ test('파트너 문의 유형 라벨을 한국어로 바꾼다', () => {
   assert.equal(getPartnerInquiryTypeLabel('featured_listing'), 'Featured 등록');
   assert.equal(getPartnerInquiryTypeLabel('sponsorship'), '스폰서 제안');
   assert.equal(getPartnerInquiryTypeLabel('other'), '기타 문의');
+});
+
+test('차단 기준 라벨을 한국어로 바꾼다', () => {
+  assert.equal(getPartnerGuardScopeLabel('ip'), 'IP 기준 차단');
+  assert.equal(getPartnerGuardScopeLabel('email'), '이메일 기준 차단');
 });
 
 test('파트너 클릭 대상은 허용값만 인정한다', () => {

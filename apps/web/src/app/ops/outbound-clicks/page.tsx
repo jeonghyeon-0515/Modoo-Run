@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { PageShell } from '@/components/layout/page-shell';
+import { formatRetryAfterSeconds } from '@/lib/monetization/rate-limit-helpers';
 import { getOutboundClickDashboard } from '@/lib/races/outbound-report-repository';
 import { getOutboundTargetLabel } from '@/lib/races/outbound-report';
 import { getPartnerInquiryTypeLabel } from '@/lib/monetization/utils';
@@ -31,6 +32,11 @@ function formatDateTime(value: string) {
 
 function formatRate(value: number) {
   return `${value.toFixed(1)}%`;
+}
+
+function maskHash(value?: string | null) {
+  if (!value) return '없음';
+  return `${value.slice(0, 6)}…${value.slice(-4)}`;
 }
 
 function TrendBars({
@@ -305,7 +311,7 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
       <section className="mt-4 grid gap-4 lg:grid-cols-[0.85fr_1.15fr]">
         <article className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
           <h2 className="text-lg font-semibold text-slate-950">광고 · 제휴 문의 현황</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <div className="rounded-2xl bg-slate-50 px-4 py-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">문의 수</p>
               <p className="mt-2 text-2xl font-bold text-slate-950">{partner.totalLeadCount}</p>
@@ -314,20 +320,42 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">문의 진입 클릭</p>
               <p className="mt-2 text-2xl font-bold text-slate-950">{partner.totalClickCount}</p>
             </div>
+            <div className="rounded-2xl bg-slate-50 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">차단된 제출</p>
+              <p className="mt-2 text-2xl font-bold text-slate-950">{partner.totalGuardCount}</p>
+            </div>
           </div>
-          <div className="mt-4 space-y-3">
-            {partner.leadSummaries.length > 0 ? (
-              partner.leadSummaries.map((item) => (
-                <div key={item.inquiryType} className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3">
-                  <span className="text-sm font-medium text-slate-700">{getPartnerInquiryTypeLabel(item.inquiryType)}</span>
-                  <span className="text-sm font-semibold text-slate-950">{item.count}건</span>
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <div className="space-y-3">
+              <p className="text-sm font-semibold text-slate-900">문의 유형별</p>
+              {partner.leadSummaries.length > 0 ? (
+                partner.leadSummaries.map((item) => (
+                  <div key={item.inquiryType} className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3">
+                    <span className="text-sm font-medium text-slate-700">{getPartnerInquiryTypeLabel(item.inquiryType)}</span>
+                    <span className="text-sm font-semibold text-slate-950">{item.count}건</span>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+                  아직 접수된 문의가 없습니다.
                 </div>
-              ))
-            ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 p-4 text-sm text-slate-600">
-                아직 접수된 문의가 없습니다.
-              </div>
-            )}
+              )}
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm font-semibold text-slate-900">차단 기준별</p>
+              {partner.guardSummaries.length > 0 ? (
+                partner.guardSummaries.map((item) => (
+                  <div key={item.blockedScope} className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3">
+                    <span className="text-sm font-medium text-slate-700">{item.label}</span>
+                    <span className="text-sm font-semibold text-slate-950">{item.count}건</span>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+                  아직 차단된 제출이 없습니다.
+                </div>
+              )}
+            </div>
           </div>
         </article>
 
@@ -371,6 +399,51 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
             </table>
           </div>
         </article>
+      </section>
+
+      <section className="mt-4 rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-950">최근 차단 로그</h2>
+            <p className="mt-1 text-sm text-slate-500">문의 폼 rate limit으로 막힌 최근 제출 기록입니다.</p>
+          </div>
+          <p className="text-xs text-slate-500">원문 이메일/IP는 저장하지 않습니다.</p>
+        </div>
+        <div className="mt-4 overflow-x-auto">
+          <table className="min-w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-slate-200 text-slate-500">
+                <th className="px-3 py-3 font-semibold">시각</th>
+                <th className="px-3 py-3 font-semibold">기준</th>
+                <th className="px-3 py-3 font-semibold">재시도</th>
+                <th className="px-3 py-3 font-semibold">유입 경로</th>
+                <th className="px-3 py-3 font-semibold">해시 식별자</th>
+              </tr>
+            </thead>
+            <tbody>
+              {partner.recentGuardEvents.length > 0 ? (
+                partner.recentGuardEvents.map((event) => (
+                  <tr key={event.id} className="border-b border-slate-100 last:border-b-0">
+                    <td className="px-3 py-3 text-slate-600">{formatDateTime(event.created_at)}</td>
+                    <td className="px-3 py-3 text-slate-700">{event.blocked_scope === 'ip' ? 'IP 기준 차단' : '이메일 기준 차단'}</td>
+                    <td className="px-3 py-3 text-slate-700">{formatRetryAfterSeconds(event.retry_after_seconds)}</td>
+                    <td className="px-3 py-3 text-slate-600">{event.source_path ?? '/advertise'}</td>
+                    <td className="px-3 py-3 text-xs text-slate-500">
+                      <div>email {maskHash(event.email_hash)}</div>
+                      <div>ip {maskHash(event.ip_hash)}</div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="px-3 py-6 text-center text-slate-500">
+                    아직 표시할 차단 로그가 없습니다.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </section>
     </PageShell>
   );

@@ -44,6 +44,12 @@ function hashIdentifier(value: string) {
   return createHash('sha256').update(value).digest('hex').slice(0, 24);
 }
 
+export function hashPartnerLeadIdentifier(value: string | null | undefined) {
+  const normalized = String(value ?? '').trim();
+  if (!normalized) return null;
+  return hashIdentifier(normalized.toLowerCase());
+}
+
 export function extractClientIp(headers: HeaderSource) {
   const forwardedFor = headers.get('x-vercel-forwarded-for') ?? headers.get('x-forwarded-for');
   if (forwardedFor) {

@@ -3,8 +3,10 @@
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { hashPartnerLeadAuditIdentifier } from '@/lib/monetization/privacy';
 import { enforcePartnerLeadRateLimit, getPartnerLeadRateLimitMessage } from '@/lib/monetization/rate-limit';
-import { createPartnerLead } from '@/lib/monetization/repository';
+import { extractClientIp } from '@/lib/monetization/rate-limit-helpers';
+import { createPartnerLead, recordPartnerLeadGuardEvent } from '@/lib/monetization/repository';
 import { normalizePartnerLeadInput } from '@/lib/monetization/utils';
 
 export async function createPartnerLeadAction(formData: FormData) {
@@ -23,18 +25,23 @@ export async function createPartnerLeadAction(formData: FormData) {
       });
 
       const headerStore = await headers();
+      const clientIp = extractClientIp(headerStore);
       const rateLimitResult = await enforcePartnerLeadRateLimit({
         email: input.email,
         headers: headerStore,
       });
 
       if (!rateLimitResult.allowed) {
-        console.warn('partner lead blocked by rate limit', {
-          scope: rateLimitResult.scope,
+        await recordPartnerLeadGuardEvent({
+          blockedScope: rateLimitResult.scope,
           retryAfterSeconds: rateLimitResult.retryAfterSeconds,
+          sourcePath: input.sourcePath,
+          emailHash: hashPartnerLeadAuditIdentifier(input.email) ?? 'unknown',
+          ipHash: hashPartnerLeadAuditIdentifier(clientIp),
         });
         message = getPartnerLeadRateLimitMessage(rateLimitResult.retryAfterSeconds);
         shouldCreateLead = false;
+        revalidatePath('/ops/outbound-clicks');
       }
 
       if (shouldCreateLead) {

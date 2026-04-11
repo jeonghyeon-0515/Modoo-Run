@@ -8,6 +8,7 @@ const {
   extractClientIp,
   formatRetryAfterSeconds,
   getPartnerLeadRateLimitMessage,
+  hashPartnerLeadIdentifier,
 } = require('../../src/lib/monetization/rate-limit-helpers.ts');
 
 function createFakeTransaction(store) {
@@ -113,6 +114,11 @@ test('재시도 대기 시간을 자연어로 포맷한다', () => {
   assert.equal(formatRetryAfterSeconds(45), '약 45초');
   assert.equal(formatRetryAfterSeconds(90), '약 2분');
   assert.equal(formatRetryAfterSeconds(3700), '약 2시간');
+});
+
+test('민감 식별자는 공백 제거 후 해시한다', () => {
+  assert.equal(hashPartnerLeadIdentifier('  SALES@EXAMPLE.COM '), hashPartnerLeadIdentifier('sales@example.com'));
+  assert.equal(hashPartnerLeadIdentifier(''), null);
 });
 
 test('제한 메시지에 재시도 시간이 포함된다', () => {

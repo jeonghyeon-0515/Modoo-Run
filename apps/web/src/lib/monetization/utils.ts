@@ -4,6 +4,9 @@ export type PartnerClickTarget = (typeof partnerClickTargets)[number];
 export const partnerInquiryTypes = ['featured_listing', 'sponsorship', 'affiliate', 'other'] as const;
 export type PartnerInquiryType = (typeof partnerInquiryTypes)[number];
 
+export const partnerLeadGuardScopes = ['ip', 'email'] as const;
+export type PartnerLeadGuardScope = (typeof partnerLeadGuardScopes)[number];
+
 function readRequiredText(value: FormDataEntryValue | string | null | undefined, label: string) {
   const normalized = String(value ?? '').trim();
   if (!normalized) {
@@ -29,6 +32,12 @@ export function getPartnerInquiryTypeLabel(type: PartnerInquiryType | string) {
   if (type === 'sponsorship') return '스폰서 제안';
   if (type === 'affiliate') return '제휴 제안';
   return '기타 문의';
+}
+
+export function getPartnerGuardScopeLabel(scope: PartnerLeadGuardScope | string) {
+  if (scope === 'ip') return 'IP 기준 차단';
+  if (scope === 'email') return '이메일 기준 차단';
+  return scope;
 }
 
 export function validatePartnerInquiryType(value: string): PartnerInquiryType {
