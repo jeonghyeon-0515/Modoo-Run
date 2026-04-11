@@ -84,7 +84,20 @@ class FakeRateLimitStore {
   }
 }
 
-test('x-forwarded-for의 첫 번째 IP를 클라이언트 IP로 사용한다', () => {
+test('Vercel 헤더를 우선 사용하고 없으면 x-forwarded-for의 첫 번째 IP를 사용한다', () => {
+  const ip = extractClientIp({
+    get(name) {
+      if (name === 'x-vercel-forwarded-for') return '192.0.2.10';
+      if (name === 'x-forwarded-for') return '198.51.100.10, 10.0.0.1';
+      if (name === 'x-real-ip') return '203.0.113.20';
+      return null;
+    },
+  });
+
+  assert.equal(ip, '192.0.2.10');
+});
+
+test('Vercel 헤더가 없으면 x-forwarded-for의 첫 번째 IP를 사용한다', () => {
   const ip = extractClientIp({
     get(name) {
       if (name === 'x-forwarded-for') return '198.51.100.10, 10.0.0.1';

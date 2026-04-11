@@ -45,7 +45,7 @@ function hashIdentifier(value: string) {
 }
 
 export function extractClientIp(headers: HeaderSource) {
-  const forwardedFor = headers.get('x-forwarded-for');
+  const forwardedFor = headers.get('x-vercel-forwarded-for') ?? headers.get('x-forwarded-for');
   if (forwardedFor) {
     const firstHop = forwardedFor
       .split(',')
