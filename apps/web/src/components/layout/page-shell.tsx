@@ -22,11 +22,19 @@ export async function PageShell({
     <div className="min-h-screen bg-[var(--background)]">
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8">
-          <div>
-            <Link href="/races" className="text-base font-bold tracking-tight text-slate-950">
-              모두의 러닝
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+            <div>
+              <Link href="/races" className="text-base font-bold tracking-tight text-slate-950">
+                모두의 러닝
+              </Link>
+              <div className="text-sm text-slate-500">러너를 위한 일정 · 기록 공간</div>
+            </div>
+            <Link
+              href="/advertise"
+              className="inline-flex items-center justify-center rounded-full border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--brand-strong)] transition hover:bg-[#ffe5dd]"
+            >
+              광고 · 제휴 문의
             </Link>
-            <div className="text-sm text-slate-500">러너를 위한 일정 · 기록 공간</div>
           </div>
 
           {viewer ? (
@@ -98,6 +106,28 @@ export async function PageShell({
         </section>
         {children}
       </main>
+
+      <footer className="border-t border-slate-200 bg-white/95">
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-5 py-6 text-sm sm:px-8 sm:py-7">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-semibold text-slate-900">모두의 러닝</p>
+              <p className="mt-1 text-sm text-slate-500">러너를 위한 일정 · 기록 공간</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 text-sm font-medium text-slate-600">
+              <Link href="/advertise" className="transition hover:text-slate-950">
+                광고 · 제휴 문의
+              </Link>
+              <Link href="/gear" className="transition hover:text-slate-950">
+                공개 가이드
+              </Link>
+            </div>
+          </div>
+          <p className="text-xs leading-6 text-slate-400">
+            브랜드 협업, featured listing, 스폰서 노출 문의는 광고 · 제휴 문의 페이지에서 바로 남길 수 있습니다.
+          </p>
+        </div>
+      </footer>
 
       <BottomNav />
     </div>
