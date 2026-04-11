@@ -2,8 +2,10 @@ import Link from 'next/link';
 import { getOptionalViewer } from '@/lib/auth/session';
 import { PageShell } from '@/components/layout/page-shell';
 import { PartnerInquiryCard } from '@/components/monetization/partner-inquiry-card';
+import { PromoSlotCard } from '@/components/monetization/promo-slot-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { listCommunityPosts } from '@/lib/community/repository';
+import { getCommunityPromoSlots } from '@/lib/monetization/public-catalog';
 import { listRaces } from '@/lib/races/repository';
 import { createCommunityPostAction } from './actions';
 
@@ -56,6 +58,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
   ]);
 
   const activeCategoryCount = new Set(posts.map((post) => post.category)).size;
+  const promoSlots = getCommunityPromoSlots();
 
   return (
     <PageShell
@@ -173,6 +176,22 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
         </div>
 
         <aside className="space-y-6">
+          <section className="space-y-4">
+            {promoSlots.map((slot) => (
+              <PromoSlotCard
+                key={slot.id}
+                badge={slot.badge}
+                title={slot.title}
+                description={slot.description}
+                href={slot.href}
+                ctaLabel={slot.ctaLabel}
+                external={slot.external}
+                disclosure={slot.disclosure}
+                compact
+              />
+            ))}
+          </section>
+
           <section className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
             <h2 className="text-lg font-semibold text-slate-950">지금 나누기 좋은 주제</h2>
             <div className="mt-4 space-y-3">

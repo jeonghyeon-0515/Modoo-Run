@@ -13,13 +13,14 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function ServiceTabs() {
+export function ServiceTabs({ isStaff = false }: { isStaff?: boolean }) {
   const pathname = usePathname();
+  const tabItems = isStaff ? [...items, { href: '/ops', label: '관리자' }] : items;
 
   return (
     <div className="border-t border-slate-200 bg-white/95">
       <div className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-5 py-2.5 sm:px-8">
-        {items.map((item) => {
+        {tabItems.map((item) => {
           const active = isActive(pathname, item.href);
 
           return (

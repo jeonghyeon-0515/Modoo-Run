@@ -45,10 +45,10 @@ export async function PageShell({
                 </Link>
                 {viewer.isStaff ? (
                   <Link
-                    href="/ops/outbound-clicks"
+                    href="/ops"
                     className="rounded-full border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--brand-strong)] transition hover:bg-[#ffe5dd]"
                   >
-                    운영 흐름
+                    관리자
                   </Link>
                 ) : null}
               </div>
@@ -70,7 +70,7 @@ export async function PageShell({
             </Link>
           )}
         </div>
-        <ServiceTabs />
+        <ServiceTabs isStaff={viewer?.isStaff ?? false} />
       </header>
 
       <main className={`mx-auto w-full max-w-5xl px-5 ${compactIntro ? 'py-5 sm:py-6' : 'py-8'} sm:px-8`}>

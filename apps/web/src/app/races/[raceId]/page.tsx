@@ -2,11 +2,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { PageShell } from '@/components/layout/page-shell';
+import { PromoSlotCard } from '@/components/monetization/promo-slot-card';
 import { RaceDetailViewTracker } from '@/components/races/race-detail-view-tracker';
 import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { LinkPendingCue } from '@/components/ui/link-pending-cue';
 import { getOptionalViewer } from '@/lib/auth/session';
+import { getRaceDetailPromoSlots } from '@/lib/monetization/public-catalog';
 import {
   formatRaceDate,
   getRaceStatusLabel,
@@ -90,6 +92,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
   const mapLinkUrl = getRaceMapLinkUrl(race);
   const googleCalendarUrl = getRaceGoogleCalendarUrl(race);
   const calendarDownloadPath = race.eventDate ? getRaceCalendarDownloadPath(race.sourceRaceId) : null;
+  const promoSlots = getRaceDetailPromoSlots(race);
 
   const informationCards = [
     ['일정', formatRaceDate(race.eventDate, race.eventDateLabel)],
@@ -250,6 +253,33 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
       </section>
 
       <section className="mt-6 space-y-6">
+        <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-950">스폰서 · 제휴 안내</h3>
+              <p className="mt-1 text-sm text-slate-500">참가 준비 흐름 안에서 볼 수 있는 공개 가이드와 스폰서형 정보를 함께 정리했습니다.</p>
+            </div>
+            <Link href="/gear" className="text-sm font-semibold text-[var(--brand)]">
+              준비물 가이드
+            </Link>
+          </div>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            {promoSlots.map((slot) => (
+              <PromoSlotCard
+                key={slot.id}
+                badge={slot.badge}
+                title={slot.title}
+                description={slot.description}
+                href={slot.href}
+                ctaLabel={slot.ctaLabel}
+                external={slot.external}
+                disclosure={slot.disclosure}
+              />
+            ))}
+          </div>
+        </section>
+
         <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">

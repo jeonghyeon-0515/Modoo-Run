@@ -1,8 +1,11 @@
 import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
+import { FeaturedRaceSection } from '@/components/monetization/featured-race-section';
 import { PartnerInquiryCard } from '@/components/monetization/partner-inquiry-card';
+import { PromoSlotCard } from '@/components/monetization/promo-slot-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
+import { getRacesPagePromoSlots, pickFeaturedRaces } from '@/lib/monetization/public-catalog';
 import {
   formatRaceDate,
   getRaceStatusLabel,
@@ -135,6 +138,9 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
     filters.region.length === 0 &&
     filters.month.length === 0 &&
     filters.distance.length === 0;
+  const featuredRaces = pickFeaturedRaces(races);
+  const featuredRaceIds = new Set(featuredRaces.map((item) => item.race.id));
+  const promoSlots = getRacesPagePromoSlots();
 
   const renderAdvancedFilters = () => (
     <>
@@ -264,6 +270,23 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
       </section>
 
       <section className="mt-4 space-y-3">
+        <FeaturedRaceSection items={featuredRaces} />
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {promoSlots.map((slot) => (
+            <PromoSlotCard
+              key={slot.id}
+              badge={slot.badge}
+              title={slot.title}
+              description={slot.description}
+              href={slot.href}
+              ctaLabel={slot.ctaLabel}
+              external={slot.external}
+              disclosure={slot.disclosure}
+            />
+          ))}
+        </div>
+
         {races.length === 0 ? (
           <article className="rounded-[1.25rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
             <p className="text-base font-semibold text-slate-950">조건에 맞는 대회가 없습니다.</p>
@@ -293,6 +316,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                       {formatRaceDate(race.eventDate, race.eventDateLabel)}
                     </p>
                     {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
+                    {featuredRaceIds.has(race.id) ? <StatusBadge tone="info">Featured</StatusBadge> : null}
                   </div>
                   <h2 className="mt-1 line-clamp-2 text-sm font-semibold text-slate-950 sm:text-lg">
                     {race.title}
