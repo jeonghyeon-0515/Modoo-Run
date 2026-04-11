@@ -32,7 +32,7 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Se
   const resolvedSearchParams = await searchParams;
   const message = readFirstValue(resolvedSearchParams.message);
   const sourcePath = readFirstValue(resolvedSearchParams.source) ?? '/advertise';
-  const isError = Boolean(message && /문제|실패|오류|입력/.test(message));
+  const isError = Boolean(message && /문제|실패|오류|입력|짧은 시간|잠시 후|제한/.test(message));
 
   return (
     <PageShell
@@ -135,7 +135,9 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Se
             </label>
 
             <div className="flex items-center justify-between gap-3">
-              <p className="text-xs text-slate-400">보내주신 문의는 운영자가 직접 확인합니다.</p>
+              <p className="text-xs leading-5 text-slate-400">
+                보내주신 문의는 운영자가 직접 확인하며, 반복 제출은 잠시 제한될 수 있습니다.
+              </p>
               <AdvertiseSubmitButton />
             </div>
           </form>
