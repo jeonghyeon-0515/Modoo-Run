@@ -83,5 +83,6 @@ test('외부 클릭 로그를 대상/대회 기준으로 요약한다', () => {
 test('외부 클릭 대상 라벨을 사용자 친화적으로 바꾼다', () => {
   assert.equal(getOutboundTargetLabel('apply'), '바로 지원');
   assert.equal(getOutboundTargetLabel('calendar_ics'), 'ICS 저장');
+  assert.equal(getOutboundTargetLabel('partner_inquiry'), '문의 진입');
   assert.equal(getOutboundTargetLabel('unknown_kind'), 'unknown_kind');
 });

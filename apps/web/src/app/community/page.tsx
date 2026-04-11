@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getOptionalViewer } from '@/lib/auth/session';
 import { PageShell } from '@/components/layout/page-shell';
+import { PartnerInquiryCard } from '@/components/monetization/partner-inquiry-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { listCommunityPosts } from '@/lib/community/repository';
 import { listRaces } from '@/lib/races/repository';
@@ -183,6 +184,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
               ))}
             </div>
           </section>
+          <PartnerInquiryCard sourcePath="/community" compact />
         </aside>
       </section>
 

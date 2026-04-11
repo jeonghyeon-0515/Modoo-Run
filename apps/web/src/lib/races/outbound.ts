@@ -7,6 +7,9 @@ export const raceOutboundTargets = [
   'map',
   'calendar_google',
   'calendar_ics',
+  'affiliate',
+  'sponsored',
+  'partner_inquiry',
 ] as const;
 
 export type RaceOutboundTarget = (typeof raceOutboundTargets)[number];
@@ -163,6 +166,12 @@ export function resolveRaceOutboundUrl(
       return getRaceMapLinkUrl(race);
     case 'calendar_google':
       return getRaceGoogleCalendarUrl(race);
+    case 'affiliate':
+      return getRacePrimaryApplyUrl(race);
+    case 'sponsored':
+      return normalizeExternalUrl(race.homepageUrl) ?? normalizeExternalUrl(race.sourceDetailUrl);
+    case 'partner_inquiry':
+      return buildAbsoluteUrl(`/advertise?source=${encodeURIComponent(`/races/${race.sourceRaceId}`)}`);
     default:
       return null;
   }

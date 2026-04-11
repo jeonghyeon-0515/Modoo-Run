@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
+import { PartnerInquiryCard } from '@/components/monetization/partner-inquiry-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
 import {
@@ -319,6 +320,8 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           ))
         )}
       </section>
+
+      <PartnerInquiryCard sourcePath="/races" />
     </PageShell>
   );
 }

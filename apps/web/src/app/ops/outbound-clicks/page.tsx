@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { PageShell } from '@/components/layout/page-shell';
 import { getOutboundClickDashboard } from '@/lib/races/outbound-report-repository';
 import { getOutboundTargetLabel } from '@/lib/races/outbound-report';
+import { getPartnerInquiryTypeLabel } from '@/lib/monetization/utils';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -102,7 +103,7 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
   const resolvedSearchParams = await searchParams;
   const daysValue = Number(readFirstValue(resolvedSearchParams.days) ?? '7');
   const days = [7, 30, 90].includes(daysValue) ? daysValue : 7;
-  const summary = await getOutboundClickDashboard(days);
+  const { outbound, partner } = await getOutboundClickDashboard(days);
 
   return (
     <PageShell
@@ -130,16 +131,16 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
       <section className="mt-4 grid gap-3 sm:grid-cols-3">
         <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">총 상세 조회</p>
-          <p className="mt-2 text-3xl font-bold text-slate-950">{summary.totalViewCount}</p>
+          <p className="mt-2 text-3xl font-bold text-slate-950">{outbound.totalViewCount}</p>
         </article>
         <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">지원 클릭</p>
-          <p className="mt-2 text-3xl font-bold text-slate-950">{summary.applyClickCount}</p>
+          <p className="mt-2 text-3xl font-bold text-slate-950">{outbound.applyClickCount}</p>
         </article>
         <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">지원 전환율</p>
           <p className="mt-2 text-lg font-bold text-slate-950">
-            {summary.totalViewCount > 0 ? formatRate(summary.applyConversionRate) : '데이터 없음'}
+            {outbound.totalViewCount > 0 ? formatRate(outbound.applyConversionRate) : '데이터 없음'}
           </p>
           <p className="mt-1 text-xs text-slate-500">상세 조회 대비 지원 클릭 비율</p>
         </article>
@@ -153,8 +154,8 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
           </div>
           <p className="text-xs text-slate-500">최근 {days}일</p>
         </div>
-        {summary.dailyTrend.length > 0 ? (
-          <TrendBars points={summary.dailyTrend} />
+        {outbound.dailyTrend.length > 0 ? (
+          <TrendBars points={outbound.dailyTrend} />
         ) : (
           <div className="mt-4 rounded-2xl border border-dashed border-slate-300 p-4 text-sm text-slate-600">
             아직 추이를 그릴 데이터가 없습니다.
@@ -166,8 +167,8 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
         <article className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
           <h2 className="text-lg font-semibold text-slate-950">액션별 클릭 수</h2>
           <div className="mt-4 space-y-3">
-            {summary.targetSummaries.length > 0 ? (
-              summary.targetSummaries.map((item) => (
+            {outbound.targetSummaries.length > 0 ? (
+              outbound.targetSummaries.map((item) => (
                 <div key={item.targetKind} className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
                   <span className="text-sm font-medium text-slate-700">{getOutboundTargetLabel(item.targetKind)}</span>
                   <span className="text-sm font-semibold text-slate-950">{item.count}회</span>
@@ -187,8 +188,8 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
             <p className="text-xs text-slate-500">상세 조회 대비</p>
           </div>
           <div className="mt-4 space-y-3">
-            {summary.topConversionRaces.length > 0 ? (
-              summary.topConversionRaces.map((item, index) => (
+            {outbound.topConversionRaces.length > 0 ? (
+              outbound.topConversionRaces.map((item, index) => (
                 <div key={item.sourceRaceId} className="rounded-2xl border border-slate-200 px-4 py-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -234,8 +235,8 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
           <p className="text-xs text-slate-500">sourceRaceId 기준</p>
         </div>
         <div className="mt-4 space-y-3">
-          {summary.topRaces.length > 0 ? (
-            summary.topRaces.map((item, index) => (
+          {outbound.topRaces.length > 0 ? (
+            outbound.topRaces.map((item, index) => (
               <div key={item.sourceRaceId} className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-4">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-[var(--brand)]">#{index + 1}</p>
@@ -276,8 +277,8 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
               </tr>
             </thead>
             <tbody>
-              {summary.recentEvents.length > 0 ? (
-                summary.recentEvents.map((event) => (
+              {outbound.recentEvents.length > 0 ? (
+                outbound.recentEvents.map((event) => (
                   <tr key={`${event.sourceRaceId}-${event.targetKind}-${event.createdAt}`} className="border-b border-slate-100 last:border-b-0">
                     <td className="px-3 py-3 text-slate-600">{formatDateTime(event.createdAt)}</td>
                     <td className="px-3 py-3">
@@ -299,6 +300,77 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
             </tbody>
           </table>
         </div>
+      </section>
+
+      <section className="mt-4 grid gap-4 lg:grid-cols-[0.85fr_1.15fr]">
+        <article className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <h2 className="text-lg font-semibold text-slate-950">광고 · 제휴 문의 현황</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl bg-slate-50 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">문의 수</p>
+              <p className="mt-2 text-2xl font-bold text-slate-950">{partner.totalLeadCount}</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">문의 진입 클릭</p>
+              <p className="mt-2 text-2xl font-bold text-slate-950">{partner.totalClickCount}</p>
+            </div>
+          </div>
+          <div className="mt-4 space-y-3">
+            {partner.leadSummaries.length > 0 ? (
+              partner.leadSummaries.map((item) => (
+                <div key={item.inquiryType} className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3">
+                  <span className="text-sm font-medium text-slate-700">{getPartnerInquiryTypeLabel(item.inquiryType)}</span>
+                  <span className="text-sm font-semibold text-slate-950">{item.count}건</span>
+                </div>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+                아직 접수된 문의가 없습니다.
+              </div>
+            )}
+          </div>
+        </article>
+
+        <article className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold text-slate-950">최근 광고 · 제휴 문의</h2>
+            <Link href="/advertise" className="text-sm font-medium text-slate-500 hover:text-slate-900">
+              문의 페이지
+            </Link>
+          </div>
+          <div className="mt-4 overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500">
+                  <th className="px-3 py-3 font-semibold">시각</th>
+                  <th className="px-3 py-3 font-semibold">이름</th>
+                  <th className="px-3 py-3 font-semibold">브랜드/주최측</th>
+                  <th className="px-3 py-3 font-semibold">유형</th>
+                  <th className="px-3 py-3 font-semibold">상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                {partner.recentLeads.length > 0 ? (
+                  partner.recentLeads.map((lead) => (
+                    <tr key={lead.id} className="border-b border-slate-100 last:border-b-0">
+                      <td className="px-3 py-3 text-slate-600">{formatDateTime(lead.created_at)}</td>
+                      <td className="px-3 py-3 text-slate-900">{lead.name}</td>
+                      <td className="px-3 py-3 text-slate-700">{lead.organization_name}</td>
+                      <td className="px-3 py-3 text-slate-700">{getPartnerInquiryTypeLabel(lead.inquiry_type)}</td>
+                      <td className="px-3 py-3 text-slate-500">{lead.status}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-3 py-6 text-center text-slate-500">
+                      아직 표시할 문의가 없습니다.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </article>
       </section>
     </PageShell>
   );

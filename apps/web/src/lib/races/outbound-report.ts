@@ -58,6 +58,9 @@ export function getOutboundTargetLabel(targetKind: string) {
   if (targetKind === 'map') return '지도';
   if (targetKind === 'calendar_google') return 'Google 캘린더';
   if (targetKind === 'calendar_ics') return 'ICS 저장';
+  if (targetKind === 'affiliate') return '제휴 클릭';
+  if (targetKind === 'sponsored') return '스폰서 클릭';
+  if (targetKind === 'partner_inquiry') return '문의 진입';
   return targetKind;
 }
 

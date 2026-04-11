@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { requireModerator } from '@/lib/auth/session';
+import { getPartnerDashboard } from '@/lib/monetization/repository';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { OutboundClickEventRow, RaceDetailViewEventRow, summarizeOutboundClicks } from './outbound-report';
 
@@ -87,5 +88,10 @@ export async function getOutboundClickDashboard(days = 7) {
 
   const clickRows = ((clickData ?? []) as RawOutboundClickEvent[]).map(mapOutboundClickEvent);
   const viewRows = ((viewData ?? []) as RawRaceDetailViewEvent[]).map(mapRaceDetailViewEvent);
-  return summarizeOutboundClicks(clickRows, viewRows);
+  const partner = await getPartnerDashboard(days);
+
+  return {
+    outbound: summarizeOutboundClicks(clickRows, viewRows),
+    partner,
+  };
 }
