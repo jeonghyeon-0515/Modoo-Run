@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSiteUrl } from '@/lib/site';
-import { publicPartnerDestinations, resolvePublicPartnerDestination } from '@/lib/monetization/public-catalog';
+import { publicPartnerDestinations } from '@/lib/monetization/public-catalog';
+import { resolvePartnerDestinationUrl } from '@/lib/monetization/partner-destination-repository';
 import { isPartnerClickTarget } from '@/lib/monetization/utils';
 import { recordPartnerClick } from '@/lib/monetization/repository';
 
@@ -28,8 +29,8 @@ function normalizeExternalUrl(value: string | null) {
   }
 }
 
-function resolveAllowedDestination(destinationKey: string | null, destinationUrl: string | null) {
-  const keyed = resolvePublicPartnerDestination(destinationKey ?? '');
+async function resolveAllowedDestination(destinationKey: string | null, destinationUrl: string | null) {
+  const keyed = destinationKey ? await resolvePartnerDestinationUrl(destinationKey) : null;
   if (keyed) {
     return keyed;
   }
@@ -45,7 +46,7 @@ function resolveAllowedDestination(destinationKey: string | null, destinationUrl
 export async function GET(request: NextRequest, { params }: { params: Params }) {
   const { target } = await params;
   const sourcePath = normalizeSourcePath(request.nextUrl.searchParams.get('source'));
-  const destination = resolveAllowedDestination(
+  const destination = await resolveAllowedDestination(
     request.nextUrl.searchParams.get('destinationKey'),
     request.nextUrl.searchParams.get('destination'),
   );

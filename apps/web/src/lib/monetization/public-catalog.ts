@@ -3,6 +3,14 @@ import type { RaceDetailItem, RaceListItem } from '../races/types';
 export type PublicPartnerTargetKind = 'affiliate' | 'sponsored';
 export type PublicPartnerDestinationKey = 'garmin' | 'nike' | 'decathlon';
 
+export type PublicPartnerDestinationMeta = {
+  key: PublicPartnerDestinationKey;
+  name: string;
+  badge: '스폰서' | '제휴';
+  defaultUrl: string;
+  description: string;
+};
+
 export type FeaturedRacePlacement = {
   race: RaceListItem;
   eyebrow: string;
@@ -41,6 +49,30 @@ export const publicPartnerDestinations: Record<PublicPartnerDestinationKey, stri
   nike: 'https://www.nike.com/kr/',
   decathlon: 'https://www.decathlon.co.kr/',
 } as const;
+
+export const publicPartnerDestinationMetas: PublicPartnerDestinationMeta[] = [
+  {
+    key: 'garmin',
+    name: 'Garmin',
+    badge: '스폰서',
+    defaultUrl: publicPartnerDestinations.garmin,
+    description: '러닝 워치 · 기록 도구 기본 링크',
+  },
+  {
+    key: 'nike',
+    name: 'Nike',
+    badge: '제휴',
+    defaultUrl: publicPartnerDestinations.nike,
+    description: '브랜드 러닝 컬렉션 기본 링크',
+  },
+  {
+    key: 'decathlon',
+    name: 'Decathlon',
+    badge: '제휴',
+    defaultUrl: publicPartnerDestinations.decathlon,
+    description: '러닝 장비/카테고리 기본 링크',
+  },
+];
 
 export const affiliateGuideSections: AffiliateGuideSection[] = [
   {

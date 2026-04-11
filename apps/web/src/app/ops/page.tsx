@@ -11,6 +11,11 @@ const adminLinks = [
     description: '대회 목록 상단 featured 노출 대회를 직접 선택하고 문구를 수정합니다.',
   },
   {
+    href: '/ops/partners',
+    title: '제휴 링크 관리',
+    description: 'Garmin, Nike, Decathlon 등 공개 제휴 링크를 운영자가 직접 수정합니다.',
+  },
+  {
     href: '/ops/outbound-clicks',
     title: '외부 클릭 · 문의 흐름',
     description: '광고·제휴 문의, 외부 이동, 차단 로그와 추이를 한 화면에서 확인합니다.',
