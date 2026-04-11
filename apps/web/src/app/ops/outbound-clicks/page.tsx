@@ -4,7 +4,7 @@ import { PageShell } from '@/components/layout/page-shell';
 import { formatRetryAfterSeconds } from '@/lib/monetization/rate-limit-helpers';
 import { getOutboundClickDashboard } from '@/lib/races/outbound-report-repository';
 import { getOutboundTargetLabel } from '@/lib/races/outbound-report';
-import { getPartnerInquiryTypeLabel } from '@/lib/monetization/utils';
+import { getPartnerGuardScopeLabel, getPartnerInquiryTypeLabel } from '@/lib/monetization/utils';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -82,6 +82,48 @@ function TrendBars({
   );
 }
 
+function GuardTrendBars({
+  points,
+}: {
+  points: Array<{ dateLabel: string; totalCount: number }>;
+}) {
+  const maxValue = Math.max(...points.map((point) => point.totalCount), 1);
+
+  return (
+    <div className="mt-4 overflow-x-auto">
+      <div
+        className="grid min-w-max gap-2"
+        style={{ gridTemplateColumns: `repeat(${points.length}, minmax(28px, 1fr))` }}
+      >
+        {points.map((point) => {
+          const barHeight = point.totalCount > 0 ? Math.max(8, Math.round((point.totalCount / maxValue) * 120)) : 4;
+          return (
+            <div key={point.dateLabel} className="flex flex-col items-center gap-2">
+              <div className="flex h-32 w-full items-end justify-center rounded-2xl bg-slate-50 px-1 py-2">
+                <div
+                  className="w-4 rounded-full bg-amber-500/80"
+                  style={{ height: `${barHeight}px` }}
+                  title={`${point.dateLabel} 차단 ${point.totalCount}건`}
+                />
+              </div>
+              <div className="text-center">
+                <p className="text-[11px] font-semibold text-slate-500">{point.dateLabel}</p>
+                <p className="text-[10px] text-slate-400">{point.totalCount}건</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-4 text-xs text-slate-500">
+        <span className="inline-flex items-center gap-2">
+          <span className="h-3 w-3 rounded-full bg-amber-500/80" />
+          차단된 제출
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function FilterChip({
   href,
   active,
@@ -150,6 +192,23 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
           </p>
           <p className="mt-1 text-xs text-slate-500">상세 조회 대비 지원 클릭 비율</p>
         </article>
+      </section>
+
+      <section className="mt-4 rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-950">차단 추이</h2>
+            <p className="mt-1 text-sm text-slate-500">최근 기간 동안 문의 폼에서 차단된 제출 수를 날짜별로 봅니다.</p>
+          </div>
+          <p className="text-xs text-slate-500">최근 {days}일</p>
+        </div>
+        {partner.guardDailyTrend.some((point) => point.totalCount > 0) ? (
+          <GuardTrendBars points={partner.guardDailyTrend} />
+        ) : (
+          <div className="mt-4 rounded-2xl border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+            아직 차단 추이를 그릴 데이터가 없습니다.
+          </div>
+        )}
       </section>
 
       <section className="mt-4 rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
@@ -425,7 +484,7 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
                 partner.recentGuardEvents.map((event) => (
                   <tr key={event.id} className="border-b border-slate-100 last:border-b-0">
                     <td className="px-3 py-3 text-slate-600">{formatDateTime(event.created_at)}</td>
-                    <td className="px-3 py-3 text-slate-700">{event.blocked_scope === 'ip' ? 'IP 기준 차단' : '이메일 기준 차단'}</td>
+                    <td className="px-3 py-3 text-slate-700">{getPartnerGuardScopeLabel(event.blocked_scope)}</td>
                     <td className="px-3 py-3 text-slate-700">{formatRetryAfterSeconds(event.retry_after_seconds)}</td>
                     <td className="px-3 py-3 text-slate-600">{event.source_path ?? '/advertise'}</td>
                     <td className="px-3 py-3 text-xs text-slate-500">

@@ -86,3 +86,33 @@ test('외부 클릭 대상 라벨을 사용자 친화적으로 바꾼다', () =>
   assert.equal(getOutboundTargetLabel('partner_inquiry'), '문의 진입');
   assert.equal(getOutboundTargetLabel('unknown_kind'), 'unknown_kind');
 });
+
+test('일자 추이는 KST 기준으로 묶인다', () => {
+  const summary = summarizeOutboundClicks(
+    [
+      {
+        sourceRaceId: '90001',
+        raceTitle: '심야 런',
+        targetKind: 'apply',
+        sourcePath: '/races/90001',
+        viewerRole: 'anon',
+        createdAt: '2026-04-09T15:30:00.000Z',
+      },
+    ],
+    [
+      {
+        sourceRaceId: '90001',
+        raceTitle: '심야 런',
+        sourcePath: '/races/90001',
+        viewerRole: 'anon',
+        createdAt: '2026-04-09T15:10:00.000Z',
+      },
+    ],
+    { trendLimit: 7 },
+  );
+
+  assert.equal(summary.dailyTrend.length, 1);
+  assert.equal(summary.dailyTrend[0].dateLabel, '4/10');
+  assert.equal(summary.dailyTrend[0].viewCount, 1);
+  assert.equal(summary.dailyTrend[0].applyClickCount, 1);
+});

@@ -1,3 +1,24 @@
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+function toKstCalendarParts(date: Date) {
+  const shifted = new Date(date.getTime() + KST_OFFSET_MS);
+  return {
+    year: shifted.getUTCFullYear(),
+    month: shifted.getUTCMonth() + 1,
+    day: shifted.getUTCDate(),
+  };
+}
+
+function formatKstDateLabel(value: string) {
+  const parts = toKstCalendarParts(new Date(value));
+  return `${parts.month}/${parts.day}`;
+}
+
+function formatKstDateKey(value: string) {
+  const parts = toKstCalendarParts(new Date(value));
+  return `${parts.year}-${String(parts.month).padStart(2, '0')}-${String(parts.day).padStart(2, '0')}`;
+}
+
 export type OutboundClickEventRow = {
   sourceRaceId: string;
   raceTitle: string;
@@ -65,15 +86,11 @@ export function getOutboundTargetLabel(targetKind: string) {
 }
 
 function formatDateLabel(value: string) {
-  return new Intl.DateTimeFormat('ko-KR', {
-    month: 'numeric',
-    day: 'numeric',
-    timeZone: 'Asia/Seoul',
-  }).format(new Date(value));
+  return formatKstDateLabel(value);
 }
 
 function toDateKey(value: string) {
-  return new Date(value).toISOString().slice(0, 10);
+  return formatKstDateKey(value);
 }
 
 export function summarizeOutboundClicks(

@@ -3,6 +3,7 @@ import 'server-only';
 import { getOptionalViewer, requireModerator } from '@/lib/auth/session';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { buildPartnerLeadGuardDailyTrend, buildRecentKstDayBuckets } from './report';
 import {
   partnerClickTargets,
   partnerInquiryTypes,
@@ -53,12 +54,6 @@ type CountResponse = {
   count: number | null;
   error: { message: string } | null;
 };
-
-function getSinceIso(days: number) {
-  const since = new Date();
-  since.setUTCDate(since.getUTCDate() - days);
-  return since.toISOString();
-}
 
 function normalizeCount(response: CountResponse, label: string) {
   if (response.error) {
@@ -141,7 +136,11 @@ export async function getPartnerDashboard(days = 7) {
   await requireModerator('/ops/outbound-clicks');
 
   const supabase = await getSupabaseServerClient();
-  const sinceIso = getSinceIso(days);
+  const guardDailyTrendBuckets = buildRecentKstDayBuckets(days);
+  const firstBucket = guardDailyTrendBuckets[0];
+  const lastBucket = guardDailyTrendBuckets.at(-1);
+  const sinceIso = firstBucket?.startIso ?? new Date().toISOString();
+  const untilIso = lastBucket?.endIso ?? new Date().toISOString();
 
   const [
     { data: leads, error: leadsError },
@@ -155,22 +154,25 @@ export async function getPartnerDashboard(days = 7) {
       .from('partner_leads')
       .select('id, name, email, organization_name, inquiry_type, message, source_path, status, created_at')
       .gte('created_at', sinceIso)
+      .lt('created_at', untilIso)
       .order('created_at', { ascending: false })
       .limit(100),
     supabase
       .from('partner_lead_guard_events')
       .select('id, blocked_scope, retry_after_seconds, source_path, email_hash, ip_hash, created_at')
       .gte('created_at', sinceIso)
+      .lt('created_at', untilIso)
       .order('created_at', { ascending: false })
       .limit(100),
-    supabase.from('partner_leads').select('id', { count: 'exact', head: true }).gte('created_at', sinceIso),
-    supabase.from('partner_click_events').select('id', { count: 'exact', head: true }).gte('created_at', sinceIso),
-    supabase.from('partner_lead_guard_events').select('id', { count: 'exact', head: true }).gte('created_at', sinceIso),
+    supabase.from('partner_leads').select('id', { count: 'exact', head: true }).gte('created_at', sinceIso).lt('created_at', untilIso),
+    supabase.from('partner_click_events').select('id', { count: 'exact', head: true }).gte('created_at', sinceIso).lt('created_at', untilIso),
+    supabase.from('partner_lead_guard_events').select('id', { count: 'exact', head: true }).gte('created_at', sinceIso).lt('created_at', untilIso),
     ...partnerClickTargets.map((targetKind) =>
       supabase
         .from('partner_click_events')
         .select('id', { count: 'exact', head: true })
         .gte('created_at', sinceIso)
+        .lt('created_at', untilIso)
         .eq('target_kind', targetKind),
     ),
     ...partnerInquiryTypes.map((inquiryType) =>
@@ -178,6 +180,7 @@ export async function getPartnerDashboard(days = 7) {
         .from('partner_leads')
         .select('id', { count: 'exact', head: true })
         .gte('created_at', sinceIso)
+        .lt('created_at', untilIso)
         .eq('inquiry_type', inquiryType),
     ),
     ...partnerLeadGuardScopes.map((blockedScope) =>
@@ -185,6 +188,7 @@ export async function getPartnerDashboard(days = 7) {
         .from('partner_lead_guard_events')
         .select('id', { count: 'exact', head: true })
         .gte('created_at', sinceIso)
+        .lt('created_at', untilIso)
         .eq('blocked_scope', blockedScope),
     ),
   ]);
@@ -205,6 +209,22 @@ export async function getPartnerDashboard(days = 7) {
   const guardSummaryResponses = summaryResponses.slice(
     partnerClickTargets.length + partnerInquiryTypes.length,
   ) as CountResponse[];
+  const guardDailyTrendResponses = await Promise.all(
+    guardDailyTrendBuckets.map((bucket) =>
+      supabase
+        .from('partner_lead_guard_events')
+        .select('id', { count: 'exact', head: true })
+        .gte('created_at', bucket.startIso)
+        .lt('created_at', bucket.endIso),
+    ),
+  );
+  const guardDailyTrend = buildPartnerLeadGuardDailyTrend(
+    guardDailyTrendBuckets,
+    guardDailyTrendBuckets.map((bucket, index) => ({
+      dateKey: bucket.dateKey,
+      count: normalizeCount(guardDailyTrendResponses[index] as CountResponse, `파트너 차단 일별 추이(${bucket.dateKey})`),
+    })),
+  );
 
   return {
     totalLeadCount: normalizeCount(totalLeadCountResponse as CountResponse, '파트너 문의 수'),
@@ -231,6 +251,7 @@ export async function getPartnerDashboard(days = 7) {
         count: normalizeCount(guardSummaryResponses[index], `파트너 차단 요약(${blockedScope})`),
       }))
       .filter((item) => item.count > 0),
+    guardDailyTrend,
     recentLeads: (leads ?? []) as RawPartnerLeadRow[],
     recentGuardEvents: (guardEvents ?? []) as RawPartnerLeadGuardRow[],
   };

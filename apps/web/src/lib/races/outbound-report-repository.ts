@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { requireModerator } from '@/lib/auth/session';
+import { buildRecentKstDayBuckets } from '@/lib/monetization/report';
 import { getPartnerDashboard } from '@/lib/monetization/repository';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { OutboundClickEventRow, RaceDetailViewEventRow, summarizeOutboundClicks } from './outbound-report';
@@ -21,12 +22,6 @@ type RawRaceDetailViewEvent = {
   created_at: string;
   races: { title: string } | { title: string }[] | null;
 };
-
-function getSinceIso(days: number) {
-  const since = new Date();
-  since.setUTCDate(since.getUTCDate() - days);
-  return since.toISOString();
-}
 
 function mapRaceTitle(value: RawOutboundClickEvent['races']) {
   if (!value) return '대회 이름 없음';
@@ -62,18 +57,24 @@ export async function getOutboundClickDashboard(days = 7) {
   await requireModerator('/ops/outbound-clicks');
 
   const supabase = await getSupabaseServerClient();
-  const sinceIso = getSinceIso(days);
+  const dateBuckets = buildRecentKstDayBuckets(days);
+  const firstBucket = dateBuckets[0];
+  const lastBucket = dateBuckets.at(-1);
+  const sinceIso = firstBucket?.startIso ?? new Date().toISOString();
+  const untilIso = lastBucket?.endIso ?? new Date().toISOString();
   const [{ data: clickData, error: clickError }, { data: viewData, error: viewError }] = await Promise.all([
     supabase
       .from('race_outbound_click_events')
       .select('source_race_id, target_kind, source_path, viewer_role, created_at, races(title)')
       .gte('created_at', sinceIso)
+      .lt('created_at', untilIso)
       .order('created_at', { ascending: false })
       .limit(500),
     supabase
       .from('race_detail_view_events')
       .select('source_race_id, source_path, viewer_role, created_at, races(title)')
       .gte('created_at', sinceIso)
+      .lt('created_at', untilIso)
       .order('created_at', { ascending: false })
       .limit(1000),
   ]);
