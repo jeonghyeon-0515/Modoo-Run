@@ -165,7 +165,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
 
       <section className="hero-shell overflow-hidden rounded-[1.75rem] p-6 text-white sm:rounded-[2rem] sm:p-8">
         <div className="max-w-4xl">
-          <p className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-[var(--brand-soft-strong)] ring-1 ring-white/10">
+          <p className="inline-flex rounded-full bg-white/12 px-3 py-1 text-xs font-semibold text-[#ffd9cc] ring-1 ring-white/12">
             참가 전에 핵심 정보 먼저 보기
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -175,7 +175,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
             {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
             {isBookmarked ? <StatusBadge tone="success">찜한 대회</StatusBadge> : null}
           </div>
-          <p className="mt-5 text-sm font-semibold text-[var(--brand-soft-strong)]">
+          <p className="mt-5 text-sm font-semibold text-[#ffd9cc]">
             {formatRaceDate(race.eventDate, race.eventDateLabel)}
           </p>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-5xl">{race.title}</h2>
@@ -198,7 +198,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
                 href={getRaceOutboundPath(race.sourceRaceId, 'apply')}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_38px_rgba(255,107,87,0.28)] transition hover:bg-[var(--brand-strong)]"
+                className="public-primary-button inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition"
               >
                 바로 지원하기
               </a>
@@ -339,7 +339,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
                 <Link
                   key={item.id}
                   href={`/races/${item.sourceRaceId}`}
-                  className="interactive-card group relative overflow-hidden rounded-[1.25rem] border border-slate-200 p-4 transition hover:-translate-y-0.5 hover:border-[var(--brand-soft)]"
+                  className="interactive-card group relative overflow-hidden rounded-[1.25rem] border border-slate-200 p-4 transition hover:-translate-y-0.5 hover:border-slate-300"
                 >
                   <LinkPendingOverlay label="추천 대회 여는 중…" />
                   <div className="flex items-start justify-between gap-3">

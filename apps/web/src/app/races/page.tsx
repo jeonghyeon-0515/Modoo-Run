@@ -85,8 +85,8 @@ function FilterChip({
       href={href}
       className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition sm:text-sm ${
         active
-          ? 'border-slate-300 bg-slate-100 text-slate-950'
-          : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+          ? 'public-chip-active'
+          : 'public-chip-idle'
       }`}
     >
       {children}
@@ -236,9 +236,9 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             <p className="mt-1 text-sm text-slate-600">
               {isDefaultOpenView
                 ? '날짜가 가까운 순서로 정렬했습니다.'
-                : activeLabels.length > 0
-                  ? `${activeLabels.join(' · ')} 조건을 함께 적용했습니다.`
-                  : '조건을 바꾸면 원하는 일정만 골라볼 수 있습니다.'}
+                  : activeLabels.length > 0
+                  ? `${activeLabels.join(' · ')} 조건으로 조금 더 좁혀서 보여드리고 있어요.`
+                  : '조건을 바꾸면 지금 찾는 일정만 가볍게 골라볼 수 있어요.'}
             </p>
           </div>
 
@@ -292,11 +292,11 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           <article className="rounded-[1.25rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
             <p className="text-base font-semibold text-slate-950">조건에 맞는 대회가 없습니다.</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              필터를 조정하거나 접수 상태를 전체 보기로 바꿔 다른 일정도 확인해 보세요.
+              필터를 조금만 풀어보면 다른 일정도 편하게 살펴볼 수 있어요.
             </p>
             <Link
               href="/races"
-              className="mt-5 inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="public-primary-button mt-5 inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition"
             >
               필터 초기화
             </Link>
@@ -317,7 +317,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                       {formatRaceDate(race.eventDate, race.eventDateLabel)}
                     </p>
                     {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
-                    {featuredRaceIds.has(race.id) ? <StatusBadge tone="info">Featured</StatusBadge> : null}
+                    {featuredRaceIds.has(race.id) ? <StatusBadge tone="disclosure">Featured</StatusBadge> : null}
                   </div>
                   <h2 className="mt-1 line-clamp-2 text-sm font-semibold text-slate-950 sm:text-lg">
                     {race.title}

@@ -3,20 +3,37 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { formatRaceDate } from '@/lib/races/formatters';
 import type { FeaturedRacePlacement } from '@/lib/monetization/public-catalog';
 
-export function FeaturedRaceSection({ items }: { items: FeaturedRacePlacement[] }) {
+export function FeaturedRaceSection({
+  items,
+  variant = 'public',
+}: {
+  items: FeaturedRacePlacement[];
+  variant?: 'public' | 'ops-preview';
+}) {
   if (items.length === 0) return null;
+
+  const isOpsPreview = variant === 'ops-preview';
 
   return (
     <section className="mt-4 rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <StatusBadge tone="info">Featured</StatusBadge>
+            <StatusBadge tone={isOpsPreview ? 'ops-info' : 'disclosure'}>Featured</StatusBadge>
             <p className="text-lg font-semibold text-slate-950">주목할 대회</p>
           </div>
-          <p className="mt-2 text-sm text-slate-600">사용자에게 실제로 노출되는 featured listing 시범 영역입니다.</p>
+          <p className="mt-2 text-sm text-slate-600">
+            {isOpsPreview
+              ? '운영 화면에서 확인하는 featured preview입니다.'
+              : '사용자에게 실제로 노출되는 featured listing 시범 영역입니다.'}
+          </p>
         </div>
-        <Link href="/advertise" className="text-sm font-medium text-slate-500 hover:text-slate-900">
+        <Link
+          href="/advertise"
+          className={`text-sm font-medium ${
+            isOpsPreview ? 'text-slate-500 hover:text-slate-900' : 'text-[var(--public-accent-strong)] hover:text-[var(--public-accent-strong)]/90'
+          }`}
+        >
           노출 문의
         </Link>
       </div>
@@ -26,9 +43,19 @@ export function FeaturedRaceSection({ items }: { items: FeaturedRacePlacement[] 
           <Link
             key={item.race.id}
             href={`/races/${item.race.sourceRaceId}`}
-            className="rounded-[1.1rem] border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)]/60 p-4 transition hover:border-[var(--brand)]"
+            className={`rounded-[1.1rem] border p-4 transition ${
+              isOpsPreview
+                ? 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                : 'border-slate-200 bg-white hover:border-slate-300'
+            }`}
           >
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--brand-strong)]">{item.eyebrow}</p>
+            <p
+              className={`text-[11px] font-semibold uppercase tracking-wide ${
+                isOpsPreview ? 'text-slate-500' : 'text-slate-500'
+              }`}
+            >
+              {item.eyebrow}
+            </p>
             <h3 className="mt-2 text-lg font-semibold text-slate-950">{item.race.title}</h3>
             <p className="mt-2 text-sm text-slate-600">
               {formatRaceDate(item.race.eventDate, item.race.eventDateLabel)} · {item.race.region ?? '지역 미정'}

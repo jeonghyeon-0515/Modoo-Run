@@ -92,8 +92,8 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                 href={categoryHref(category.value)}
                 className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
                   selectedCategory === category.value
-                    ? 'border-slate-300 bg-slate-100 text-slate-950'
-                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+                    ? 'public-chip-active'
+                    : 'public-chip-idle'
                 }`}
               >
                 {category.label}
@@ -167,7 +167,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             </form>
           ) : (
             <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-              로그인 후 글과 댓글을 작성할 수 있습니다.{' '}
+              로그인하면 대회 준비 경험이나 후기를 더 편하게 남길 수 있어요.{' '}
               <Link href="/login?next=/community" className="font-semibold text-[var(--brand)]">
                 로그인하기
               </Link>
@@ -212,7 +212,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
           <article className="rounded-[1.25rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
             <p className="text-base font-semibold text-slate-950">등록된 글이 아직 없습니다.</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              첫 글을 작성하세요.
+              첫 글로 준비 과정이나 완주 경험을 가볍게 남겨보세요.
             </p>
           </article>
         ) : (

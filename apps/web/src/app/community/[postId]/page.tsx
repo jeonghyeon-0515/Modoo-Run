@@ -101,7 +101,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
           </form>
         ) : (
           <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-            댓글 남기기는 로그인 후 사용할 수 있습니다.{' '}
+            로그인하면 댓글로 공감이나 준비 팁을 남길 수 있어요.{' '}
             <Link href={`/login?next=${encodeURIComponent(`/community/${post.id}`)}`} className="font-semibold text-[var(--brand)]">
               로그인하기
             </Link>
@@ -113,7 +113,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
         {post.comments.length === 0 ? (
           <article className="rounded-[1.75rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
             <p className="text-base font-semibold text-slate-950">댓글이 아직 없습니다.</p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">첫 댓글로 준비 경험이나 팁을 남겨보세요.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">첫 댓글로 준비 경험이나 작은 팁을 남겨보세요.</p>
           </article>
         ) : (
           post.comments.map((comment) => (

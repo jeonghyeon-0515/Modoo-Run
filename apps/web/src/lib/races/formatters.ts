@@ -1,7 +1,7 @@
 type RaceStatus = 'open' | 'closed' | 'unknown';
 
 export function getRaceStatusTone(status: RaceStatus) {
-  if (status === 'open') return 'info' as const;
+  if (status === 'open') return 'success' as const;
   if (status === 'closed') return 'warning' as const;
   return 'neutral' as const;
 }

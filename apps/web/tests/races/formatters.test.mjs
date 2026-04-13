@@ -12,7 +12,7 @@ const {
 test('대회 상태 라벨과 톤을 반환한다', () => {
   assert.equal(getRaceStatusLabel('open'), '접수중');
   assert.equal(getRaceStatusLabel('closed'), '접수마감');
-  assert.equal(getRaceStatusTone('open'), 'info');
+  assert.equal(getRaceStatusTone('open'), 'success');
   assert.equal(getRaceStatusTone('closed'), 'warning');
 });
 

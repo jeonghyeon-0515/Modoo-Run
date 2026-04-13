@@ -12,7 +12,7 @@ export default function GearGuidePage() {
     >
       <section className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
         <div className="flex flex-wrap items-center gap-2">
-          <StatusBadge tone="info">광고 · 제휴 안내</StatusBadge>
+          <StatusBadge tone="disclosure">광고 · 제휴 안내</StatusBadge>
           <p className="text-sm font-semibold text-slate-900">일부 링크는 스폰서 또는 제휴 링크입니다.</p>
         </div>
         <p className="mt-3 text-sm leading-6 text-slate-600">
@@ -36,11 +36,11 @@ export default function GearGuidePage() {
                   className="rounded-[1.1rem] border border-slate-200 bg-slate-50 p-5 transition hover:border-slate-300"
                 >
                   <div className="flex items-center gap-2">
-                    <StatusBadge tone="info">{resource.label}</StatusBadge>
+                    <StatusBadge tone="disclosure">{resource.label}</StatusBadge>
                     <p className="text-base font-semibold text-slate-950">{resource.title}</p>
                   </div>
                   <p className="mt-3 text-sm leading-6 text-slate-600">{resource.description}</p>
-                  <p className="mt-4 text-sm font-semibold text-[var(--brand-strong)]">{resource.ctaLabel} →</p>
+                  <p className="mt-4 text-sm font-semibold text-[var(--public-accent-strong)]">{resource.ctaLabel} →</p>
                 </a>
               ))}
             </div>
@@ -56,7 +56,7 @@ export default function GearGuidePage() {
         <div className="mt-4 flex flex-wrap gap-3">
           <Link
             href="/advertise"
-            className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+            className="public-primary-button inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition"
           >
             광고 · 제휴 문의하기
           </Link>

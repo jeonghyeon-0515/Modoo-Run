@@ -54,7 +54,7 @@ export default async function OpsFeaturedPage({ searchParams }: { searchParams: 
       ) : null}
 
       <section className="mt-6">
-        <FeaturedRaceSection items={previewItems} />
+        <FeaturedRaceSection items={previewItems} variant="ops-preview" />
       </section>
 
       <section className="mt-6 grid gap-5 xl:grid-cols-2">

@@ -53,7 +53,7 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Se
             {placementItems.map((item) => (
               <div key={item.title} className="rounded-[1rem] border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-center gap-2">
-                  <StatusBadge tone="info">{item.badge}</StatusBadge>
+                  <StatusBadge tone="disclosure">{item.badge}</StatusBadge>
                   <p className="text-sm font-semibold text-slate-900">{item.title}</p>
                 </div>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
