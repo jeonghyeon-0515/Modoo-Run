@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 
 const items = [
   { href: '/races', label: '대회 일정' },
+  { href: '/compare', label: '대회 비교' },
   { href: '/community', label: '커뮤니티' },
   { href: '/plan', label: '일정 캘린더' },
 ];

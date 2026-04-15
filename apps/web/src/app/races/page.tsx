@@ -3,6 +3,7 @@ import { PageShell } from '@/components/layout/page-shell';
 import { FeaturedRaceSection } from '@/components/monetization/featured-race-section';
 import { PartnerInquiryCard } from '@/components/monetization/partner-inquiry-card';
 import { PromoSlotCard } from '@/components/monetization/promo-slot-card';
+import { RaceCompareButton } from '@/components/races/race-compare-button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
 import { listActiveFeaturedRacePlacements } from '@/lib/monetization/featured-repository';
@@ -327,45 +328,65 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           </article>
         ) : (
           races.map((race) => (
-            <Link
+            <article
               key={race.id}
-              href={`/races/${race.sourceRaceId}`}
-              aria-label={`${race.title} 상세 보기`}
-              className="group relative block overflow-hidden rounded-[1rem] border border-slate-200 bg-white p-3 shadow-sm transition hover:border-slate-300 sm:rounded-[1.1rem] sm:p-4"
+              className="overflow-hidden rounded-[1rem] border border-slate-200 bg-white shadow-sm transition hover:border-slate-300 sm:rounded-[1.1rem]"
             >
-              <LinkPendingOverlay label="대회 여는 중…" />
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-[11px] font-semibold text-slate-500 sm:text-xs">
-                      {formatRaceDate(race.eventDate, race.eventDateLabel)}
-                    </p>
-                    {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
-                    {featuredRaceIds.has(race.id) ? <StatusBadge tone="disclosure">Featured</StatusBadge> : null}
-                  </div>
-                  <h2 className="mt-1 line-clamp-2 text-sm font-semibold text-slate-950 sm:text-lg">
-                    {race.title}
-                  </h2>
+              <Link
+                href={`/races/${race.sourceRaceId}`}
+                aria-label={`${race.title} 상세 보기`}
+                className="group relative block p-3 sm:p-4"
+              >
+                <LinkPendingOverlay label="대회 여는 중…" />
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-[11px] font-semibold text-slate-500 sm:text-xs">
+                        {formatRaceDate(race.eventDate, race.eventDateLabel)}
+                      </p>
+                      {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
+                      {featuredRaceIds.has(race.id) ? <StatusBadge tone="disclosure">Featured</StatusBadge> : null}
+                    </div>
+                    <h2 className="mt-1 line-clamp-2 text-sm font-semibold text-slate-950 sm:text-lg">
+                      {race.title}
+                    </h2>
 
-                  <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-600 sm:text-sm">
-                    <span className="line-clamp-1">{race.location ?? '장소 정보는 상세에서 확인해보세요.'}</span>
-                    <span className="text-slate-300">·</span>
-                    <span className="line-clamp-1">{race.courseSummary ?? '종목 정보는 상세 페이지에서 확인할 수 있습니다.'}</span>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-600 sm:text-sm">
+                      <span className="line-clamp-1">{race.location ?? '장소 정보는 상세에서 확인해보세요.'}</span>
+                      <span className="text-slate-300">·</span>
+                      <span className="line-clamp-1">{race.courseSummary ?? '종목 정보는 상세 페이지에서 확인할 수 있습니다.'}</span>
+                    </div>
+                    {race.registrationPeriodLabel ? (
+                      <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">접수 {race.registrationPeriodLabel}</p>
+                    ) : null}
                   </div>
-                  {race.registrationPeriodLabel ? (
-                    <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">접수 {race.registrationPeriodLabel}</p>
-                  ) : null}
+                  <div className="flex flex-col items-end gap-2">
+                    <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
+                      {getRaceStatusLabel(race.registrationStatus)}
+                    </StatusBadge>
+                    <span className="inline-flex items-center gap-2 text-[11px] font-medium text-slate-500 transition group-hover:text-slate-900 sm:text-xs">
+                      자세히 보기 →
+                    </span>
+                  </div>
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                  <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
-                    {getRaceStatusLabel(race.registrationStatus)}
-                  </StatusBadge>
-                  <span className="inline-flex items-center gap-2 text-[11px] font-medium text-slate-500 transition group-hover:text-slate-900 sm:text-xs">
-                    자세히 보기 →
-                  </span>
-                </div>
+              </Link>
+              <div className="border-t border-slate-100 px-3 py-3 sm:px-4">
+                <RaceCompareButton
+                  compact
+                  item={{
+                    sourceRaceId: race.sourceRaceId,
+                    title: race.title,
+                    eventDate: race.eventDate,
+                    eventDateLabel: race.eventDateLabel,
+                    region: race.region,
+                    location: race.location,
+                    courseSummary: race.courseSummary,
+                    registrationPeriodLabel: race.registrationPeriodLabel,
+                    detailPath: `/races/${race.sourceRaceId}`,
+                  }}
+                />
               </div>
-            </Link>
+            </article>
           ))
         )}
       </section>

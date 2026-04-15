@@ -67,6 +67,12 @@ async function buildEntries(): Promise<SitemapEntry[]> {
       priority: 0.7,
     },
     {
+      url: buildAbsoluteUrl('/compare'),
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.65,
+    },
+    {
       url: buildAbsoluteUrl('/plan'),
       lastModified: now,
       changeFrequency: 'weekly',

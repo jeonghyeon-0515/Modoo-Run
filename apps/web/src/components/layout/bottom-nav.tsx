@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 
 const items = [
   { href: '/races', label: '대회일정' },
+  { href: '/compare', label: '비교' },
   { href: '/plan', label: '캘린더' },
   { href: '/community', label: '커뮤니티' },
 ];
@@ -18,7 +19,7 @@ export function BottomNav() {
 
   return (
     <nav className="sticky bottom-0 z-20 mt-10 border-t border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto grid max-w-5xl grid-cols-3 px-3 py-2">
+      <div className="mx-auto grid max-w-5xl grid-cols-4 px-3 py-2">
         {items.map((item) => (
           <Link
             key={item.href}

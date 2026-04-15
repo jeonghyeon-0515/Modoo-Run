@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { PageShell } from '@/components/layout/page-shell';
 import { PromoSlotCard } from '@/components/monetization/promo-slot-card';
 import { RaceDetailViewTracker } from '@/components/races/race-detail-view-tracker';
+import { RaceCompareButton } from '@/components/races/race-compare-button';
 import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { LinkPendingCue } from '@/components/ui/link-pending-cue';
@@ -94,6 +95,17 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
   const googleCalendarUrl = getRaceGoogleCalendarUrl(race);
   const calendarDownloadPath = race.eventDate ? getRaceCalendarDownloadPath(race.sourceRaceId) : null;
   const promoSlots = getRaceDetailPromoSlots(race);
+  const compareItem = {
+    sourceRaceId: race.sourceRaceId,
+    title: race.title,
+    eventDate: race.eventDate,
+    eventDateLabel: race.eventDateLabel,
+    region: race.region,
+    location: race.location,
+    courseSummary: race.courseSummary,
+    registrationPeriodLabel: race.registrationPeriodLabel,
+    detailPath: `/races/${race.sourceRaceId}`,
+  };
 
   const informationCards = [
     ['일정', formatRaceDate(race.eventDate, race.eventDateLabel)],
@@ -259,6 +271,7 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
                 ICS 저장
               </a>
             ) : null}
+            <RaceCompareButton item={compareItem} />
           </div>
         </div>
       </section>

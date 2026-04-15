@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
+import { RaceCompareButton } from '@/components/races/race-compare-button';
 import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { getRaceStatusLabel, getRaceStatusTone, formatRaceDate } from '@/lib/races/formatters';
@@ -8,34 +9,49 @@ import { listRaceLandingItems, type RaceLandingItem } from '@/lib/races/landing-
 
 function RaceLandingCard({ race }: { race: RaceLandingItem }) {
   return (
-    <Link
-      href={`/races/${race.sourceRaceId}`}
-      className="interactive-card group relative overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300"
-    >
-      <LinkPendingOverlay label="대회 정보 여는 중…" />
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold text-[var(--brand)]">
-            {formatRaceDate(race.eventDate, race.eventDateLabel)}
-          </p>
-          <h2 className="mt-2 line-clamp-2 text-base font-semibold text-slate-950">{race.title}</h2>
+    <article className="interactive-card overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300">
+      <Link href={`/races/${race.sourceRaceId}`} className="group relative block p-5">
+        <LinkPendingOverlay label="대회 정보 여는 중…" />
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-[var(--brand)]">
+              {formatRaceDate(race.eventDate, race.eventDateLabel)}
+            </p>
+            <h2 className="mt-2 line-clamp-2 text-base font-semibold text-slate-950">{race.title}</h2>
+          </div>
+          <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
+            {getRaceStatusLabel(race.registrationStatus)}
+          </StatusBadge>
         </div>
-        <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
-          {getRaceStatusLabel(race.registrationStatus)}
-        </StatusBadge>
-      </div>
-      <p className="mt-3 line-clamp-1 text-sm text-slate-600">
-        {race.region ?? '지역 미정'} · {race.location ?? '장소 정보 없음'}
-      </p>
-      <p className="mt-2 line-clamp-1 text-sm text-slate-500">
-        {race.courseSummary ?? '종목 정보 없음'}
-      </p>
-      {race.registrationCloseAt || race.registrationPeriodLabel ? (
-        <p className="mt-4 rounded-xl bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600">
-          접수 {race.registrationCloseAt ? `${race.registrationCloseAt} 마감` : race.registrationPeriodLabel}
+        <p className="mt-3 line-clamp-1 text-sm text-slate-600">
+          {race.region ?? '지역 미정'} · {race.location ?? '장소 정보 없음'}
         </p>
-      ) : null}
-    </Link>
+        <p className="mt-2 line-clamp-1 text-sm text-slate-500">
+          {race.courseSummary ?? '종목 정보 없음'}
+        </p>
+        {race.registrationCloseAt || race.registrationPeriodLabel ? (
+          <p className="mt-4 rounded-xl bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600">
+            접수 {race.registrationCloseAt ? `${race.registrationCloseAt} 마감` : race.registrationPeriodLabel}
+          </p>
+        ) : null}
+      </Link>
+      <div className="border-t border-slate-100 px-5 py-4">
+        <RaceCompareButton
+          compact
+          item={{
+            sourceRaceId: race.sourceRaceId,
+            title: race.title,
+            eventDate: race.eventDate,
+            eventDateLabel: race.eventDateLabel,
+            region: race.region,
+            location: race.location,
+            courseSummary: race.courseSummary,
+            registrationPeriodLabel: race.registrationPeriodLabel,
+            detailPath: `/races/${race.sourceRaceId}`,
+          }}
+        />
+      </div>
+    </article>
   );
 }
 
