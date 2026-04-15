@@ -27,7 +27,8 @@ import {
   listBookmarkedRaceIds,
   listRelatedRaces,
 } from '@/lib/races/repository';
-import { buildAbsoluteUrl } from '@/lib/site';
+import { buildBreadcrumbSchema, serializeJsonLd } from '@/lib/seo/schema';
+import { buildAbsoluteUrl, getSiteUrl } from '@/lib/site';
 
 type Params = Promise<{ raceId: string }>;
 
@@ -140,6 +141,12 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
         }
       : undefined,
   };
+  const siteUrl = getSiteUrl();
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: '홈', path: '/' },
+    { name: '대회 일정', path: '/races' },
+    { name: race.title, path: `/races/${race.sourceRaceId}` },
+  ], siteUrl);
 
   return (
     <PageShell
@@ -150,7 +157,11 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
       <RaceDetailViewTracker sourceRaceId={race.sourceRaceId} />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(eventSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
       <div className="mb-4">
         <Link

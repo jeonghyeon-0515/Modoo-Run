@@ -22,8 +22,8 @@
 | A4 | P0 | 대회 상세 `generateMetadata()` | 대회별 고유 title/description/canonical 적용 | 완료 |
 | A5 | P0 | Event JSON-LD 적용 | 상세 HTML에 Event schema 노출 | 완료 |
 | A6 | P0 | SEO Audit workflow 운영 | PR/스케줄 기준 기본 SEO 누락 감지 | 완료 |
-| A7 | P1 | Organization / WebSite schema 추가 | 루트 HTML에 조직/사이트 스키마 노출 | 미구현 |
-| A8 | P1 | Breadcrumb schema 추가 | 대회 상세 breadcrumb schema 노출 | 미구현 |
+| A7 | P1 | Organization / WebSite schema 추가 | 루트 HTML에 조직/사이트 스키마 노출 | 완료 |
+| A8 | P1 | Breadcrumb schema 추가 | 대회 상세 breadcrumb schema 노출 | 완료 |
 | A9 | P1 | 페이지 갱신 요청(IndexNow/Naver) 루틴 | 변경 후 갱신 요청 자동/반자동 가능 | 완료 |
 | A10 | P2 | SEO 리포트 자동 요약 | 주간 감사 로그 축적 | Actions 후보 |
 

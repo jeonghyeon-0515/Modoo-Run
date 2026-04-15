@@ -26,11 +26,20 @@ function run() {
   assert(layout.includes('metadataBase'), 'layout metadataBase 설정이 없습니다.');
   assert(layout.includes('openGraph'), 'layout openGraph 설정이 없습니다.');
   assert(layout.includes('verification'), 'layout verification 설정이 없습니다.');
+  assert(layout.includes('buildSiteStructuredData'), '루트 Organization/WebSite schema 렌더링이 없습니다.');
+  assert(layout.includes('application/ld+json'), '루트 structured data JSON-LD 렌더링이 없습니다.');
 
   const raceDetail = read('src/app/races/[raceId]/page.tsx');
   assert(raceDetail.includes('generateMetadata'), '대회 상세 generateMetadata 가 없습니다.');
   assert(raceDetail.includes('application/ld+json'), '대회 상세 JSON-LD structured data 가 없습니다.');
   assert(raceDetail.includes('"@type": \'Event\''.replace(/'/g, '"')) || raceDetail.includes("'@type': 'Event'"), 'Event schema 가 없습니다.');
+  assert(raceDetail.includes('buildBreadcrumbSchema'), '대회 상세 Breadcrumb schema 렌더링이 없습니다.');
+
+  const schemaUtils = read('src/lib/seo/schema.ts');
+  assert(schemaUtils.includes("'@type': 'Organization'"), 'Organization schema builder 가 없습니다.');
+  assert(schemaUtils.includes("'@type': 'WebSite'"), 'WebSite schema builder 가 없습니다.');
+  assert(schemaUtils.includes("'@type': 'BreadcrumbList'"), 'BreadcrumbList schema builder 가 없습니다.');
+  assert(schemaUtils.includes('serializeJsonLd'), 'JSON-LD 직렬화 유틸이 없습니다.');
 
   const strategyDoc = path.join(root, '..', '..', 'docs', 'strategy', 'growth-backlog-90d.md');
   assert(fs.existsSync(strategyDoc), '성장 백로그 문서가 없습니다.');

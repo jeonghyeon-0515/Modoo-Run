@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { getSiteUrl, getSiteVerification } from '@/lib/site';
+import { buildSiteStructuredData, serializeJsonLd } from '@/lib/seo/schema';
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
@@ -26,9 +27,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const siteStructuredData = buildSiteStructuredData(getSiteUrl());
+
   return (
     <html lang="ko" className="h-full antialiased">
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(siteStructuredData) }}
+        />
         {children}
       </body>
     </html>
