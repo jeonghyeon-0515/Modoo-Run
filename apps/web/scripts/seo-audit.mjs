@@ -41,6 +41,22 @@ function run() {
   assert(schemaUtils.includes("'@type': 'BreadcrumbList'"), 'BreadcrumbList schema builder 가 없습니다.');
   assert(schemaUtils.includes('serializeJsonLd'), 'JSON-LD 직렬화 유틸이 없습니다.');
 
+  [
+    'src/app/races/closing-soon/page.tsx',
+    'src/app/races/regions/seoul/page.tsx',
+    'src/app/races/regions/busan/page.tsx',
+    'src/app/races/distances/10k/page.tsx',
+    'src/app/races/distances/half-full/page.tsx',
+  ].forEach((file) => {
+    assert(exists(file), `${file} 랜딩 페이지가 없습니다.`);
+    const source = read(file);
+    assert(source.includes('metadata'), `${file} metadata 설정이 없습니다.`);
+    assert(source.includes('canonical'), `${file} canonical 설정이 없습니다.`);
+  });
+
+  const sitemap = read('src/app/sitemap.xml/route.ts');
+  assert(sitemap.includes('raceLandingPages'), 'sitemap 에 대회 랜딩 페이지 목록이 없습니다.');
+
   const strategyDoc = path.join(root, '..', '..', 'docs', 'strategy', 'growth-backlog-90d.md');
   assert(fs.existsSync(strategyDoc), '성장 백로그 문서가 없습니다.');
   const onboardingDoc = path.join(root, '..', '..', 'docs', 'ops', 'search-portal-onboarding.md');

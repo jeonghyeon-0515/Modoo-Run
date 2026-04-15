@@ -1,4 +1,5 @@
 import { listRaces } from '@/lib/races/repository';
+import { raceLandingPages } from '@/lib/races/landing-config';
 import { buildAbsoluteUrl } from '@/lib/site';
 import { hasSupabasePublicEnv } from '@/lib/supabase/env';
 
@@ -53,6 +54,12 @@ async function buildEntries(): Promise<SitemapEntry[]> {
       changeFrequency: 'daily',
       priority: 0.9,
     },
+    ...raceLandingPages.map((page) => ({
+      url: buildAbsoluteUrl(page.path),
+      lastModified: now,
+      changeFrequency: 'daily' as const,
+      priority: 0.85,
+    })),
     {
       url: buildAbsoluteUrl('/community'),
       lastModified: now,
