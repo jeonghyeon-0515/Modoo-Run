@@ -6,6 +6,11 @@ export const dynamic = 'force-dynamic';
 
 const adminLinks = [
   {
+    href: '/ops/corrections',
+    title: '대회 정보 수정 요청',
+    description: '사용자와 주최측이 보낸 일정·장소·접수 정보 수정 요청을 검토합니다.',
+  },
+  {
     href: '/ops/featured',
     title: 'Featured Listing 편성',
     description: '대회 목록 상단 featured 노출 대회를 직접 선택하고 문구를 수정합니다.',

@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/auth/utils.test.mjs tests/profile/utils.test.mjs tests/monetization/utils.test.mjs tests/monetization/rate-limit.test.mjs tests/monetization/privacy.test.mjs tests/monetization/report.test.mjs tests/monetization/public-catalog.test.mjs tests/monetization/partner-destination-helpers.test.mjs tests/internal/request-auth.test.mjs tests/races/roadrun.test.mjs tests/races/formatters.test.mjs tests/races/cache.test.mjs tests/races/outbound.test.mjs tests/races/outbound-report.test.mjs tests/plans/stats.test.mjs tests/seo/schema.test.mjs"
+    "test": "node --test tests/auth/utils.test.mjs tests/profile/utils.test.mjs tests/monetization/utils.test.mjs tests/monetization/rate-limit.test.mjs tests/monetization/privacy.test.mjs tests/monetization/report.test.mjs tests/monetization/public-catalog.test.mjs tests/monetization/partner-destination-helpers.test.mjs tests/internal/request-auth.test.mjs tests/races/roadrun.test.mjs tests/races/formatters.test.mjs tests/races/cache.test.mjs tests/races/outbound.test.mjs tests/races/outbound-report.test.mjs tests/plans/stats.test.mjs tests/seo/schema.test.mjs tests/corrections/utils.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.0",

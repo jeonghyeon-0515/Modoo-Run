@@ -265,6 +265,23 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
 
       <section className="mt-6 space-y-6">
         <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-950">정보가 다르게 보이나요?</h3>
+              <p className="mt-1 text-sm leading-6 text-slate-600">
+                일정, 접수기간, 장소, 공식 링크가 실제 안내와 다르면 운영팀에 알려주세요.
+              </p>
+            </div>
+            <Link
+              href={`/races/${race.sourceRaceId}/correction`}
+              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-300 hover:bg-slate-50"
+            >
+              정보 수정 요청
+            </Link>
+          </div>
+        </section>
+
+        <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
           <div className="flex items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-semibold text-slate-950">스폰서 · 제휴 안내</h3>
