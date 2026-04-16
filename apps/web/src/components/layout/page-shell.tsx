@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import { getOptionalViewer } from '@/lib/auth/session';
+import { getUnreadNotificationCount } from '@/lib/notifications/repository';
 import { BottomNav } from './bottom-nav';
 import { ServiceTabs } from './service-tabs';
 
@@ -17,6 +18,7 @@ export async function PageShell({
 }) {
   const viewer = await getOptionalViewer();
   const roleLabel = viewer?.role === 'admin' ? '관리자' : viewer?.role === 'moderator' ? '운영자' : '러너';
+  const unreadNotifications = viewer ? await getUnreadNotificationCount(viewer.id) : 0;
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -37,6 +39,17 @@ export async function PageShell({
               </div>
               <div className="hidden h-5 w-px bg-slate-200 sm:block" />
               <div className="flex items-center gap-3 text-sm font-medium text-slate-600 sm:gap-4">
+                <Link
+                  href="/notifications"
+                  className="inline-flex items-center gap-2 transition hover:text-slate-950"
+                >
+                  <span>알림</span>
+                  {unreadNotifications > 0 ? (
+                    <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-slate-900 px-1.5 py-0.5 text-[11px] font-semibold text-white">
+                      {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                    </span>
+                  ) : null}
+                </Link>
                 <Link
                   href="/profile"
                   className="transition hover:text-slate-950"
