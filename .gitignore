@@ -1,5 +1,7 @@
 .omx/
+.omc/
 .playwright-mcp/
 .npm-cache/
 .vercel
+docs/reports/weekly-*.md
 supabase/.temp/
