@@ -29,6 +29,8 @@ const quickLinks = [
 ] as const;
 
 export default function Home() {
+  const [featuredLink, ...secondaryLinks] = quickLinks;
+
   return (
     <PageShell title="러닝 홈" compactIntro>
       <section className="hero-shell rounded-[1.75rem] p-6 text-white shadow-sm sm:p-8">
@@ -57,25 +59,31 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mt-5 grid gap-4 md:grid-cols-3">
-        {quickLinks.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`interactive-card rounded-[1.25rem] border p-5 shadow-sm ${
-              item.featured
-                ? 'border-[var(--brand-soft-strong)] bg-[var(--public-accent-soft)] md:col-span-2'
-                : 'border-slate-200 bg-white'
-            }`}
-          >
-            <p className={`text-xs font-semibold ${item.featured ? 'text-[var(--brand)]' : 'text-slate-500'}`}>
-              {item.eyebrow}
-            </p>
-            <p className="mt-2 text-xl font-semibold tracking-tight text-slate-950">{item.title}</p>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">{item.description}</p>
-            <p className="mt-5 text-sm font-semibold text-[var(--brand-strong)]">{item.action} →</p>
-          </Link>
-        ))}
+      <section className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.8fr)] lg:items-stretch">
+        <Link
+          href={featuredLink.href}
+          className="interactive-card interactive-card-featured rounded-[1.25rem] border border-[var(--brand-soft-strong)] bg-[var(--public-accent-soft)] p-6 shadow-sm lg:min-h-[260px]"
+        >
+          <p className="text-xs font-semibold text-[var(--brand)]">{featuredLink.eyebrow}</p>
+          <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">{featuredLink.title}</p>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">{featuredLink.description}</p>
+          <p className="mt-8 text-sm font-semibold text-[var(--brand-strong)]">{featuredLink.action} →</p>
+        </Link>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+          {secondaryLinks.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="interactive-card rounded-[1.25rem] border border-slate-200 bg-white p-5 shadow-sm"
+            >
+              <p className="text-xs font-semibold text-slate-500">{item.eyebrow}</p>
+              <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{item.title}</p>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
+              <p className="mt-6 text-sm font-semibold text-[var(--brand-strong)]">{item.action} →</p>
+            </Link>
+          ))}
+        </div>
       </section>
     </PageShell>
   );
