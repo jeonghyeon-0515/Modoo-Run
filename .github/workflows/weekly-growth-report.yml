@@ -1,0 +1,89 @@
+name: Weekly Growth Report
+
+on:
+  schedule:
+    - cron: '17 0 * * 1'
+  workflow_dispatch:
+    inputs:
+      report_days:
+        description: '최근 며칠 데이터를 집계할지 입력'
+        required: false
+        default: '7'
+
+jobs:
+  weekly-growth-report:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      GROWTH_REPORT_DAYS: ${{ github.event.inputs.report_days || '7' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate required secrets
+        run: |
+          for name in NEXT_PUBLIC_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY; do
+            if [ -z "${!name}" ]; then
+              echo "필수 시크릿 $name 이(가) 비어 있습니다."
+              exit 1
+            fi
+          done
+
+      - name: Build weekly growth report
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/weekly-growth-report.mjs 2>&1 | tee weekly-growth-report.log
+
+      - name: Upload weekly report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-growth-report-${{ github.run_number }}
+          path: docs/reports/weekly-*.md
+          if-no-files-found: error
+
+      - name: Write failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          {
+            echo "Weekly growth report workflow failed."
+            echo "Timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            echo "Report days: ${GROWTH_REPORT_DAYS}"
+            for name in NEXT_PUBLIC_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY; do
+              if [ -n "${!name}" ]; then
+                echo "$name: set"
+              else
+                echo "$name: missing"
+              fi
+            done
+            if [ -f weekly-growth-report.log ]; then
+              echo
+              echo "## weekly-growth-report.log"
+              cat weekly-growth-report.log
+            fi
+          } > weekly-growth-failure.log
+
+      - name: Upload failure log artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-growth-report-log-${{ github.run_number }}
+          path: |
+            apps/web/weekly-growth-failure.log
+            apps/web/weekly-growth-report.log
+          if-no-files-found: error
