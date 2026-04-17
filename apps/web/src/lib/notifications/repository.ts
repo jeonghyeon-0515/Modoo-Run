@@ -1,9 +1,18 @@
 import 'server-only';
 
+import type { RaceChangeField, RaceChangeSummaryItem } from '@/lib/races/change-events';
+import { listRaceBookmarkSubscribers } from '@/lib/races/repository';
+import { deliverRaceChangeEvent } from './delivery';
 import { requireViewer } from '@/lib/auth/session';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
-import { getNotificationTypeLabel, type NotificationType } from './utils';
+import {
+  buildRaceUpdateNotificationBody,
+  buildRaceUpdateNotificationTitle,
+  getNotificationTypeLabel,
+  normalizeNotificationInput,
+  type NotificationType,
+} from './utils';
 
 type RawNotificationRow = {
   id: string;
@@ -17,12 +26,6 @@ type RawNotificationRow = {
   is_read: boolean;
   read_at: string | null;
   created_at: string;
-};
-
-type NotificationInsertClient = {
-  from(table: 'user_notifications'): {
-    insert(values: Record<string, unknown>): Promise<{ error: { message: string } | null }>;
-  };
 };
 
 function mapNotification(row: RawNotificationRow) {
@@ -42,6 +45,10 @@ function mapNotification(row: RawNotificationRow) {
   };
 }
 
+function isUniqueViolation(error?: { code?: string; message?: string } | null) {
+  return error?.code === '23505';
+}
+
 export async function createUserNotification(input: {
   userId: string;
   raceId?: string | null;
@@ -51,20 +58,28 @@ export async function createUserNotification(input: {
   sourcePath: string;
   metadata?: Record<string, unknown>;
 }) {
-  const admin = getSupabaseAdminClient() as unknown as NotificationInsertClient;
-  const { error } = await admin.from('user_notifications').insert({
-    user_id: input.userId,
-    race_id: input.raceId ?? null,
-    notification_type: input.notificationType,
-    title: input.title,
-    body: input.body,
-    source_path: input.sourcePath,
-    metadata: input.metadata ?? {},
-  });
+  const normalized = normalizeNotificationInput(input);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const admin: any = getSupabaseAdminClient();
+  const { data, error } = await admin
+    .from('user_notifications')
+    .insert({
+      user_id: input.userId,
+      race_id: input.raceId ?? null,
+      notification_type: normalized.notificationType,
+      title: normalized.title,
+      body: normalized.body,
+      source_path: normalized.sourcePath,
+      metadata: input.metadata ?? {},
+    })
+    .select('id')
+    .single();
 
-  if (error) {
-    throw new Error(`알림 저장 실패: ${error.message}`);
+  if (error || !data) {
+    throw new Error(`알림 저장 실패: ${error?.message ?? 'unknown'}`);
   }
+
+  return data.id as string;
 }
 
 export async function createBookmarkSavedNotification(input: {
@@ -85,6 +100,135 @@ export async function createBookmarkSavedNotification(input: {
       raceTitle: input.raceTitle,
     },
   });
+}
+
+export async function createRaceUpdateNotification(input: {
+  userId: string;
+  raceId: string;
+  sourceRaceId: string;
+  raceTitle: string;
+  changedFields: RaceChangeField[];
+  summaryItems: RaceChangeSummaryItem[];
+  changeKey: string;
+  eventId: string;
+}) {
+  return createUserNotification({
+    userId: input.userId,
+    raceId: input.raceId,
+    notificationType: 'race_update',
+    title: buildRaceUpdateNotificationTitle(input.raceTitle),
+    body: buildRaceUpdateNotificationBody(input.summaryItems),
+    sourcePath: `/races/${input.sourceRaceId}`,
+    metadata: {
+      eventId: input.eventId,
+      sourceRaceId: input.sourceRaceId,
+      raceTitle: input.raceTitle,
+      changedFields: input.changedFields,
+      summaryItems: input.summaryItems,
+      changeKey: input.changeKey,
+    },
+  });
+}
+
+export async function deliverRaceChangeEventToBookmarkedUsers(input: {
+  eventId: string;
+  raceId: string;
+  sourceRaceId: string;
+  raceTitle: string;
+  changedFields: RaceChangeField[];
+  summaryItems: RaceChangeSummaryItem[];
+  changeKey: string;
+}) {
+  const subscribers = await listRaceBookmarkSubscribers(input.raceId);
+  if (subscribers.length === 0) {
+    return { deliveredCount: 0 };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const admin: any = getSupabaseAdminClient();
+
+  return deliverRaceChangeEvent(
+    {
+      ...input,
+      subscribers,
+    },
+    {
+      async readDelivery({ eventId, userId }) {
+        const { data, error } = await admin
+          .from('race_change_notifications')
+          .select('id, notification_id')
+          .eq('event_id', eventId)
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (error) {
+          throw new Error(`변경 알림 전달 기록 조회 실패: ${error.message}`);
+        }
+
+        return data
+          ? {
+              id: data.id as string,
+              notificationId: (data.notification_id as string | null) ?? null,
+            }
+          : null;
+      },
+      async createDelivery({ eventId, userId }) {
+        const { data, error } = await admin
+          .from('race_change_notifications')
+          .insert({
+            event_id: eventId,
+            user_id: userId,
+          })
+          .select('id')
+          .single();
+
+        if (error) {
+          if (isUniqueViolation(error)) {
+            return null;
+          }
+          throw new Error(`변경 알림 전달 기록 저장 실패: ${error.message}`);
+        }
+
+        if (!data) {
+          throw new Error('변경 알림 전달 기록 저장 결과가 비어 있습니다.');
+        }
+
+        return { id: data.id as string };
+      },
+      async createNotification(notificationInput) {
+        return createRaceUpdateNotification(notificationInput);
+      },
+      async linkNotification({ deliveryId, notificationId }) {
+        const { error } = await admin
+          .from('race_change_notifications')
+          .update({ notification_id: notificationId })
+          .eq('id', deliveryId)
+          .is('notification_id', null);
+
+        if (error) {
+          throw new Error(`변경 알림 전달 기록 업데이트 실패: ${error.message}`);
+        }
+
+        const { data, error: readError } = await admin
+          .from('race_change_notifications')
+          .select('notification_id')
+          .eq('id', deliveryId)
+          .maybeSingle();
+
+        if (readError) {
+          throw new Error(`변경 알림 전달 기록 조회 실패: ${readError.message}`);
+        }
+
+        return data?.notification_id === notificationId;
+      },
+      async deleteNotification(notificationId) {
+        await admin.from('user_notifications').delete().eq('id', notificationId);
+      },
+      async deleteDelivery(deliveryId) {
+        await admin.from('race_change_notifications').delete().eq('id', deliveryId).is('notification_id', null);
+      },
+    },
+  );
 }
 
 export async function listViewerNotifications(input?: { filter?: 'all' | 'unread'; limit?: number }) {

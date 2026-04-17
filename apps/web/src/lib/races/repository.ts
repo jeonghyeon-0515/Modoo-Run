@@ -1,3 +1,4 @@
+import { getSupabaseAdminClient } from '@/lib/supabase/admin';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import {
   RaceDetailItem,
@@ -288,6 +289,29 @@ export async function listBookmarkedRaceIds(userId: string) {
   }
 
   return new Set((data ?? []).map((row: { race_id: string }) => row.race_id));
+}
+
+export async function listRaceBookmarkSubscribers(raceId: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const admin: any = getSupabaseAdminClient();
+  const { data, error } = await admin
+    .from('race_bookmarks')
+    .select('user_id, notify_registration_deadline, notify_one_week_before')
+    .eq('race_id', raceId);
+
+  if (error) {
+    throw new Error(`관심 대회 구독자 조회 실패: ${error.message}`);
+  }
+
+  return ((data ?? []) as Array<{
+    user_id: string;
+    notify_registration_deadline: boolean;
+    notify_one_week_before: boolean;
+  }>).map((row) => ({
+    userId: row.user_id,
+    notifyRegistrationDeadline: row.notify_registration_deadline,
+    notifyOneWeekBefore: row.notify_one_week_before,
+  }));
 }
 
 export async function setRaceBookmark(userId: string, raceId: string, enabled: boolean) {

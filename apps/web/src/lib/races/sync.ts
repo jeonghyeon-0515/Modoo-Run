@@ -1,8 +1,11 @@
 import { createHash } from 'node:crypto';
+import { deliverRaceChangeEventToBookmarkedUsers } from '@/lib/notifications/repository';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
 import { warmRaceCacheFromDatabase } from '@/lib/races/cache';
 import { fetchRoadrunRaceDetail, fetchRoadrunRaceList, roadrunSource } from '@/lib/races/source/roadrun-fetch';
 import { parseRoadrunDetail, parseRoadrunList } from '@/lib/races/source/roadrun.js';
+import { buildRaceChangeKey, detectImportantRaceChanges, pickRaceChangeSnapshot } from './change-events';
+import { persistRaceChangeEvent } from './change-event-delivery';
 
 type TriggerType = 'cron' | 'manual' | 'backfill';
 
@@ -196,7 +199,7 @@ async function getDisabledSourceIds() {
   );
 }
 
-async function upsertRaceRecord(item: RoadrunListItem, detail: RoadrunDetail, year: number) {
+async function upsertRaceRecord(item: RoadrunListItem, detail: RoadrunDetail, year: number, syncRunId: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const admin: any = getSupabaseAdminClient();
   const registrationPeriod = parseRegistrationPeriod(detail.registrationPeriod);
@@ -206,7 +209,9 @@ async function upsertRaceRecord(item: RoadrunListItem, detail: RoadrunDetail, ye
 
   const { data: existing, error: existingError } = await admin
     .from('races')
-    .select('id, source_hash, last_changed_at')
+    .select(
+      'id, source_hash, last_changed_at, title, event_date, event_date_label, region, location, course_summary, registration_open_at, registration_close_at, registration_period_label, registration_status, homepage_url',
+    )
     .eq('source_site', ROADRUN_SOURCE_SITE)
     .eq('source_race_id', item.sourceRaceId)
     .maybeSingle();
@@ -216,6 +221,36 @@ async function upsertRaceRecord(item: RoadrunListItem, detail: RoadrunDetail, ye
   }
 
   const hasChanged = !existing || existing.source_hash !== sourceHash;
+  const nextSnapshot = pickRaceChangeSnapshot({
+    title: detail.title || item.title,
+    eventDate: toIsoDate(year, item.dateLabel),
+    eventDateLabel: item.dateLabel,
+    region: detail.region || null,
+    location: detail.location || item.location,
+    courseSummary: detail.courseSummary || item.courseSummary,
+    registrationOpenAt: registrationPeriod.openAt,
+    registrationCloseAt: registrationPeriod.closeAt,
+    registrationPeriodLabel: detail.registrationPeriod || null,
+    registrationStatus: inferRegistrationStatus(registrationPeriod.closeAt),
+    homepageUrl: detail.homepage || null,
+  });
+  const previousSnapshot = existing
+    ? pickRaceChangeSnapshot({
+        title: existing.title,
+        eventDate: existing.event_date,
+        eventDateLabel: existing.event_date_label,
+        region: existing.region,
+        location: existing.location,
+        courseSummary: existing.course_summary,
+        registrationOpenAt: existing.registration_open_at,
+        registrationCloseAt: existing.registration_close_at,
+        registrationPeriodLabel: existing.registration_period_label,
+        registrationStatus: existing.registration_status,
+        homepageUrl: existing.homepage_url,
+      })
+    : null;
+  const importantChange = hasChanged ? detectImportantRaceChanges(previousSnapshot, nextSnapshot) : null;
+
   const racePayload = {
     source_site: ROADRUN_SOURCE_SITE,
     source_race_id: item.sourceRaceId,
@@ -276,6 +311,75 @@ async function upsertRaceRecord(item: RoadrunListItem, detail: RoadrunDetail, ye
   if (sourceError) {
     throw new Error(`race_source upsert 실패: ${sourceError.message}`);
   }
+
+  if (!importantChange) {
+    return;
+  }
+
+  const changeKey = buildRaceChangeKey(race.id, importantChange);
+  await persistRaceChangeEvent(
+    {
+      syncRunId,
+      raceId: race.id,
+      sourceSite: ROADRUN_SOURCE_SITE,
+      sourceRaceId: item.sourceRaceId,
+      raceTitle: racePayload.title,
+      changeKey,
+      importantChange,
+    },
+    {
+      async readExistingEvent({ raceId, changeKey: targetChangeKey }) {
+        const { data, error } = await admin
+          .from('race_change_events')
+          .select('id')
+          .eq('race_id', raceId)
+          .eq('change_key', targetChangeKey)
+          .maybeSingle();
+
+        if (error) {
+          throw new Error(`대회 변경 이벤트 조회 실패: ${error.message}`);
+        }
+
+        return data ? { id: data.id as string } : null;
+      },
+      async createEvent({ raceId, syncRunId: targetSyncRunId, sourceSite, sourceRaceId, changeKey: targetChangeKey, importantChange: targetChange }) {
+        const { data, error } = await admin
+          .from('race_change_events')
+          .insert({
+            race_id: raceId,
+            sync_run_id: targetSyncRunId,
+            source_site: sourceSite,
+            source_race_id: sourceRaceId,
+            change_key: targetChangeKey,
+            change_type: 'important_update',
+            changed_fields: targetChange.changedFields,
+            summary: {
+              summaryItems: targetChange.summaryItems,
+            },
+            before_payload: targetChange.beforePayload,
+            after_payload: targetChange.afterPayload,
+          })
+          .select('id')
+          .single();
+
+        if (error) {
+          if (error.code === '23505') {
+            return null;
+          }
+          throw new Error(`대회 변경 이벤트 저장 실패: ${error.message}`);
+        }
+
+        if (!data) {
+          throw new Error('대회 변경 이벤트 저장 결과가 비어 있습니다.');
+        }
+
+        return { id: data.id as string };
+      },
+      async deliver(deliveryInput) {
+        await deliverRaceChangeEventToBookmarkedUsers(deliveryInput);
+      },
+    },
+  );
 }
 
 export async function setRaceSourceDisabled(sourceRaceId: string, disabled: boolean) {
@@ -348,7 +452,7 @@ export async function runRoadrunSync(options: SyncOptions = {}): Promise<SyncSum
           const detailBytes = await fetchRoadrunRaceDetail(item.sourceRaceId);
           fetchedCount += 1;
           const detail = parseRoadrunDetail(detailBytes) as RoadrunDetail;
-          await upsertRaceRecord(item, detail, year);
+          await upsertRaceRecord(item, detail, year, syncRunId);
           upsertedCount += 1;
         } catch (error) {
           failedCount += 1;

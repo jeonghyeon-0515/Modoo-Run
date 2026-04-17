@@ -1,3 +1,5 @@
+import type { RaceChangeSummaryItem } from '../races/change-events';
+
 export const notificationTypes = ['bookmark_saved', 'race_update', 'registration_reminder', 'system'] as const;
 
 export type NotificationType = (typeof notificationTypes)[number];
@@ -17,12 +19,43 @@ function normalizeLongText(value: unknown, maxLength: number) {
   return String(value ?? '').trim().slice(0, maxLength);
 }
 
+function formatSummaryValue(value: string | null) {
+  return value ?? '미정';
+}
+
 export function isNotificationType(value: string): value is NotificationType {
   return (notificationTypes as readonly string[]).includes(value);
 }
 
 export function getNotificationTypeLabel(value: string) {
   return notificationTypeLabels[value as NotificationType] ?? value;
+}
+
+export function buildRaceUpdateNotificationTitle(raceTitle: string) {
+  const title = normalizeText(raceTitle, 80);
+  return `${title || '저장한 대회'} 정보가 변경되었어요`;
+}
+
+export function buildRaceUpdateNotificationBody(summaryItems: RaceChangeSummaryItem[]) {
+  if (summaryItems.length === 0) {
+    return '저장한 대회의 주요 정보가 업데이트됐어요. 상세 내용을 확인해 주세요.';
+  }
+
+  const messages = summaryItems.map((item) => {
+    const before = formatSummaryValue(item.before);
+    const after = formatSummaryValue(item.after);
+    return `${item.label}이(가) ${before}에서 ${after}로 변경됐어요.`;
+  });
+
+  if (messages.length === 1) {
+    return messages[0];
+  }
+
+  if (messages.length <= 3) {
+    return messages.join(' ');
+  }
+
+  return `${messages.slice(0, 3).join(' ')} 외 ${messages.length - 3}건 변경됐어요.`;
 }
 
 export function normalizeNotificationInput(input: {
