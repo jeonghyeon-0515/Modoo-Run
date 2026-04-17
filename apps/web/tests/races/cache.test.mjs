@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { applyRaceFilters, getRaceCacheTtlSeconds, groupHashFieldsByTtl } = require('../../src/lib/races/cache-helpers.ts');
+const { applyRaceFilters, collectRaceRegions, getRaceCacheTtlSeconds, groupHashFieldsByTtl } = require('../../src/lib/races/cache-helpers.ts');
 
 const sampleRaces = [
   {
@@ -117,4 +117,15 @@ test('같은 TTL을 가진 hash field를 묶어 hsetex payload로 만든다', ()
       '50001': '{"title":"c"}',
     },
   });
+});
+
+test('지역 목록은 중복과 null을 제거한 독립 캐시 payload로 만든다', () => {
+  const regions = collectRaceRegions([
+    { region: '서울' },
+    { region: '부산' },
+    { region: '서울' },
+    { region: null },
+  ]);
+
+  assert.deepEqual(regions, ['서울', '부산']);
 });

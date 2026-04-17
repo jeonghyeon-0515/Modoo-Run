@@ -114,6 +114,10 @@ export function summarizeActiveRaceFilters(filters: FilterableRaceFilters) {
   ];
 }
 
+export function collectRaceRegions(items: Array<{ region: string | null }>) {
+  return [...new Set(items.map((item) => item.region).filter(Boolean))] as string[];
+}
+
 export function groupHashFieldsByTtl<T>(items: HashFieldWithTtl<T>[]) {
   const groups = new Map<number, Record<string, T>>();
 

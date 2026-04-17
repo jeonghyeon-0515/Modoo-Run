@@ -267,7 +267,7 @@ export async function getRaceExplorerSummary(limitRegions = 4): Promise<RaceExpl
 
 export async function listRegions() {
   const cached = await getCachedRegions();
-  if (cached) {
+  if (cached !== null) {
     return cached;
   }
 

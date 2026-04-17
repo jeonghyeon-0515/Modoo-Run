@@ -1,6 +1,6 @@
 import { getUpstashRedisClient } from '@/lib/cache/upstash';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
-import { applyRaceFilters, getRaceCacheTtlSeconds, groupHashFieldsByTtl } from './cache-helpers';
+import { applyRaceFilters, collectRaceRegions, getRaceCacheTtlSeconds, groupHashFieldsByTtl } from './cache-helpers';
 import {
   RaceDetailItem,
   RaceFilters,
@@ -49,6 +49,7 @@ type RaceCacheWarmResult = {
 
 const OPEN_RACE_INDEX_KEY = 'races:v3:open:order';
 const OPEN_RACE_DETAIL_HASH_KEY = 'races:v3:open:details';
+const OPEN_RACE_REGIONS_KEY = 'races:v3:open:regions';
 const LEGACY_OPEN_RACE_INDEX_KEY = 'races:v2:open:ids';
 const LEGACY_OPEN_RACE_DETAIL_PREFIX = 'races:v2:detail:';
 const LEGACY_DATASET_KEY = 'races:v1:dataset';
@@ -58,6 +59,7 @@ const raceCacheSelectColumns =
   'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, last_synced_at, representative_name, phone, homepage_url, summary, description, source_detail_url, source_list_url, registration_open_at, registration_close_at';
 
 let memoryOpenIndex: { expiresAt: number; value: OpenRaceIndex } | null = null;
+let memoryOpenRegions: { expiresAt: number; value: string[] } | null = null;
 const memoryOpenDetails = new Map<string, { expiresAt: number; value: RaceDetailItem }>();
 
 function legacyDetailKey(sourceRaceId: string) {
@@ -143,6 +145,22 @@ function rememberDetail(detail: RaceDetailItem) {
   });
 }
 
+function rememberOpenRegions(regions: string[]) {
+  memoryOpenRegions = {
+    expiresAt: Date.now() + MEMORY_TTL_MS,
+    value: regions,
+  };
+}
+
+function getRememberedRegions() {
+  if (!memoryOpenRegions) return null;
+  if (memoryOpenRegions.expiresAt <= Date.now()) {
+    memoryOpenRegions = null;
+    return null;
+  }
+  return memoryOpenRegions.value;
+}
+
 function getRememberedDetail(sourceRaceId: string) {
   const cached = memoryOpenDetails.get(sourceRaceId);
   if (!cached) return null;
@@ -167,6 +185,14 @@ async function readLegacyOpenIndexFromRedis() {
 
   const raw = await redis.get(LEGACY_OPEN_RACE_INDEX_KEY);
   return readJson<{ sourceRaceIds: string[] }>(raw);
+}
+
+async function readOpenRegionsFromRedis() {
+  const redis = getUpstashRedisClient();
+  if (!redis) return null;
+
+  const raw = await redis.get(OPEN_RACE_REGIONS_KEY);
+  return readJson<string[]>(raw);
 }
 
 async function readOpenIndex() {
@@ -272,13 +298,30 @@ export async function getCachedRelatedRaces(input: {
 }
 
 export async function getCachedRegions() {
+  const remembered = getRememberedRegions();
+  if (remembered !== null) {
+    return remembered;
+  }
+
+  const cached = await readOpenRegionsFromRedis();
+  if (cached !== null) {
+    rememberOpenRegions(cached);
+    return cached;
+  }
+
   const index = await readOpenIndex();
   if (!index) return null;
 
   const details = await readOpenRaceDetails(index.sourceRaceIds);
   if (details.length === 0) return null;
 
-  return [...new Set(details.map((item) => item.region).filter(Boolean))] as string[];
+  const regions = collectRaceRegions(details);
+  const redis = getUpstashRedisClient();
+  if (redis) {
+    await redis.set(OPEN_RACE_REGIONS_KEY, JSON.stringify(regions), { ex: OPEN_RACE_INDEX_TTL_SECONDS });
+  }
+  rememberOpenRegions(regions);
+  return regions;
 }
 
 export async function getCachedRecentlySyncedRaces() {
@@ -341,6 +384,7 @@ export async function warmRaceCacheFromDatabase(): Promise<RaceCacheWarmResult> 
       };
     }),
   );
+  const regions = collectRaceRegions(rows.map(({ row }) => row));
   const pipeline = redis.pipeline();
 
   pipeline.del(LEGACY_DATASET_KEY);
@@ -368,10 +412,13 @@ export async function warmRaceCacheFromDatabase(): Promise<RaceCacheWarmResult> 
       );
     });
     pipeline.set(OPEN_RACE_INDEX_KEY, JSON.stringify(index), { ex: OPEN_RACE_INDEX_TTL_SECONDS });
+    pipeline.set(OPEN_RACE_REGIONS_KEY, JSON.stringify(regions), { ex: OPEN_RACE_INDEX_TTL_SECONDS });
     rememberOpenIndex(index);
+    rememberOpenRegions(regions);
   } else {
-    pipeline.del(OPEN_RACE_INDEX_KEY, OPEN_RACE_DETAIL_HASH_KEY);
+    pipeline.del(OPEN_RACE_INDEX_KEY, OPEN_RACE_DETAIL_HASH_KEY, OPEN_RACE_REGIONS_KEY);
     memoryOpenIndex = null;
+    memoryOpenRegions = null;
     memoryOpenDetails.clear();
   }
 
