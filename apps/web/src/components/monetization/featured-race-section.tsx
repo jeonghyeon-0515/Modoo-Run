@@ -27,6 +27,11 @@ export function FeaturedRaceSection({
               ? '운영 화면에서 확인하는 featured preview입니다.'
               : '사용자에게 실제로 노출되는 featured listing 시범 영역입니다.'}
           </p>
+          <p className="mt-2 text-xs leading-5 text-slate-500">
+            {isOpsPreview
+              ? '여기서 입력한 라벨과 설명 문구가 공개 화면에 그대로 보이므로 광고·스폰서 여부를 숨기지 않도록 작성해 주세요.'
+              : '유료 또는 협업 노출은 카드 라벨과 설명 문구에서 구분해 표기합니다.'}
+          </p>
         </div>
         <Link
           href="/advertise"

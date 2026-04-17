@@ -12,6 +12,11 @@ function readFirstValue(value?: string | string[]) {
 
 const placementItems = [
   {
+    badge: 'Featured',
+    title: '대회 목록 상단 Featured Listing',
+    description: '대회 목록 상단 주목할 대회 영역에서 메인 1개, 보조 1개 슬롯으로 노출합니다.',
+  },
+  {
     badge: '스폰서',
     title: '대회 상세 내 파트너 슬롯',
     description: '대회 준비 흐름을 해치지 않는 위치에 배너가 아닌 정보형 슬롯으로 노출합니다.',
@@ -21,11 +26,14 @@ const placementItems = [
     title: '러닝 준비물 / 장비 콘텐츠 연결',
     description: '러너에게 실제 도움이 되는 준비물 콘텐츠 안에서 제휴 링크를 운영합니다.',
   },
-  {
-    badge: 'Featured',
-    title: '주최측 대회 강조 노출',
-    description: '지역/시즌 큐레이션 화면에서 명확한 표기와 함께 우선 노출합니다.',
-  },
+];
+
+const inquiryChecklist = [
+  '대회명 또는 브랜드명',
+  '원하는 노출 유형(Featured / 스폰서 / 제휴)',
+  '희망 일정과 캠페인 기간',
+  '강조하고 싶은 핵심 정보(일정, 장소, 접수, 코스 등)',
+  '회신 받을 담당자 이름과 이메일',
 ];
 
 export default async function AdvertisePage({ searchParams }: { searchParams: SearchParams }) {
@@ -42,11 +50,12 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Se
     >
       <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <article className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-          <h2 className="text-lg font-semibold text-slate-950">운영 원칙</h2>
+          <h2 className="text-lg font-semibold text-slate-950">상품 안내와 운영 원칙</h2>
           <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
             <li>• 러너의 대회 탐색 흐름을 방해하지 않는 위치만 사용합니다.</li>
             <li>• 광고, 제휴, 스폰서 표기는 화면에서 명확하게 구분합니다.</li>
-            <li>• 초기에는 한국 러너에게 실제 도움이 되는 장비/준비물 중심 협업만 받습니다.</li>
+            <li>• Featured listing은 `/races` 상단 주목할 대회 영역에 메인 1개, 보조 1개 슬롯으로 운영합니다.</li>
+            <li>• 가격과 계약 조건은 아직 최종 확정 전이라 문의 후 별도 협의가 필요합니다.</li>
           </ul>
 
           <div className="mt-6 space-y-3">
@@ -59,6 +68,23 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Se
                 <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
               </div>
             ))}
+          </div>
+
+          <div className="mt-6 rounded-[1rem] border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm font-semibold text-slate-900">문의에 포함해 주세요</p>
+            <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+              {inquiryChecklist.map((item) => (
+                <li key={item}>• {item}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-6 rounded-[1rem] border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
+            <p className="font-semibold text-slate-900">운영 메모</p>
+            <p className="mt-2">
+              현재는 상품 구조와 노출 기준만 정리된 상태입니다. 실제 판매 가격, 계약 조건, 세금계산서 처리 방식은
+              문의 접수 후 운영팀이 별도로 안내합니다.
+            </p>
           </div>
         </article>
 

@@ -8,6 +8,8 @@ import { pickFeaturedRaces, type FeaturedRacePlacement } from './public-catalog'
 
 type SlotKey = 'featured_primary' | 'featured_secondary';
 
+export const featuredPlacementLabelOptions = ['Featured Listing', '지역 추천', '스폰서'] as const;
+
 type RawFeaturedPlacement = {
   slot_key: SlotKey;
   race_id: string;
@@ -203,6 +205,10 @@ export async function saveFeaturedPlacement(input: {
 
   if (!eyebrow) {
     throw new Error('노출 라벨을 입력해 주세요.');
+  }
+
+  if (!featuredPlacementLabelOptions.includes(eyebrow as (typeof featuredPlacementLabelOptions)[number])) {
+    throw new Error('허용된 라벨만 선택해 주세요.');
   }
 
   if (!summary) {
