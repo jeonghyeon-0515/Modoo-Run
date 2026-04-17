@@ -5,25 +5,25 @@ const quickLinks = [
   {
     eyebrow: '가장 많이 찾는 메뉴',
     title: '대회 일정',
-    description: '접수 중인 대회를 날짜순으로 바로 살펴봅니다.',
+    description: '지금 접수 중인 대회를 한눈에 확인합니다.',
     href: '/races',
-    action: '지금 보기',
+    action: '대회 보러 가기',
     featured: true,
   },
   {
-    eyebrow: '먼저 챙길 일정',
+    eyebrow: '놓치기 쉬운 일정',
     title: '마감 임박',
-    description: '곧 마감되는 일정만 빠르게 확인합니다.',
+    description: '곧 마감되는 대회만 빠르게 모아봅니다.',
     href: '/races/closing-soon',
-    action: '마감 일정 보기',
+    action: '일정 확인하기',
     featured: false,
   },
   {
-    eyebrow: '가볍게 둘러보기',
+    eyebrow: '러너들 이야기',
     title: '커뮤니티',
     description: '후기와 질문을 편하게 둘러봅니다.',
     href: '/community',
-    action: '둘러보기',
+    action: '이야기 보러 가기',
     featured: false,
   },
 ] as const;
@@ -35,27 +35,8 @@ export default function Home() {
     <PageShell title="러닝 홈" compactIntro>
       <section className="hero-shell rounded-[1.75rem] p-6 text-white shadow-sm sm:p-8">
         <div className="max-w-3xl">
-          <p className="text-xs font-semibold tracking-[0.16em] text-slate-200">바로 찾기</p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            대회 일정, 마감 체크, 커뮤니티를 한 번에.
-          </h2>
-          <p className="mt-4 text-sm leading-7 text-slate-200 sm:text-base">
-            자주 찾는 메뉴만 먼저 담았습니다.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href="/races"
-              className="public-primary-button inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition"
-            >
-              대회 일정 보기
-            </Link>
-            <Link
-              href="/races/closing-soon"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
-            >
-              마감 임박 보기
-            </Link>
-          </div>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">이번 주에 볼 것만 먼저 담았습니다.</h2>
+          <p className="mt-4 text-sm leading-7 text-slate-200 sm:text-base">아래 카드에서 바로 둘러보세요.</p>
         </div>
       </section>
 
