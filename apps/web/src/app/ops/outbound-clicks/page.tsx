@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { requireModerator } from '@/lib/auth/session';
 import { PageShell } from '@/components/layout/page-shell';
 import { formatRetryAfterSeconds } from '@/lib/monetization/rate-limit-helpers';
 import { getOutboundClickDashboard } from '@/lib/races/outbound-report-repository';
@@ -151,10 +152,12 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
   const resolvedSearchParams = await searchParams;
   const daysValue = Number(readFirstValue(resolvedSearchParams.days) ?? '7');
   const days = [7, 30, 90].includes(daysValue) ? daysValue : 7;
+  const viewer = await requireModerator('/ops/outbound-clicks');
   const { outbound, partner } = await getOutboundClickDashboard(days);
 
   return (
     <PageShell
+      viewer={viewer}
       title="외부 신청 흐름"
       description="최근 외부 이동 흐름을 확인할 수 있는 운영 화면입니다."
       compactIntro

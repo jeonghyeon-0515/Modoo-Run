@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -33,9 +34,11 @@ import { buildAbsoluteUrl, getSiteUrl } from '@/lib/site';
 
 type Params = Promise<{ raceId: string }>;
 
+const getRacePageData = cache(async (raceId: string) => getRaceBySourceRaceId(raceId));
+
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { raceId } = await params;
-  const race = await getRaceBySourceRaceId(raceId);
+  const race = await getRacePageData(raceId);
 
   if (!race) {
     return {
@@ -73,7 +76,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 export default async function RaceDetailPage({ params }: { params: Params }) {
   const { raceId } = await params;
   const viewer = await getOptionalViewer();
-  const race = await getRaceBySourceRaceId(raceId);
+  const race = await getRacePageData(raceId);
 
   if (!race) {
     notFound();

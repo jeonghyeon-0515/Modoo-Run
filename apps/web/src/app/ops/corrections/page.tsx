@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { requireModerator } from '@/lib/auth/session';
 import { PageShell } from '@/components/layout/page-shell';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { correctionStatuses, getCorrectionStatusLabel, isCorrectionStatus } from '@/lib/corrections/utils';
@@ -28,10 +29,12 @@ export default async function OpsCorrectionsPage({ searchParams }: { searchParam
   const statusParam = readFirstValue(resolvedSearchParams.status) ?? 'new';
   const selectedStatus = statusParam === 'all' || isCorrectionStatus(statusParam) ? statusParam : 'new';
   const message = readFirstValue(resolvedSearchParams.message);
+  const viewer = await requireModerator('/ops/corrections');
   const { items } = await listRaceCorrectionRequestsForOps(selectedStatus);
 
   return (
     <PageShell
+      viewer={viewer}
       title="대회 정보 수정 요청"
       description="사용자와 주최측이 보낸 정보 수정 요청을 검토하고 처리 상태를 남깁니다."
       compactIntro

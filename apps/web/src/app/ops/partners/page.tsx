@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { requireModerator } from '@/lib/auth/session';
 import { PageShell } from '@/components/layout/page-shell';
 import { listPartnerDestinationSettingsForOps } from '@/lib/monetization/partner-destination-repository';
 import { resetPartnerDestinationAction, savePartnerDestinationAction } from './actions';
@@ -17,10 +18,12 @@ function isErrorMessage(message?: string) {
 export default async function OpsPartnersPage({ searchParams }: { searchParams: SearchParams }) {
   const resolvedSearchParams = await searchParams;
   const message = readFirstValue(resolvedSearchParams.message);
+  const viewer = await requireModerator('/ops/partners');
   const settings = await listPartnerDestinationSettingsForOps();
 
   return (
     <PageShell
+      viewer={viewer}
       title="제휴 링크 관리"
       description="공개 화면에서 사용되는 파트너 링크를 관리자 화면에서 직접 바꿀 수 있습니다."
       compactIntro

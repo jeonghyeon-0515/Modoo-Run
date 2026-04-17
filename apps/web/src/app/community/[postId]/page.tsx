@@ -18,7 +18,8 @@ function getCategoryLabel(value: string) {
 
 export default async function CommunityDetailPage({ params }: { params: Params }) {
   const { postId } = await params;
-  const [post, viewer] = await Promise.all([getCommunityPost(postId), getOptionalViewer()]);
+  const viewer = await getOptionalViewer();
+  const post = await getCommunityPost(postId, viewer?.id);
 
   if (!post) {
     notFound();

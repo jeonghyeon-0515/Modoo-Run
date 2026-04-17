@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { requireModerator } from '@/lib/auth/session';
 import { PageShell } from '@/components/layout/page-shell';
 import { FeaturedRaceSection } from '@/components/monetization/featured-race-section';
 import {
@@ -22,11 +23,13 @@ function isErrorMessage(message?: string) {
 export default async function OpsFeaturedPage({ searchParams }: { searchParams: SearchParams }) {
   const resolvedSearchParams = await searchParams;
   const message = readFirstValue(resolvedSearchParams.message);
+  const viewer = await requireModerator('/ops/featured');
   const { races, slots } = await listFeaturedPlacementsForOps();
   const previewItems = await listActiveFeaturedRacePlacements(races, 2);
 
   return (
     <PageShell
+      viewer={viewer}
       title="Featured Listing 편성"
       description="대회 목록 상단 featured 영역을 운영자가 직접 선택하고 문구를 수정할 수 있습니다."
       compactIntro

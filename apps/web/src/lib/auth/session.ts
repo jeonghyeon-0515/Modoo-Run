@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isStaffRole, normalizeNextPath, resolveDisplayName, resolveViewerRole, type ViewerRole } from './utils';
@@ -16,7 +17,7 @@ type RawProfile = {
 
 export { normalizeNextPath, resolveDisplayName } from './utils';
 
-export async function getOptionalViewer(): Promise<Viewer | null> {
+const loadOptionalViewer = cache(async (): Promise<Viewer | null> => {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -49,6 +50,10 @@ export async function getOptionalViewer(): Promise<Viewer | null> {
     role,
     isStaff: isStaffRole(role),
   };
+});
+
+export async function getOptionalViewer(): Promise<Viewer | null> {
+  return loadOptionalViewer();
 }
 
 export async function requireViewer(nextPath = '/') {

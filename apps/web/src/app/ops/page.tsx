@@ -38,10 +38,11 @@ const adminLinks = [
 ];
 
 export default async function OpsHomePage() {
-  await requireModerator('/ops');
+  const viewer = await requireModerator('/ops');
 
   return (
     <PageShell
+      viewer={viewer}
       title="관리자 기능"
       description="운영 흐름, 공개 노출 상태, 광고·제휴 진입 화면을 빠르게 확인할 수 있습니다."
       compactIntro

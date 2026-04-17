@@ -1,4 +1,4 @@
-import { getOptionalViewer, requireModerator, requireViewer } from '@/lib/auth/session';
+import { requireModerator, requireViewer } from '@/lib/auth/session';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 type RawPost = {
@@ -48,14 +48,24 @@ function getAuthorLabel(authorUserId: string, currentUserId?: string | null) {
   return currentUserId && authorUserId === currentUserId ? '나' : '러너';
 }
 
-export async function listCommunityPosts(category?: string) {
-  const viewer = await getOptionalViewer();
+export async function listCommunityPosts(input?: {
+  category?: string;
+  viewerId?: string | null;
+  page?: number;
+  limit?: number;
+}) {
   const supabase = await getSupabaseServerClient();
+  const category = input?.category;
+  const viewerId = input?.viewerId ?? null;
+  const page = Math.max(1, input?.page ?? 1);
+  const limit = Math.max(1, input?.limit ?? 20);
+  const offset = (page - 1) * limit;
   let query = supabase
     .from('community_posts')
     .select('id, author_user_id, linked_race_id, category, title, content, status, like_count, comment_count, report_count, created_at, updated_at')
     .neq('status', 'deleted')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit);
 
   if (category && category !== 'all') {
     query = query.eq('category', category);
@@ -66,14 +76,18 @@ export async function listCommunityPosts(category?: string) {
     throw new Error(`커뮤니티 목록 조회 실패: ${error.message}`);
   }
 
-  return (data ?? []).map((post: RawPost) => ({
+  const posts = ((data ?? []) as RawPost[]).map((post) => ({
     ...post,
-    authorLabel: getAuthorLabel(post.author_user_id, viewer?.id),
-  })) as CommunityPost[];
+    authorLabel: getAuthorLabel(post.author_user_id, viewerId),
+  }));
+
+  return {
+    items: posts.slice(0, limit) as CommunityPost[],
+    hasNextPage: posts.length > limit,
+  };
 }
 
-export async function getCommunityPost(postId: string) {
-  const viewer = await getOptionalViewer();
+export async function getCommunityPost(postId: string, viewerId?: string | null) {
   const supabase = await getSupabaseServerClient();
   const { data: post, error: postError } = await supabase
     .from('community_posts')
@@ -102,10 +116,10 @@ export async function getCommunityPost(postId: string) {
 
   return {
     ...(post as RawPost),
-    authorLabel: getAuthorLabel(post.author_user_id, viewer?.id),
+    authorLabel: getAuthorLabel(post.author_user_id, viewerId),
     comments: (comments ?? []).map((comment: RawComment) => ({
       ...comment,
-      authorLabel: getAuthorLabel(comment.author_user_id, viewer?.id),
+      authorLabel: getAuthorLabel(comment.author_user_id, viewerId),
     })),
   } as CommunityDetail;
 }

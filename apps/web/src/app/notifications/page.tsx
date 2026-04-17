@@ -26,7 +26,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
   const resolvedSearchParams = await searchParams;
   const filter = readFirstValue(resolvedSearchParams.filter) === 'unread' ? 'unread' : 'all';
   const message = readFirstValue(resolvedSearchParams.message);
-  const { items } = await listViewerNotifications({ filter });
+  const { items, viewer } = await listViewerNotifications({ filter });
   const unreadCount = items.filter((item) => !item.isRead).length;
 
   return (
@@ -34,6 +34,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       title="알림함"
       description="저장한 대회와 관련된 내부 알림을 확인하고 읽음 처리할 수 있습니다."
       compactIntro
+      viewer={viewer}
     >
       {message ? (
         <section

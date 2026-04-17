@@ -47,16 +47,40 @@ function categoryHref(value: string) {
   return value === 'all' ? '/community' : `/community?category=${value}`;
 }
 
+function communityPageHref(category: string, page: number) {
+  const params = new URLSearchParams();
+  if (category !== 'all') {
+    params.set('category', category);
+  }
+  if (page > 1) {
+    params.set('page', String(page));
+  }
+  const query = params.toString();
+  return query ? `/community?${query}` : '/community';
+}
+
 export default async function CommunityPage({ searchParams }: { searchParams: SearchParams }) {
   const resolvedSearchParams = await searchParams;
   const selectedCategory = readValue(resolvedSearchParams.category) ?? 'all';
+  const pageParam = Number(readValue(resolvedSearchParams.page) ?? '1');
+  const page = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1;
 
-  const [posts, races, viewer] = await Promise.all([
-    listCommunityPosts(selectedCategory),
+  const viewerPromise = getOptionalViewer();
+  const [viewer, postResult, races] = await Promise.all([
+    viewerPromise,
+    viewerPromise.then((resolvedViewer) =>
+      listCommunityPosts({
+        category: selectedCategory,
+        viewerId: resolvedViewer?.id,
+        page,
+        limit: 20,
+      }),
+    ),
     listRaces({ registrationStatus: 'all', limit: 20 }),
-    getOptionalViewer(),
   ]);
 
+  const posts = postResult.items;
+  const hasNextPage = postResult.hasNextPage;
   const activeCategoryCount = new Set(posts.map((post) => post.category)).size;
   const promoSlots = getCommunityPromoSlots();
 
@@ -208,6 +232,10 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
       </section>
 
       <section className="mt-6 space-y-4">
+        <div className="flex items-center justify-between gap-3 rounded-[1.1rem] bg-white px-4 py-3 shadow-sm ring-1 ring-black/5">
+          <p className="text-sm text-slate-600">최근 글부터 20개씩 먼저 보여줍니다.</p>
+          <p className="text-sm font-semibold text-slate-900">{page}페이지</p>
+        </div>
         {posts.length === 0 ? (
           <article className="rounded-[1.25rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
             <p className="text-base font-semibold text-slate-950">등록된 글이 아직 없습니다.</p>
@@ -241,6 +269,27 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             </Link>
           ))
         )}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.1rem] bg-white px-4 py-4 shadow-sm ring-1 ring-black/5">
+          <p className="text-sm text-slate-500">이전 글도 페이지 단위로 계속 볼 수 있습니다.</p>
+          <div className="flex flex-wrap gap-2">
+            {page > 1 ? (
+              <Link
+                href={communityPageHref(selectedCategory, page - 1)}
+                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                이전 페이지
+              </Link>
+            ) : null}
+            {hasNextPage ? (
+              <Link
+                href={communityPageHref(selectedCategory, page + 1)}
+                className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+              >
+                다음 페이지
+              </Link>
+            ) : null}
+          </div>
+        </div>
       </section>
     </PageShell>
   );

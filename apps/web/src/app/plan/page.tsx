@@ -94,6 +94,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
     <PageShell
       title="이번 달 러닝 계획"
       description="이번 달 계획과 실행 기록을 관리합니다."
+      viewer={viewer}
     >
       {!viewer ? (
         <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">

@@ -48,6 +48,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
       title="프로필"
       description="닉네임과 러닝 취향을 간단하게 관리할 수 있습니다."
       compactIntro
+      viewer={viewer}
     >
       <section className="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5 sm:p-7">
         {message ? (
