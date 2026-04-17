@@ -82,7 +82,7 @@ export async function PageShell({
           ) : (
             <Link
               href="/login"
-              className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="public-primary-button rounded-full px-4 py-2 text-sm font-semibold transition"
             >
               로그인
             </Link>

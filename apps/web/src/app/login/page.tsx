@@ -65,13 +65,13 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
             <button
               type="submit"
               formAction={loginAction}
-              className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="public-primary-button inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition"
             >
               로그인하기
             </button>
             <Link
               href={`/signup?next=${encodeURIComponent(nextPath)}`}
-              className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="public-secondary-button inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-semibold transition"
             >
               회원가입
             </Link>
