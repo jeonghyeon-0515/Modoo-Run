@@ -33,14 +33,7 @@ export default function Home() {
 
   return (
     <PageShell title="러닝 홈" compactIntro>
-      <section className="hero-shell rounded-[1.75rem] p-6 text-white shadow-sm sm:p-8">
-        <div className="max-w-3xl">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">이번 주에 볼 것만 먼저 담았습니다.</h2>
-          <p className="mt-4 text-sm leading-7 text-slate-200 sm:text-base">아래 카드에서 바로 둘러보세요.</p>
-        </div>
-      </section>
-
-      <section className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.8fr)] lg:items-stretch">
+      <section className="grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.8fr)] lg:items-stretch">
         <Link
           href={featuredLink.href}
           className="interactive-card interactive-card-featured rounded-[1.25rem] border border-[var(--brand-soft-strong)] bg-[var(--public-accent-soft)] p-6 shadow-sm lg:min-h-[260px]"
