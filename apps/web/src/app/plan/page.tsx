@@ -151,10 +151,10 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                 <p className="mt-2 text-sm text-slate-600">계획을 적고 실행 상태를 기록할 수 있습니다.</p>
               </div>
               <div className="flex items-center gap-2">
-                <Link href={monthHref(prevMonth.year, prevMonth.month)} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                <Link href={monthHref(prevMonth.year, prevMonth.month)} className="focus-ring inline-flex min-h-11 items-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                   이전 달
                 </Link>
-                <Link href={monthHref(nextMonth.year, nextMonth.month)} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                <Link href={monthHref(nextMonth.year, nextMonth.month)} className="focus-ring inline-flex min-h-11 items-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                   다음 달
                 </Link>
               </div>
@@ -169,7 +169,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                   <input
                     name="title"
                     defaultValue={plan?.title ?? `${monthTitle} 플랜`}
-                    className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none ring-0 transition focus:border-blue-400"
+                    className="focus-ring mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none ring-0 transition focus:border-blue-400"
                     placeholder="10km 완주 준비"
                   />
                 </label>
@@ -178,7 +178,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                   <textarea
                     name="notes"
                     defaultValue={plan?.notes ?? ''}
-                    className="mt-2 min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                    className="focus-ring mt-2 min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                     placeholder="목표나 메모"
                   />
                 </label>
@@ -190,7 +190,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                   <select
                     name="targetRaceId"
                     defaultValue={plan?.target_race_id ?? ''}
-                    className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                    className="focus-ring mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                   >
                     <option value="">아직 안 정했어요</option>
                     {races.map((race) => (
@@ -209,7 +209,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       step="0.1"
                       name="goalDistanceKm"
                       defaultValue={plan?.goal_distance_km ?? ''}
-                      className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                       placeholder="40"
                     />
                   </label>
@@ -219,7 +219,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       type="number"
                       name="goalSessions"
                       defaultValue={plan?.goal_sessions ?? ''}
-                      className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                       placeholder="12"
                     />
                   </label>
@@ -228,7 +228,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                 <div className="flex flex-wrap gap-3">
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+                    className="focus-ring inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
                   >
                     {plan ? '계획 저장하기' : '플랜 만들기'}
                   </button>
@@ -238,7 +238,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       <button
                         type="submit"
                         formAction={deleteMonthlyPlanAction}
-                        className="inline-flex items-center justify-center rounded-full border border-red-200 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                        className="focus-ring inline-flex items-center justify-center rounded-full border border-red-200 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
                       >
                         이달 계획 지우기
                       </button>
@@ -293,7 +293,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                             <input type="hidden" name="status" value={option.value} />
                             <button
                               type="submit"
-                              className={`rounded-full px-3 py-2 text-xs font-semibold transition ${
+                              className={`focus-ring inline-flex min-h-11 items-center rounded-full px-3.5 py-2.5 text-xs font-semibold transition ${
                                 item.status === option.value
                                   ? 'bg-[var(--brand)] text-white'
                                   : 'bg-[var(--surface-muted)] text-slate-700 hover:bg-[var(--brand-soft)]'
@@ -306,7 +306,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       </div>
 
                       <details className="mt-4 rounded-2xl bg-slate-50 p-4">
-                        <summary className="cursor-pointer text-sm font-semibold text-slate-700">일정 수정</summary>
+                        <summary className="focus-ring rounded-md px-1 py-1 cursor-pointer text-sm font-semibold text-slate-700">일정 수정</summary>
                         <form action={updatePlanItemAction} className="mt-4 space-y-3">
                           <input type="hidden" name="itemId" value={item.id} />
                           <div className="grid gap-3 sm:grid-cols-2">
@@ -314,12 +314,12 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                               type="date"
                               name="scheduledDate"
                               defaultValue={item.scheduled_date}
-                              className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                              className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                             />
                             <select
                               name="category"
                               defaultValue={item.category}
-                              className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                              className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                             >
                               {categoryOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -331,12 +331,12 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                           <input
                             name="title"
                             defaultValue={item.title}
-                            className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                            className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                           />
                           <textarea
                             name="description"
                             defaultValue={item.description ?? ''}
-                            className="min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                            className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                           />
                           <div className="grid gap-3 sm:grid-cols-2">
                             <input
@@ -344,28 +344,28 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                               step="0.1"
                               name="targetDistanceKm"
                               defaultValue={item.target_distance_km ?? ''}
-                              className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                              className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                       placeholder="8"
                             />
                             <input
                               type="number"
                               name="targetDurationMinutes"
                               defaultValue={item.target_duration_minutes ?? ''}
-                              className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                              className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                       placeholder="50"
                             />
                           </div>
                           <div className="flex flex-wrap gap-3">
                             <button
                               type="submit"
-                              className="rounded-full bg-[var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+                              className="focus-ring rounded-full bg-[var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
                             >
                               일정 수정
                             </button>
                             <button
                               type="submit"
                               formAction={deletePlanItemAction}
-                              className="rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                              className="focus-ring rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
                             >
                               일정 삭제
                             </button>
@@ -389,12 +389,12 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       type="date"
                       name="scheduledDate"
                       defaultValue={createDateInputValue(year, month)}
-                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                     />
                     <select
                       name="category"
                       defaultValue="easy_run"
-                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                     >
                       {categoryOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -404,12 +404,12 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     </select>
                     <input
                       name="title"
-                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                       placeholder="퇴근 후 5km"
                     />
                     <textarea
                       name="description"
-                      className="min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                       placeholder="메모 또는 목표 페이스"
                     />
                     <div className="grid gap-3 sm:grid-cols-2">
@@ -417,19 +417,19 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                         type="number"
                         step="0.1"
                         name="targetDistanceKm"
-                        className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                        className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                         placeholder="거리 (km)"
                       />
                       <input
                         type="number"
                         name="targetDurationMinutes"
-                        className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                        className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
                         placeholder="시간 (분)"
                       />
                     </div>
                     <button
                       type="submit"
-                      className="inline-flex w-full items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+                      className="focus-ring inline-flex w-full items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
                     >
                       이 일정 추가하기
                     </button>

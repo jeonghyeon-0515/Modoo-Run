@@ -1,7 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { getSiteUrl, getSiteVerification } from '@/lib/site';
 import { buildSiteStructuredData, serializeJsonLd } from '@/lib/seo/schema';
+
+export const viewport: Viewport = {
+  themeColor: '#f4f6f8',
+  viewportFit: 'cover',
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
@@ -32,6 +37,7 @@ export default function RootLayout({
   return (
     <html lang="ko" className="h-full antialiased">
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
+        <a href="#main-content" className="skip-link">본문으로 바로가기</a>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(siteStructuredData) }}

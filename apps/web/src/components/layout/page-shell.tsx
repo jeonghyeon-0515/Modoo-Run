@@ -27,10 +27,10 @@ export async function PageShell({
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <header className="app-shell-header sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8">
           <div>
-            <Link href="/races" className="text-base font-bold tracking-tight text-slate-950">
+            <Link href="/races" className="focus-ring rounded-md text-base font-bold tracking-tight text-slate-950">
               모두의 러닝
             </Link>
             <div className="text-sm text-slate-500">러너를 위한 일정 · 기록 공간</div>
@@ -46,7 +46,7 @@ export async function PageShell({
               <div className="flex items-center gap-3 text-sm font-medium text-slate-600 sm:gap-4">
                 <Link
                   href="/notifications"
-                  className="inline-flex items-center gap-2 transition hover:text-slate-950"
+                  className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-md px-2 transition hover:text-slate-950"
                 >
                   <span>알림</span>
                   {resolvedUnreadNotifications > 0 ? (
@@ -57,14 +57,14 @@ export async function PageShell({
                 </Link>
                 <Link
                   href="/profile"
-                  className="transition hover:text-slate-950"
+                  className="focus-ring inline-flex min-h-11 items-center rounded-md px-2 transition hover:text-slate-950"
                 >
                   프로필
                 </Link>
                 {viewer.isStaff ? (
                   <Link
                     href="/ops"
-                    className="rounded-full border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--brand-strong)] transition hover:bg-[#ffe5dd]"
+                    className="focus-ring inline-flex min-h-11 items-center rounded-full border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--brand-strong)] transition hover:bg-[#ffe5dd]"
                   >
                     관리자
                   </Link>
@@ -73,7 +73,7 @@ export async function PageShell({
               <form action="/auth/logout" method="post">
                 <button
                   type="submit"
-                  className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
+                  className="focus-ring inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-slate-500 transition hover:text-slate-900"
                 >
                   로그아웃
                 </button>
@@ -82,7 +82,7 @@ export async function PageShell({
           ) : (
             <Link
               href="/login"
-              className="public-primary-button rounded-full px-4 py-2 text-sm font-semibold transition"
+              className="focus-ring public-primary-button inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold transition"
             >
               로그인
             </Link>
@@ -91,7 +91,7 @@ export async function PageShell({
         <ServiceTabs isStaff={viewer?.isStaff ?? false} />
       </header>
 
-      <main className={`mx-auto w-full max-w-5xl px-5 ${compactIntro ? 'py-5 sm:py-6' : 'py-8'} sm:px-8`}>
+      <main id="main-content" tabIndex={-1} className={`app-shell-main mx-auto w-full max-w-5xl px-5 ${compactIntro ? 'py-5 sm:py-6' : 'py-8'} sm:px-8`}>
         <section className={compactIntro ? 'mb-5 sm:mb-6' : 'mb-8'}>
           <h1
             className={
@@ -125,10 +125,10 @@ export async function PageShell({
               <p className="mt-1 text-sm text-slate-500">러너를 위한 일정 · 기록 공간</p>
             </div>
             <div className="flex flex-wrap items-center gap-3 text-sm font-medium text-slate-600">
-              <Link href="/advertise" className="transition hover:text-slate-950">
+              <Link href="/advertise" className="focus-ring inline-flex min-h-11 items-center rounded-md px-2 transition hover:text-slate-950">
                 광고 · 제휴 문의
               </Link>
-              <Link href="/gear" className="transition hover:text-slate-950">
+              <Link href="/gear" className="focus-ring inline-flex min-h-11 items-center rounded-md px-2 transition hover:text-slate-950">
                 공개 가이드
               </Link>
             </div>

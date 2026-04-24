@@ -28,7 +28,7 @@ export function ServiceTabs({ isStaff = false }: { isStaff?: boolean }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition ${
+              className={`focus-ring inline-flex min-h-11 items-center whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition ${
                 active
                   ? 'border border-slate-300 bg-slate-100 text-slate-950'
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'

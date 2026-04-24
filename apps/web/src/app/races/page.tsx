@@ -85,7 +85,7 @@ function FilterChip({
   return (
     <Link
       href={href}
-      className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition sm:text-sm ${
+      className={`focus-ring inline-flex min-h-11 items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition sm:min-h-10 sm:py-1.5 sm:text-sm ${
         active
           ? 'public-chip-active'
           : 'public-chip-idle'
@@ -235,7 +235,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             <p className="text-sm font-semibold text-slate-950">빠른 탐색</p>
             <p className="mt-1 text-sm text-slate-500">검색 의도에 맞춰 자주 찾는 대회 묶음을 바로 볼 수 있습니다.</p>
           </div>
-          <Link href="/races/closing-soon" className="text-sm font-semibold text-[var(--brand)]">
+          <Link href="/races/closing-soon" className="focus-ring inline-flex min-h-11 items-center rounded-lg px-2 py-2 text-sm font-semibold text-[var(--brand)]">
             마감 임박 보기
           </Link>
         </div>
@@ -244,7 +244,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             <Link
               key={item.key}
               href={item.path}
-              className="whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
+              className="focus-ring inline-flex min-h-11 items-center whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
             >
               {item.eyebrow}
             </Link>
@@ -268,7 +268,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           </div>
 
           {!isDefaultOpenView ? (
-            <Link href="/races" className="text-sm font-medium text-slate-500 transition hover:text-slate-900">
+            <Link href="/races" className="focus-ring inline-flex min-h-11 items-center rounded-lg px-2 py-2 text-sm font-medium text-slate-500 transition hover:text-slate-900">
               조건 초기화
             </Link>
           ) : null}
@@ -287,7 +287,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
         </div>
 
         <details className="mt-3 rounded-[1rem] border border-slate-200 bg-slate-50 p-3">
-          <summary className="cursor-pointer list-none text-sm font-semibold text-slate-800">
+          <summary className="focus-ring rounded-md px-1 py-1 cursor-pointer list-none text-sm font-semibold text-slate-800">
             지역 · 월 · 거리 더 고르기
           </summary>
           <p className="mt-3 text-xs text-slate-500">여러 조건을 동시에 적용할 수 있습니다.</p>
