@@ -4,13 +4,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const items = [
+  { href: '/', label: '홈' },
   { href: '/races', label: '대회 일정' },
+  { href: '/plan', label: '일정 캘린더' },
   { href: '/compare', label: '대회 비교' },
   { href: '/community', label: '커뮤니티' },
-  { href: '/plan', label: '일정 캘린더' },
 ];
 
 function isActive(pathname: string, href: string) {
+  if (href === '/') {
+    return pathname === '/';
+  }
+
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
