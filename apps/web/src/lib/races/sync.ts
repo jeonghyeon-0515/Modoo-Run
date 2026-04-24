@@ -6,6 +6,7 @@ import { fetchRoadrunRaceDetail, fetchRoadrunRaceList, roadrunSource } from '@/l
 import { parseRoadrunDetail, parseRoadrunList } from '@/lib/races/source/roadrun.js';
 import { buildRaceChangeKey, detectImportantRaceChanges, pickRaceChangeSnapshot } from './change-events';
 import { persistRaceChangeEvent } from './change-event-delivery';
+import { inferRegistrationStatus } from './status';
 
 type TriggerType = 'cron' | 'manual' | 'backfill';
 
@@ -106,20 +107,6 @@ function parseRegistrationPeriod(label?: string | null) {
   };
 }
 
-function inferRegistrationStatus(closeAt: string | null) {
-  if (!closeAt) return 'open';
-  const today = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Seoul',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
-    .format(new Date())
-    .replace(/\//g, '-');
-
-  return closeAt < today ? 'closed' : 'open';
-}
-
 function stableHash(payload: unknown) {
   return createHash('sha256').update(JSON.stringify(payload)).digest('hex');
 }
@@ -203,6 +190,11 @@ async function upsertRaceRecord(item: RoadrunListItem, detail: RoadrunDetail, ye
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const admin: any = getSupabaseAdminClient();
   const registrationPeriod = parseRegistrationPeriod(detail.registrationPeriod);
+  const eventDate = toIsoDate(year, item.dateLabel);
+  const registrationStatus = inferRegistrationStatus({
+    eventDate,
+    registrationCloseAt: registrationPeriod.closeAt,
+  });
   const now = new Date().toISOString();
   const sourcePayload = { list: item, detail };
   const sourceHash = stableHash(sourcePayload);
@@ -223,7 +215,7 @@ async function upsertRaceRecord(item: RoadrunListItem, detail: RoadrunDetail, ye
   const hasChanged = !existing || existing.source_hash !== sourceHash;
   const nextSnapshot = pickRaceChangeSnapshot({
     title: detail.title || item.title,
-    eventDate: toIsoDate(year, item.dateLabel),
+    eventDate,
     eventDateLabel: item.dateLabel,
     region: detail.region || null,
     location: detail.location || item.location,
@@ -231,7 +223,7 @@ async function upsertRaceRecord(item: RoadrunListItem, detail: RoadrunDetail, ye
     registrationOpenAt: registrationPeriod.openAt,
     registrationCloseAt: registrationPeriod.closeAt,
     registrationPeriodLabel: detail.registrationPeriod || null,
-    registrationStatus: inferRegistrationStatus(registrationPeriod.closeAt),
+    registrationStatus,
     homepageUrl: detail.homepage || null,
   });
   const previousSnapshot = existing
@@ -255,7 +247,7 @@ async function upsertRaceRecord(item: RoadrunListItem, detail: RoadrunDetail, ye
     source_site: ROADRUN_SOURCE_SITE,
     source_race_id: item.sourceRaceId,
     title: detail.title || item.title,
-    event_date: toIsoDate(year, item.dateLabel),
+    event_date: eventDate,
     event_date_label: item.dateLabel,
     weekday_label: item.weekday,
     region: detail.region || null,
@@ -268,7 +260,7 @@ async function upsertRaceRecord(item: RoadrunListItem, detail: RoadrunDetail, ye
     registration_open_at: registrationPeriod.openAt,
     registration_close_at: registrationPeriod.closeAt,
     registration_period_label: detail.registrationPeriod || null,
-    registration_status: inferRegistrationStatus(registrationPeriod.closeAt),
+    registration_status: registrationStatus,
     summary: detail.introduction || null,
     description: detail.introduction || null,
     source_list_url: roadrunSource.listUrl,

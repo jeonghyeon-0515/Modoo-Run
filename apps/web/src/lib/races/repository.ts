@@ -15,6 +15,7 @@ import {
 } from './cache';
 import { applyRaceFilters } from './cache-helpers';
 import { normalizeMonthFilter } from './formatters';
+import { getEffectiveRaceStatus, isRaceOpenForDiscovery } from './status';
 
 type RawRace = {
   id: string;
@@ -42,7 +43,7 @@ type RawRace = {
 };
 
 const raceListColumns =
-  'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, last_synced_at';
+  'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, registration_close_at, last_synced_at';
 
 function mapRace(row: RawRace): RaceListItem {
   return {
@@ -56,8 +57,13 @@ function mapRace(row: RawRace): RaceListItem {
     location: row.location,
     courseSummary: row.course_summary,
     organizer: row.organizer,
-    registrationStatus: row.registration_status,
+    registrationStatus: getEffectiveRaceStatus({
+      eventDate: row.event_date,
+      registrationCloseAt: row.registration_close_at ?? null,
+      registrationStatus: row.registration_status,
+    }),
     registrationPeriodLabel: row.registration_period_label,
+    registrationCloseAt: row.registration_close_at ?? null,
     lastSyncedAt: row.last_synced_at,
   };
 }
@@ -189,7 +195,7 @@ export async function listRelatedRaces(input: {
       .neq('source_race_id', input.excludeSourceRaceId)
       .eq('registration_status', 'open')
       .order('event_date', { ascending: true, nullsFirst: false })
-      .limit(limit);
+      .limit(limit * 4);
 
   if (input.region) {
     const { data, error } = await buildBaseQuery().eq('region', input.region);
@@ -198,8 +204,19 @@ export async function listRelatedRaces(input: {
       throw new Error(`관련 대회 조회 실패: ${error.message}`);
     }
 
-    if ((data ?? []).length > 0) {
-      return (data ?? []).map((row: RawRace) => mapRace(row));
+    const filtered = (data ?? [])
+      .map((row: RawRace) => mapRace(row))
+      .filter((race) =>
+        isRaceOpenForDiscovery({
+          eventDate: race.eventDate,
+          registrationCloseAt: race.registrationCloseAt,
+          registrationStatus: race.registrationStatus,
+        }),
+      )
+      .slice(0, limit);
+
+    if (filtered.length > 0) {
+      return filtered;
     }
   }
 
@@ -209,14 +226,23 @@ export async function listRelatedRaces(input: {
     throw new Error(`관련 대회 조회 실패: ${error.message}`);
   }
 
-  return (data ?? []).map((row: RawRace) => mapRace(row));
+  return (data ?? [])
+    .map((row: RawRace) => mapRace(row))
+    .filter((race) =>
+      isRaceOpenForDiscovery({
+        eventDate: race.eventDate,
+        registrationCloseAt: race.registrationCloseAt,
+        registrationStatus: race.registrationStatus,
+      }),
+    )
+    .slice(0, limit);
 }
 
 export async function getRaceExplorerSummary(limitRegions = 4): Promise<RaceExplorerSummary> {
   const supabase = await getSupabaseServerClient();
   const { data, error } = await supabase
     .from('races')
-    .select('region, registration_status, last_synced_at');
+    .select('region, registration_status, event_date, registration_close_at, last_synced_at');
 
   if (error) {
     throw new Error(`대회 요약 조회 실패: ${error.message}`);
@@ -226,6 +252,8 @@ export async function getRaceExplorerSummary(limitRegions = 4): Promise<RaceExpl
     (data as Array<{
       region: string | null;
       registration_status: RaceStatus;
+      event_date: string | null;
+      registration_close_at: string | null;
       last_synced_at: string | null;
     }>) ?? [];
 
@@ -236,8 +264,14 @@ export async function getRaceExplorerSummary(limitRegions = 4): Promise<RaceExpl
   let unknownCount = 0;
 
   rows.forEach((row) => {
-    if (row.registration_status === 'open') openCount += 1;
-    else if (row.registration_status === 'closed') closedCount += 1;
+    const effectiveStatus = getEffectiveRaceStatus({
+      eventDate: row.event_date,
+      registrationCloseAt: row.registration_close_at,
+      registrationStatus: row.registration_status,
+    });
+
+    if (effectiveStatus === 'open') openCount += 1;
+    else if (effectiveStatus === 'closed') closedCount += 1;
     else unknownCount += 1;
 
     if (row.region) {

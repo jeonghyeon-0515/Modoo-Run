@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { isRaceOpenForDiscovery } from './status';
 import type { RaceLandingKey } from './landing-config';
 import type { RaceStatus } from './types';
 
@@ -69,7 +70,7 @@ export async function listRaceLandingItems(key: RaceLandingKey, limit = 48) {
     .eq('registration_status', 'open')
     .order('event_date', { ascending: true, nullsFirst: false })
     .order('title', { ascending: true })
-    .limit(limit);
+    .limit(limit * 4);
 
   if (key === 'closing-soon') {
     const now = new Date();
@@ -93,5 +94,14 @@ export async function listRaceLandingItems(key: RaceLandingKey, limit = 48) {
     throw new Error(`대회 랜딩 목록 조회 실패: ${error.message}`);
   }
 
-  return ((data ?? []) as RawRaceLandingRow[]).map(mapRace);
+  return ((data ?? []) as RawRaceLandingRow[])
+    .map(mapRace)
+    .filter((race) =>
+      isRaceOpenForDiscovery({
+        eventDate: race.eventDate,
+        registrationCloseAt: race.registrationCloseAt,
+        registrationStatus: race.registrationStatus,
+      }),
+    )
+    .slice(0, limit);
 }

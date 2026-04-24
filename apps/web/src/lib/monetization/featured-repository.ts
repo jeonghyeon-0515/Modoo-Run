@@ -3,6 +3,7 @@ import 'server-only';
 import { requireModerator } from '@/lib/auth/session';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { listRaces } from '@/lib/races/repository';
+import { getEffectiveRaceStatus } from '@/lib/races/status';
 import type { RaceListItem } from '@/lib/races/types';
 import { pickFeaturedRaces, type FeaturedRacePlacement } from './public-catalog';
 
@@ -33,11 +34,12 @@ type RawRaceListRow = {
   organizer: string | null;
   registration_status: 'open' | 'closed' | 'unknown';
   registration_period_label: string | null;
+  registration_close_at: string | null;
   last_synced_at: string | null;
 };
 
 const raceListColumns =
-  'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, last_synced_at';
+  'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, registration_close_at, last_synced_at';
 
 function getDefaultPlacementSummaries(): Record<SlotKey, { eyebrow: string; summary: string }> {
   return {
@@ -68,8 +70,13 @@ function mapRace(row: RawRaceListRow): RaceListItem {
     location: row.location,
     courseSummary: row.course_summary,
     organizer: row.organizer,
-    registrationStatus: row.registration_status,
+    registrationStatus: getEffectiveRaceStatus({
+      eventDate: row.event_date,
+      registrationCloseAt: row.registration_close_at,
+      registrationStatus: row.registration_status,
+    }),
     registrationPeriodLabel: row.registration_period_label,
+    registrationCloseAt: row.registration_close_at,
     lastSyncedAt: row.last_synced_at,
   };
 }

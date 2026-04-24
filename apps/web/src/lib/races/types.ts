@@ -13,6 +13,7 @@ export type RaceListItem = {
   organizer: string | null;
   registrationStatus: RaceStatus;
   registrationPeriodLabel: string | null;
+  registrationCloseAt: string | null;
   lastSyncedAt: string | null;
 };
 

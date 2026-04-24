@@ -1,8 +1,11 @@
+import { getEffectiveRaceStatus } from './status.ts';
+
 type FilterableRace = {
   eventDate: string | null;
   courseSummary: string | null;
   region: string | null;
   registrationStatus: 'open' | 'closed' | 'unknown';
+  registrationCloseAt?: string | null;
 };
 
 type FilterableRaceFilters = {
@@ -54,13 +57,21 @@ function matchesMonthFilter(eventDate: string | null, values?: string | string[]
   });
 }
 
-export function getRaceCacheTtlSeconds(closeAt: string | null, now = new Date()) {
-  if (!closeAt) {
+export function getRaceCacheTtlSeconds(
+  registrationCloseAt: string | null,
+  eventDate: string | null,
+  now = new Date(),
+) {
+  const expirationCandidates = [registrationCloseAt, eventDate]
+    .filter(Boolean)
+    .map((value) => new Date(`${value}T23:59:59+09:00`).getTime())
+    .filter((value) => Number.isFinite(value));
+
+  if (expirationCandidates.length === 0) {
     return DEFAULT_RACE_CACHE_TTL_SECONDS;
   }
 
-  const expiresAt = new Date(`${closeAt}T23:59:59+09:00`);
-  const ttl = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
+  const ttl = Math.floor((Math.min(...expirationCandidates) - now.getTime()) / 1000);
   return ttl > 0 ? ttl : 1;
 }
 
@@ -69,11 +80,13 @@ export function applyRaceFilters<T extends FilterableRace>(items: T[], filters: 
   const distances = normalizeFilterValues(filters.distance).map((value) => value.toLowerCase());
 
   let filtered = items.filter((item) => {
-    if (
-      filters.registrationStatus &&
-      filters.registrationStatus !== 'all' &&
-      item.registrationStatus !== filters.registrationStatus
-    ) {
+    const effectiveStatus = getEffectiveRaceStatus({
+      eventDate: item.eventDate,
+      registrationCloseAt: item.registrationCloseAt ?? null,
+      registrationStatus: item.registrationStatus,
+    });
+
+    if (filters.registrationStatus && filters.registrationStatus !== 'all' && effectiveStatus !== filters.registrationStatus) {
       return false;
     }
 

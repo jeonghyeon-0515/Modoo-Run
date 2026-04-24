@@ -1,6 +1,7 @@
 import { getUpstashRedisClient } from '@/lib/cache/upstash';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
 import { applyRaceFilters, collectRaceRegions, getRaceCacheTtlSeconds, groupHashFieldsByTtl } from './cache-helpers';
+import { getEffectiveRaceStatus, isRaceOpenForDiscovery } from './status';
 import {
   RaceDetailItem,
   RaceFilters,
@@ -78,8 +79,13 @@ function mapRace(row: RawRace): RaceListItem {
     location: row.location,
     courseSummary: row.course_summary,
     organizer: row.organizer,
-    registrationStatus: row.registration_status,
+    registrationStatus: getEffectiveRaceStatus({
+      eventDate: row.event_date,
+      registrationCloseAt: row.registration_close_at ?? null,
+      registrationStatus: row.registration_status,
+    }),
     registrationPeriodLabel: row.registration_period_label,
+    registrationCloseAt: row.registration_close_at ?? null,
     lastSyncedAt: row.last_synced_at,
   };
 }
@@ -113,6 +119,7 @@ function mapDetailToList(detail: RaceDetailItem): RaceListItem {
     organizer: detail.organizer,
     registrationStatus: detail.registrationStatus,
     registrationPeriodLabel: detail.registrationPeriodLabel,
+    registrationCloseAt: detail.registrationCloseAt,
     lastSyncedAt: detail.lastSyncedAt,
   };
 }
@@ -138,10 +145,22 @@ function rememberOpenIndex(index: OpenRaceIndex) {
   };
 }
 
+function normalizeRaceDetail(detail: RaceDetailItem): RaceDetailItem {
+  return {
+    ...detail,
+    registrationStatus: getEffectiveRaceStatus({
+      eventDate: detail.eventDate,
+      registrationCloseAt: detail.registrationCloseAt ?? null,
+      registrationStatus: detail.registrationStatus,
+    }),
+  };
+}
+
 function rememberDetail(detail: RaceDetailItem) {
-  memoryOpenDetails.set(detail.sourceRaceId, {
+  const normalized = normalizeRaceDetail(detail);
+  memoryOpenDetails.set(normalized.sourceRaceId, {
     expiresAt: Date.now() + MEMORY_TTL_MS,
-    value: detail,
+    value: normalized,
   });
 }
 
@@ -231,8 +250,9 @@ async function readOpenRaceDetails(sourceRaceIds: string[]) {
     missingIds.forEach((sourceRaceId, index) => {
       const parsed = readJson<RaceDetailItem>(values[index]);
       if (!parsed) return;
-      details.set(sourceRaceId, parsed);
-      rememberDetail(parsed);
+      const normalized = normalizeRaceDetail(parsed);
+      details.set(sourceRaceId, normalized);
+      rememberDetail(normalized);
     });
   }
 
@@ -268,8 +288,9 @@ export async function getCachedRaceDetail(sourceRaceId: string) {
   const parsed = readJson<RaceDetailItem>(raw);
   if (!parsed) return null;
 
-  rememberDetail(parsed);
-  return parsed;
+  const normalized = normalizeRaceDetail(parsed);
+  rememberDetail(normalized);
+  return normalized;
 }
 
 export async function getCachedRelatedRaces(input: {
@@ -284,7 +305,14 @@ export async function getCachedRelatedRaces(input: {
   const details = await readOpenRaceDetails(index.sourceRaceIds);
   const base = details
     .map(mapDetailToList)
-    .filter((item) => item.sourceRaceId !== input.excludeSourceRaceId);
+    .filter((item) => item.sourceRaceId !== input.excludeSourceRaceId)
+    .filter((item) =>
+      isRaceOpenForDiscovery({
+        eventDate: item.eventDate,
+        registrationCloseAt: item.registrationCloseAt,
+        registrationStatus: item.registrationStatus,
+      }),
+    );
 
   if (input.region) {
     const regional = base.filter((item) => item.region === input.region).slice(0, limit);
@@ -358,9 +386,16 @@ export async function warmRaceCacheFromDatabase(): Promise<RaceCacheWarmResult> 
   const rows = ((data ?? []) as RawRace[])
     .map((row) => ({
       row,
-      ttlSeconds: getRaceCacheTtlSeconds(row.registration_close_at ?? null),
+      ttlSeconds: getRaceCacheTtlSeconds(row.registration_close_at ?? null, row.event_date ?? null),
     }))
-    .filter(({ ttlSeconds, row }) => row.registration_status === 'open' && ttlSeconds > 1);
+    .filter(
+      ({ ttlSeconds, row }) =>
+        isRaceOpenForDiscovery({
+          eventDate: row.event_date,
+          registrationCloseAt: row.registration_close_at ?? null,
+          registrationStatus: row.registration_status,
+        }) && ttlSeconds > 1,
+    );
   const warmedAt = new Date().toISOString();
   const index: OpenRaceIndex = {
     version: 'v3',
