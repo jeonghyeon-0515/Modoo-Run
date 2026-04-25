@@ -35,7 +35,7 @@ export function FeaturedRaceSection({
         </div>
         <Link
           href="/advertise"
-          className={`text-sm font-medium ${
+          className={`focus-ring pressable inline-flex min-h-10 items-center rounded-md px-2 text-sm font-medium ${
             isOpsPreview ? 'text-slate-500 hover:text-slate-900' : 'text-[var(--public-accent-strong)] hover:text-[var(--public-accent-strong)]/90'
           }`}
         >
@@ -48,10 +48,10 @@ export function FeaturedRaceSection({
           <Link
             key={item.race.id}
             href={`/races/${item.race.sourceRaceId}`}
-            className={`rounded-[1.1rem] border p-4 transition ${
+            className={`interactive-card soft-surface rounded-[1.1rem] border p-4 ${
               isOpsPreview
-                ? 'border-slate-200 bg-slate-50 hover:border-slate-300'
-                : 'border-slate-200 bg-white hover:border-slate-300'
+                ? 'border-black/5 bg-slate-50'
+                : 'border-black/5 bg-white'
             }`}
           >
             <p
@@ -61,11 +61,11 @@ export function FeaturedRaceSection({
             >
               {item.eyebrow}
             </p>
-            <h3 className="mt-2 text-lg font-semibold text-slate-950">{item.race.title}</h3>
-            <p className="mt-2 text-sm text-slate-600">
+            <h3 className="text-balance mt-2 text-lg font-semibold text-slate-950">{item.race.title}</h3>
+            <p className="mt-2 text-sm tabular-nums text-slate-600">
               {formatRaceDate(item.race.eventDate, item.race.eventDateLabel)} · {item.race.region ?? '지역 미정'}
             </p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">{item.summary}</p>
+            <p className="text-pretty mt-2 text-sm leading-6 text-slate-600">{item.summary}</p>
             <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
               {item.race.courseSummary ? <span>{item.race.courseSummary}</span> : null}
               {item.race.location ? <span>· {item.race.location}</span> : null}

@@ -38,7 +38,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
               name="email"
               type="email"
               required
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
               placeholder="runner@modoo.run"
             />
           </label>
@@ -50,7 +50,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
               type="password"
               required
               minLength={8}
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
               placeholder="8자 이상"
             />
           </label>
@@ -65,13 +65,13 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
             <button
               type="submit"
               formAction={loginAction}
-              className="public-primary-button inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition"
+              className="public-primary-button pressable inline-flex min-h-11 items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
             >
               로그인하기
             </button>
             <Link
               href={`/signup?next=${encodeURIComponent(nextPath)}`}
-              className="public-secondary-button inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-semibold transition"
+              className="public-secondary-button pressable inline-flex min-h-11 items-center justify-center rounded-full border px-5 py-3 text-sm font-semibold"
             >
               회원가입
             </Link>

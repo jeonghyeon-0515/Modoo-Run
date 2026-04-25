@@ -30,7 +30,7 @@ function SelectableChip({
   return (
     <label htmlFor={id} className="cursor-pointer">
       <input id={id} type="checkbox" name={name} value={value} defaultChecked={defaultChecked} className="peer sr-only" />
-      <span className="inline-flex rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition peer-checked:border-slate-900 peer-checked:bg-slate-900 peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-slate-400">
+      <span className="pressable inline-flex min-h-10 items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 peer-checked:border-slate-900 peer-checked:bg-slate-900 peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-slate-400">
         {label}
       </span>
     </label>
@@ -71,7 +71,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
           </div>
           <Link
             href="/plan"
-            className="inline-flex items-center justify-center text-sm font-medium text-slate-500 transition hover:text-slate-900"
+            className="focus-ring pressable inline-flex min-h-10 items-center justify-center text-sm font-medium text-slate-500 hover:text-slate-900"
           >
             일정 캘린더로 돌아가기
           </Link>
@@ -85,7 +85,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
               <input
                 name="displayName"
                 defaultValue={profile.displayName}
-                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
                 placeholder="닉네임을 입력하세요"
               />
             </label>
@@ -96,7 +96,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
               <select
                 name="goalRaceId"
                 defaultValue={profile.goalRaceId ?? ''}
-                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
               >
                 <option value="">아직 안 정했어요</option>
                 {goalRaceOptions.map((race) => (
@@ -113,7 +113,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
             <textarea
               name="bio"
               defaultValue={profile.bio}
-              className="mt-2 min-h-28 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+              className="mt-2 min-h-28 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
               placeholder="러닝 스타일이나 목표를 짧게 적어보세요."
             />
           </label>
@@ -155,7 +155,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Sear
           <div className="flex flex-wrap justify-end gap-3">
             <Link
               href="/races"
-              className="inline-flex items-center justify-center text-sm font-medium text-slate-500 transition hover:text-slate-900"
+              className="focus-ring pressable inline-flex min-h-10 items-center justify-center text-sm font-medium text-slate-500 hover:text-slate-900"
             >
               대회 일정 보기
             </Link>

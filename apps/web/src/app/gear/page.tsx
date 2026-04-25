@@ -33,13 +33,13 @@ export default function GearGuidePage() {
                   href={`/out/partner/${resource.targetKind}?source=${encodeURIComponent('/gear')}&destinationKey=${encodeURIComponent(resource.destinationKey)}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-[1.1rem] border border-slate-200 bg-slate-50 p-5 transition hover:border-slate-300"
+                  className="interactive-card soft-surface rounded-[1.1rem] border border-black/5 bg-slate-50 p-5"
                 >
                   <div className="flex items-center gap-2">
                     <StatusBadge tone="disclosure">{resource.label}</StatusBadge>
-                    <p className="text-base font-semibold text-slate-950">{resource.title}</p>
+                    <p className="text-balance text-base font-semibold text-slate-950">{resource.title}</p>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">{resource.description}</p>
+                  <p className="text-pretty mt-3 text-sm leading-6 text-slate-600">{resource.description}</p>
                   <p className="mt-4 text-sm font-semibold text-[var(--public-accent-strong)]">{resource.ctaLabel} →</p>
                 </a>
               ))}
@@ -56,13 +56,13 @@ export default function GearGuidePage() {
         <div className="mt-4 flex flex-wrap gap-3">
           <Link
             href="/advertise"
-            className="public-primary-button inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition"
+            className="public-primary-button pressable inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold"
           >
             광고 · 제휴 문의하기
           </Link>
           <Link
             href="/races"
-            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50"
+            className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 hover:border-slate-300 hover:bg-slate-50"
           >
             대회 일정으로 돌아가기
           </Link>

@@ -29,7 +29,7 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
               name="email"
               type="email"
               required
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
               placeholder="runner@modoo.run"
             />
           </label>
@@ -37,7 +37,7 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
           <button
             type="submit"
             formAction={requestPasswordResetAction}
-            className="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+            className="focus-ring pressable inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800"
           >
             재설정 링크 보내기
           </button>

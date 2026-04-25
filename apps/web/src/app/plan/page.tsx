@@ -112,13 +112,13 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href={`/login?next=${encodeURIComponent(`/plan?year=${year}&month=${month}`)}`}
-              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white pressable hover:bg-[var(--brand-strong)]"
             >
               로그인하고 계획 보기
             </Link>
             <Link
               href="/races"
-              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
             >
               대회 일정 보기
             </Link>
@@ -139,15 +139,15 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
           <section className="grid gap-4 sm:grid-cols-3">
             <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
               <p className="text-sm font-medium text-slate-500">이번 달 실행률</p>
-              <p className="mt-3 text-3xl font-bold text-slate-950">{stats.completionRate}%</p>
+              <p className="mt-3 text-3xl font-bold tabular-nums text-slate-950">{stats.completionRate}%</p>
             </article>
             <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
               <p className="text-sm font-medium text-slate-500">잡아둔 일정</p>
-              <p className="mt-3 text-3xl font-bold text-slate-950">{stats.totalCount}개</p>
+              <p className="mt-3 text-3xl font-bold tabular-nums text-slate-950">{stats.totalCount}개</p>
             </article>
             <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
               <p className="text-sm font-medium text-slate-500">이어 달린 날</p>
-              <p className="mt-3 text-3xl font-bold text-slate-950">{stats.streak}일</p>
+              <p className="mt-3 text-3xl font-bold tabular-nums text-slate-950">{stats.streak}일</p>
             </article>
           </section>
 
@@ -164,19 +164,19 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-[1.25rem] bg-slate-50 p-4">
                     <p className="text-xs font-semibold text-slate-400">완료한 일정</p>
-                    <p className="mt-2 text-lg font-semibold text-slate-950">{stats.completedCount}개</p>
+                    <p className="mt-2 text-lg font-semibold tabular-nums text-slate-950">{stats.completedCount}개</p>
                   </div>
                   <div className="rounded-[1.25rem] bg-slate-50 p-4">
                     <p className="text-xs font-semibold text-slate-400">부분 완료</p>
-                    <p className="mt-2 text-lg font-semibold text-slate-950">{stats.partialCount}개</p>
+                    <p className="mt-2 text-lg font-semibold tabular-nums text-slate-950">{stats.partialCount}개</p>
                   </div>
                   <div className="rounded-[1.25rem] bg-slate-50 p-4">
                     <p className="text-xs font-semibold text-slate-400">쉬어간 일정</p>
-                    <p className="mt-2 text-lg font-semibold text-slate-950">{stats.skippedCount}개</p>
+                    <p className="mt-2 text-lg font-semibold tabular-nums text-slate-950">{stats.skippedCount}개</p>
                   </div>
                   <div className="rounded-[1.25rem] bg-slate-50 p-4">
                     <p className="text-xs font-semibold text-slate-400">이어 달린 날</p>
-                    <p className="mt-2 text-lg font-semibold text-slate-950">{stats.streak}일</p>
+                    <p className="mt-2 text-lg font-semibold tabular-nums text-slate-950">{stats.streak}일</p>
                   </div>
                 </div>
               </section>
@@ -196,12 +196,12 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       type="date"
                       name="scheduledDate"
                       defaultValue={createDateInputValue(year, month)}
-                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                     />
                     <select
                       name="category"
                       defaultValue="easy_run"
-                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                     >
                       {categoryOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -213,14 +213,14 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       name="title"
                       autoComplete="off"
                       spellCheck={false}
-                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                       placeholder="퇴근 후 5km"
                     />
                     <textarea
                       name="description"
                       autoComplete="off"
                       spellCheck
-                      className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                       placeholder="메모 또는 목표 페이스"
                     />
                     <div className="grid gap-3 sm:grid-cols-2">
@@ -230,7 +230,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                         inputMode="decimal"
                         autoComplete="off"
                         name="targetDistanceKm"
-                        className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                        className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                         placeholder="거리 (km)"
                       />
                       <input
@@ -238,13 +238,13 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                         inputMode="numeric"
                         autoComplete="off"
                         name="targetDurationMinutes"
-                        className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                        className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                         placeholder="시간 (분)"
                       />
                     </div>
                     <button
                       type="submit"
-                      className="focus-ring inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+                      className="focus-ring inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white pressable hover:bg-[var(--brand-strong)]"
                     >
                       이 일정 추가하기
                     </button>
@@ -315,7 +315,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     defaultValue={plan?.title ?? ''}
                     autoComplete="off"
                     spellCheck={false}
-                    className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                    className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                     placeholder="예: 5월 하프 대비 페이스 끌어올리기"
                   />
                   <textarea
@@ -323,7 +323,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     defaultValue={plan?.notes ?? ''}
                     autoComplete="off"
                     spellCheck
-                    className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                    className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                     placeholder="이번 달에 챙길 메모나 컨디션 목표"
                   />
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -334,7 +334,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       autoComplete="off"
                       name="goalDistanceKm"
                       defaultValue={plan?.goal_distance_km ?? ''}
-                      className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                       placeholder="목표 거리 (km)"
                     />
                     <input
@@ -343,14 +343,14 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       autoComplete="off"
                       name="goalSessions"
                       defaultValue={plan?.goal_sessions ?? ''}
-                      className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                      className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                       placeholder="목표 횟수"
                     />
                   </div>
                   <select
                     name="targetRaceId"
                     defaultValue={plan?.target_race_id ?? ''}
-                    className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                    className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                   >
                     <option value="">목표 대회 선택 안 함</option>
                     {races.map((race) => (
@@ -361,7 +361,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                   </select>
                   <button
                     type="submit"
-                    className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+                    className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white pressable hover:bg-[var(--brand-strong)]"
                   >
                     {plan ? '이번 달 계획 업데이트' : '이번 달 계획 만들기'}
                   </button>
@@ -371,7 +371,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     <input type="hidden" name="planId" value={plan.id} />
                     <button
                       type="submit"
-                      className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100"
+                      className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-600 pressable hover:bg-red-100"
                     >
                       월간 계획 삭제
                     </button>
@@ -420,7 +420,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                             <select
                               name="status"
                               defaultValue={item.status}
-                              className="focus-ring min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                              className="focus-ring min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                             >
                               {statusOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -430,7 +430,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                             </select>
                             <button
                               type="submit"
-                              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 pressable hover:bg-slate-100"
                             >
                               상태 저장
                             </button>
@@ -439,7 +439,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
 
                         <details className="mt-4 rounded-[1.25rem] border border-slate-200 bg-slate-50 p-4">
                           <summary className="cursor-pointer list-none text-sm font-semibold text-slate-900">
-                            <span className="inline-flex items-center gap-2">일정 수정 열기</span>
+                            <span className="inline-flex min-h-11 items-center gap-2">일정 수정 열기</span>
                           </summary>
                           <form action={updatePlanItemAction} className="mt-4 space-y-3">
                             <input type="hidden" name="itemId" value={item.id} />
@@ -448,12 +448,12 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                                 type="date"
                                 name="scheduledDate"
                                 defaultValue={item.scheduled_date}
-                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                               />
                               <select
                                 name="category"
                                 defaultValue={item.category}
-                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                               >
                                 {categoryOptions.map((option) => (
                                   <option key={option.value} value={option.value}>
@@ -467,14 +467,14 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                               defaultValue={item.title}
                               autoComplete="off"
                               spellCheck={false}
-                              className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                              className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                             />
                             <textarea
                               name="description"
                               defaultValue={item.description ?? ''}
                               autoComplete="off"
                               spellCheck
-                              className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                              className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                             />
                             <div className="grid gap-3 sm:grid-cols-2">
                               <input
@@ -484,7 +484,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                                 autoComplete="off"
                                 name="targetDistanceKm"
                                 defaultValue={item.target_distance_km ?? ''}
-                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                                 placeholder="8"
                               />
                               <input
@@ -493,13 +493,13 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                                 autoComplete="off"
                                 name="targetDurationMinutes"
                                 defaultValue={item.target_duration_minutes ?? ''}
-                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
                                 placeholder="50"
                               />
                             </div>
                             <button
                               type="submit"
-                              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+                              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand)] px-4 py-3 text-sm font-semibold text-white pressable hover:bg-[var(--brand-strong)]"
                             >
                               일정 수정 저장
                             </button>
@@ -508,7 +508,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                             <input type="hidden" name="itemId" value={item.id} />
                             <button
                               type="submit"
-                              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100"
+                              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-600 pressable hover:bg-red-100"
                             >
                               일정 삭제
                             </button>

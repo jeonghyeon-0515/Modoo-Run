@@ -93,12 +93,12 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
       <section className="grid gap-4 sm:grid-cols-3">
         <article className="rounded-[1.1rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-sm font-medium text-slate-500">지금 보이는 글</p>
-          <p className="mt-3 text-3xl font-bold text-slate-950">{posts.length.toLocaleString('ko-KR')}개</p>
+          <p className="mt-3 text-3xl font-bold tabular-nums text-slate-950">{posts.length.toLocaleString('ko-KR')}개</p>
           <p className="mt-2 text-sm text-slate-500">선택한 주제의 글만 표시합니다.</p>
         </article>
         <article className="rounded-[1.1rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-sm font-medium text-slate-500">활성 카테고리</p>
-          <p className="mt-3 text-3xl font-bold text-slate-950">{activeCategoryCount}개</p>
+          <p className="mt-3 text-3xl font-bold tabular-nums text-slate-950">{activeCategoryCount}개</p>
           <p className="mt-2 text-sm text-slate-500">읽을 주제를 골라 볼 수 있습니다.</p>
         </article>
         <article className="rounded-[1.1rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
@@ -121,7 +121,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             <Link
               key={category.value}
               href={categoryHref(category.value)}
-              className={`focus-ring inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-medium transition ${
+              className={`focus-ring pressable inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-medium ${
                 selectedCategory === category.value ? 'public-chip-active' : 'public-chip-idle'
               }`}
             >
@@ -134,7 +134,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
       <section className="mt-6 space-y-4">
         <div className="flex items-center justify-between gap-3 rounded-[1.1rem] bg-white px-4 py-3 shadow-sm ring-1 ring-black/5">
           <p className="text-sm text-slate-600">최근 글부터 20개씩 먼저 보여줍니다.</p>
-          <p className="text-sm font-semibold text-slate-900">{page}페이지</p>
+          <p className="text-sm font-semibold tabular-nums text-slate-900">{page}페이지</p>
         </div>
         {posts.length === 0 ? (
           <article className="rounded-[1.25rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
@@ -148,7 +148,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             <Link
               key={post.id}
               href={`/community/${post.id}`}
-              className="focus-ring block rounded-[1.1rem] border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300"
+              className="focus-ring interactive-card soft-surface block rounded-[1.1rem] border border-black/5 bg-white p-5"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -163,8 +163,8 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
               <p className="mt-3 text-sm leading-6 text-slate-600 line-clamp-2">{post.content}</p>
               <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-500">
                 <span>{post.authorLabel}</span>
-                <span>댓글 {post.comment_count}</span>
-                <span>신고 {post.report_count}</span>
+                <span className="tabular-nums">댓글 {post.comment_count}</span>
+                <span className="tabular-nums">신고 {post.report_count}</span>
               </div>
             </Link>
           ))
@@ -175,7 +175,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             {page > 1 ? (
               <Link
                 href={communityPageHref(selectedCategory, page - 1)}
-                className="focus-ring inline-flex min-h-11 items-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="focus-ring pressable inline-flex min-h-11 items-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
               >
                 이전 페이지
               </Link>
@@ -183,7 +183,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             {hasNextPage ? (
               <Link
                 href={communityPageHref(selectedCategory, page + 1)}
-                className="focus-ring inline-flex min-h-11 items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="focus-ring pressable inline-flex min-h-11 items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
               >
                 다음 페이지
               </Link>
@@ -211,7 +211,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                     <select
                       name="category"
                       defaultValue={selectedCategory === 'all' ? 'free' : selectedCategory}
-                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
                     >
                       {categories
                         .filter((category) => category.value !== 'all')
@@ -228,7 +228,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                     <select
                       name="linkedRaceId"
                       defaultValue=""
-                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
                     >
                       <option value="">선택 안 함</option>
                       {races.map((race) => (
@@ -247,7 +247,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                       name="title"
                       autoComplete="off"
                       spellCheck={false}
-                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
                       placeholder="10km 첫 참가 전날 체크리스트"
                     />
                   </label>
@@ -258,14 +258,14 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                       name="content"
                       autoComplete="off"
                       spellCheck
-                      className="focus-ring mt-2 min-h-32 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                      className="focus-ring mt-2 min-h-32 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
                       placeholder="준비 과정, 훈련 기록, 후기와 팁"
                     />
                   </label>
 
                   <button
                     type="submit"
-                    className="focus-ring inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                    className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800"
                   >
                     글 작성하기
                   </button>

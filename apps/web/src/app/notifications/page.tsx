@@ -62,7 +62,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/notifications?filter=all"
-              className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+              className={`focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold ${
                 filter === 'all'
                   ? 'border-slate-900 bg-slate-900 text-white'
                   : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
@@ -72,7 +72,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
             </Link>
             <Link
               href="/notifications?filter=unread"
-              className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+              className={`focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold ${
                 filter === 'unread'
                   ? 'border-slate-900 bg-slate-900 text-white'
                   : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
@@ -84,7 +84,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
               <input type="hidden" name="filter" value={filter} />
               <button
                 type="submit"
-                className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-50"
               >
                 전체 읽음
               </button>
@@ -108,11 +108,11 @@ export default async function NotificationsPage({ searchParams }: { searchParams
                   <h2 className="mt-3 text-base font-semibold text-slate-950">{item.title}</h2>
                   <p className="mt-2 text-sm leading-6 text-slate-600">{item.body}</p>
                 </div>
-                <p className="text-xs text-slate-400">{formatKstDateTime(item.createdAt)}</p>
+                <p className="text-xs tabular-nums text-slate-400">{formatKstDateTime(item.createdAt)}</p>
               </div>
 
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
-                <Link href={item.sourcePath} className="text-sm font-semibold text-[var(--brand)]">
+                <Link href={item.sourcePath} className="focus-ring pressable inline-flex min-h-10 items-center text-sm font-semibold text-[var(--brand)]">
                   관련 화면 보기
                 </Link>
                 {!item.isRead ? (
@@ -121,13 +121,13 @@ export default async function NotificationsPage({ searchParams }: { searchParams
                     <input type="hidden" name="filter" value={filter} />
                     <button
                       type="submit"
-                      className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                      className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-50"
                     >
                       읽음 처리
                     </button>
                   </form>
                 ) : (
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs tabular-nums text-slate-400">
                     {item.readAt ? `읽음 ${formatKstDateTime(item.readAt)}` : '읽음 처리됨'}
                   </span>
                 )}

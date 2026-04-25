@@ -28,7 +28,7 @@ export function RaceCompareButton({
         const next = selected ? removeRaceCompareItem(items, item.sourceRaceId) : upsertRaceCompareItem(items, item);
         writeRaceCompareItems(next);
       }}
-      className={`focus-ring inline-flex min-h-11 items-center justify-center rounded-full border text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+      className={`focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${
         compact ? 'px-3.5 py-2 text-xs' : 'px-5 py-3'
       } ${
         selected

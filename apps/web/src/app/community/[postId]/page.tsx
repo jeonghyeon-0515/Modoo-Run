@@ -31,7 +31,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
       description="글을 읽고 댓글을 남기거나 필요한 경우 신고할 수 있습니다."
     >
       <div className="mb-4">
-        <Link href="/community" className="text-sm font-semibold text-[var(--brand)]">
+        <Link href="/community" className="focus-ring pressable inline-flex min-h-10 items-center text-sm font-semibold text-[var(--brand)]">
           ← 커뮤니티 목록으로 돌아가기
         </Link>
       </div>
@@ -41,7 +41,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
           <StatusBadge tone="neutral">{getCategoryLabel(post.category)}</StatusBadge>
           {post.status === 'hidden' ? <StatusBadge tone="warning">숨김 상태</StatusBadge> : null}
         </div>
-        <p className="mt-3 text-sm text-slate-500">
+        <p className="mt-3 text-sm tabular-nums text-slate-500">
           {post.authorLabel} · {new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Seoul' }).format(new Date(post.created_at))}
         </p>
         {post.status === 'hidden' ? (
@@ -57,13 +57,13 @@ export default async function CommunityDetailPage({ params }: { params: Params }
               <input type="hidden" name="description" value="사용자가 직접 신고 버튼을 눌렀습니다." />
               <button
                 type="submit"
-                className="rounded-full border border-amber-200 px-4 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-50"
+                className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border border-amber-200 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50"
               >
                 이 글 신고하기
               </button>
             </form>
           ) : (
-            <Link href={`/login?next=${encodeURIComponent(`/community/${post.id}`)}`} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            <Link href={`/login?next=${encodeURIComponent(`/community/${post.id}`)}`} className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
               로그인하고 의견 남기기
             </Link>
           )}
@@ -74,7 +74,7 @@ export default async function CommunityDetailPage({ params }: { params: Params }
               <input type="hidden" name="hidden" value={post.status === 'hidden' ? 'false' : 'true'} />
               <button
                 type="submit"
-                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
               >
                 {post.status === 'hidden' ? '다시 보이기' : '잠시 가리기'}
               </button>
@@ -90,12 +90,12 @@ export default async function CommunityDetailPage({ params }: { params: Params }
             <input type="hidden" name="postId" value={post.id} />
             <textarea
               name="content"
-              className="min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400"
+              className="focus-ring min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
               placeholder="공감한 점이나 팁"
             />
             <button
               type="submit"
-              className="inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+              className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--brand-strong)]"
             >
               댓글 남기기
             </button>

@@ -38,7 +38,7 @@ export function RaceCompareClient() {
         </p>
         <Link
           href="/races"
-          className="public-primary-button mt-5 inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition"
+          className="public-primary-button pressable mt-5 inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold"
         >
           대회 일정 보러가기
         </Link>
@@ -50,13 +50,13 @@ export function RaceCompareClient() {
     <section className="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-slate-950">{items.length}개 대회를 비교 중입니다.</p>
+          <p className="text-sm font-semibold tabular-nums text-slate-950">{items.length}개 대회를 비교 중입니다.</p>
           <p className="mt-1 text-sm text-slate-500">최대 4개까지 브라우저에 저장됩니다.</p>
         </div>
         <button
           type="button"
           onClick={() => updateItems([])}
-          className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+          className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-50"
         >
           모두 비우기
         </button>
@@ -64,17 +64,17 @@ export function RaceCompareClient() {
 
       <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {items.map((item) => (
-          <article key={item.sourceRaceId} className="rounded-[1rem] border border-slate-200 bg-slate-50 p-4">
+          <article key={item.sourceRaceId} className="soft-surface rounded-[1rem] border border-black/5 bg-slate-50 p-4">
             <p className="text-xs font-semibold text-[var(--brand)]">{item.region ?? '지역 미정'}</p>
-            <h2 className="mt-2 line-clamp-2 text-sm font-semibold text-slate-950">{item.title}</h2>
+            <h2 className="text-balance mt-2 line-clamp-2 text-sm font-semibold text-slate-950">{item.title}</h2>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Link href={item.detailPath} className="text-xs font-semibold text-[var(--brand)]">
+              <Link href={item.detailPath} className="focus-ring pressable inline-flex min-h-10 items-center text-xs font-semibold text-[var(--brand)]">
                 상세 보기
               </Link>
               <button
                 type="button"
                 onClick={() => updateItems(removeRaceCompareItem(items, item.sourceRaceId))}
-                className="text-xs font-semibold text-slate-500 hover:text-slate-900"
+                className="focus-ring pressable inline-flex min-h-10 items-center text-xs font-semibold text-slate-500 hover:text-slate-900"
               >
                 제거
               </button>

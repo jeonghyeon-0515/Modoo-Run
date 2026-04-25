@@ -126,7 +126,7 @@ export function SocialLoginButtons({ nextPath }: { nextPath: string }) {
                 disabled={disabled}
                 title={title}
                 aria-label={title}
-                className={`flex h-14 w-14 items-center justify-center rounded-2xl border shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
+                className={`pressable flex h-14 w-14 items-center justify-center rounded-2xl border shadow-sm disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
               >
                 <span className={isActiveProvider ? 'animate-pulse' : ''}>
                   <ProviderLogo provider={item.provider} />

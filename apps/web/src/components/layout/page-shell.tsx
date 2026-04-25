@@ -27,13 +27,13 @@ export async function PageShell({
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <header className="app-shell-header sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <header className="app-shell-header sticky top-0 z-20 border-b border-black/5 bg-white/92 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8">
           <div>
-            <Link href="/" className="focus-ring rounded-md text-base font-bold tracking-tight text-slate-950">
+            <Link href="/" className="focus-ring pressable rounded-md text-base font-bold tracking-tight text-slate-950">
               모두의 러닝
             </Link>
-            <div className="text-sm text-slate-500">러너를 위한 일정 · 기록 공간</div>
+            <div className="text-pretty text-sm text-slate-500">러너를 위한 일정 · 기록 공간</div>
           </div>
 
           {viewer ? (
@@ -46,25 +46,25 @@ export async function PageShell({
               <div className="flex items-center gap-3 text-sm font-medium text-slate-600 sm:gap-4">
                 <Link
                   href="/notifications"
-                  className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-md px-2 transition hover:text-slate-950"
+                  className="focus-ring pressable inline-flex min-h-11 items-center gap-2 rounded-md px-2 hover:text-slate-950"
                 >
                   <span>알림</span>
                   {resolvedUnreadNotifications > 0 ? (
-                    <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-slate-900 px-1.5 py-0.5 text-[11px] font-semibold text-white">
+                    <span className="inline-flex min-w-5 tabular-nums items-center justify-center rounded-full bg-slate-900 px-1.5 py-0.5 text-[11px] font-semibold text-white">
                       {resolvedUnreadNotifications > 99 ? '99+' : resolvedUnreadNotifications}
                     </span>
                   ) : null}
                 </Link>
                 <Link
                   href="/profile"
-                  className="focus-ring inline-flex min-h-11 items-center rounded-md px-2 transition hover:text-slate-950"
+                  className="focus-ring pressable inline-flex min-h-11 items-center rounded-md px-2 hover:text-slate-950"
                 >
                   프로필
                 </Link>
                 {viewer.isStaff ? (
                   <Link
                     href="/ops"
-                    className="focus-ring inline-flex min-h-11 items-center rounded-full border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--brand-strong)] transition hover:bg-[#ffe5dd]"
+                    className="focus-ring pressable inline-flex min-h-11 items-center rounded-full border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--brand-strong)] hover:bg-[#ffe5dd]"
                   >
                     관리자
                   </Link>
@@ -73,7 +73,7 @@ export async function PageShell({
               <form action="/auth/logout" method="post">
                 <button
                   type="submit"
-                  className="focus-ring inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-slate-500 transition hover:text-slate-900"
+                  className="focus-ring pressable inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-slate-500 hover:text-slate-900"
                 >
                   로그아웃
                 </button>
@@ -82,7 +82,7 @@ export async function PageShell({
           ) : (
             <Link
               href="/login"
-              className="focus-ring public-primary-button inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold transition"
+              className="focus-ring public-primary-button pressable inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold"
             >
               로그인
             </Link>
@@ -96,8 +96,8 @@ export async function PageShell({
           <h1
             className={
               compactIntro
-                ? 'text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl'
-                : 'text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl'
+                ? 'text-balance text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl'
+                : 'text-balance text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl'
             }
           >
             {title}
@@ -106,8 +106,8 @@ export async function PageShell({
             <p
               className={
                 compactIntro
-                  ? 'mt-2 max-w-3xl text-sm leading-6 text-slate-600'
-                  : 'mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base'
+                  ? 'text-pretty mt-2 max-w-3xl text-sm leading-6 text-slate-600'
+                  : 'text-pretty mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base'
               }
             >
               {description}
@@ -117,23 +117,23 @@ export async function PageShell({
         {children}
       </main>
 
-      <footer className="border-t border-slate-200 bg-white/95">
+      <footer className="border-t border-black/5 bg-white/92">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-5 py-6 text-sm sm:px-8 sm:py-7">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-semibold text-slate-900">모두의 러닝</p>
-              <p className="mt-1 text-sm text-slate-500">러너를 위한 일정 · 기록 공간</p>
+              <p className="text-pretty mt-1 text-sm text-slate-500">러너를 위한 일정 · 기록 공간</p>
             </div>
             <div className="flex flex-wrap items-center gap-3 text-sm font-medium text-slate-600">
-              <Link href="/advertise" className="focus-ring inline-flex min-h-11 items-center rounded-md px-2 transition hover:text-slate-950">
+              <Link href="/advertise" className="focus-ring pressable inline-flex min-h-11 items-center rounded-md px-2 hover:text-slate-950">
                 광고 · 제휴 문의
               </Link>
-              <Link href="/gear" className="focus-ring inline-flex min-h-11 items-center rounded-md px-2 transition hover:text-slate-950">
+              <Link href="/gear" className="focus-ring pressable inline-flex min-h-11 items-center rounded-md px-2 hover:text-slate-950">
                 공개 가이드
               </Link>
             </div>
           </div>
-          <p className="text-xs leading-6 text-slate-400">
+          <p className="text-pretty text-xs leading-6 text-slate-400">
             브랜드 협업, featured listing, 스폰서 노출 문의는 광고 · 제휴 문의 페이지에서 바로 남길 수 있습니다.
           </p>
         </div>

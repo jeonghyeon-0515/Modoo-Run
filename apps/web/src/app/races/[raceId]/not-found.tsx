@@ -14,7 +14,7 @@ export default function RaceNotFound() {
         </p>
         <Link
           href="/races"
-          className="mt-5 inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+          className="focus-ring pressable mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--brand-strong)]"
         >
           대회 목록으로 이동
         </Link>

@@ -85,7 +85,7 @@ function FilterChip({
   return (
     <Link
       href={href}
-      className={`focus-ring inline-flex min-h-11 items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition sm:min-h-10 sm:py-1.5 sm:text-sm ${
+      className={`focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium sm:min-h-10 sm:py-1.5 sm:text-sm ${
         active
           ? 'public-chip-active'
           : 'public-chip-idle'
@@ -214,7 +214,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           <p className="mt-2 text-sm leading-6 text-slate-600">{loadError}</p>
           <Link
             href="/races"
-            className="mt-5 inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+            className="pressable mt-5 inline-flex items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--brand-strong)]"
           >
             다시 시도
           </Link>
@@ -235,7 +235,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             <p className="text-sm font-semibold text-slate-950">빠른 탐색</p>
             <p className="mt-1 text-sm text-slate-500">검색 의도에 맞춰 자주 찾는 대회 묶음을 바로 볼 수 있습니다.</p>
           </div>
-          <Link href="/races/closing-soon" className="focus-ring inline-flex min-h-11 items-center rounded-full border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)] px-4 py-2 text-sm font-semibold text-[var(--brand-strong)] transition hover:bg-[#ffe9e2]">
+          <Link href="/races/closing-soon" className="focus-ring pressable inline-flex min-h-11 items-center rounded-full border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)] px-4 py-2 text-sm font-semibold text-[var(--brand-strong)] hover:bg-[#ffe9e2]">
             마감 임박 보기
           </Link>
         </div>
@@ -251,7 +251,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
               <Link
                 key={item.key}
                 href={item.path}
-                className="focus-ring inline-flex min-h-11 items-center whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
+                className="focus-ring pressable inline-flex min-h-11 items-center whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 hover:border-slate-300 hover:bg-white"
               >
                 {item.eyebrow}
               </Link>
@@ -277,7 +277,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             </div>
 
             {!isDefaultOpenView ? (
-              <Link href="/races" className="focus-ring public-secondary-button inline-flex min-h-11 items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition">
+              <Link href="/races" className="focus-ring public-secondary-button pressable inline-flex min-h-11 items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold">
                 조건 초기화
               </Link>
             ) : null}
@@ -347,7 +347,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             </p>
             <Link
               href="/races"
-              className="public-primary-button mt-5 inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition"
+              className="public-primary-button pressable mt-5 inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold"
             >
               필터 초기화
             </Link>
@@ -356,7 +356,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
           races.map((race) => (
             <article
               key={race.id}
-              className="overflow-hidden rounded-[1rem] border border-slate-200 bg-white shadow-sm transition hover:border-slate-300 sm:rounded-[1.1rem]"
+              className="interactive-card soft-surface overflow-hidden rounded-[1rem] border border-black/5 bg-white sm:rounded-[1.1rem]"
             >
               <Link
                 href={`/races/${race.sourceRaceId}`}
@@ -367,13 +367,13 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-[11px] font-semibold text-slate-500 sm:text-xs">
+                      <p className="tabular-nums text-[11px] font-semibold text-slate-500 sm:text-xs">
                         {formatRaceDate(race.eventDate, race.eventDateLabel)}
                       </p>
                       {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
                       {featuredRaceIds.has(race.id) ? <StatusBadge tone="disclosure">Featured</StatusBadge> : null}
                     </div>
-                    <h2 className="mt-1 line-clamp-2 text-sm font-semibold text-slate-950 sm:text-lg">
+                    <h2 className="text-balance mt-1 line-clamp-2 text-sm font-semibold text-slate-950 sm:text-lg">
                       {race.title}
                     </h2>
 
@@ -394,7 +394,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                     <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
                       {getRaceStatusLabel(race.registrationStatus)}
                     </StatusBadge>
-                    <span className="inline-flex min-h-10 items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700 transition group-hover:border-slate-300 group-hover:bg-slate-50 group-hover:text-slate-950 sm:text-xs">
+                    <span className="inline-flex min-h-10 items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700 sm:text-xs">
                       자세히 보기
                     </span>
                   </div>

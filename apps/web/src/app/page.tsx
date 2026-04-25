@@ -113,8 +113,8 @@ const signedInActions = [
 
 function cardClassName(tone: 'brand' | 'default') {
   return tone === 'brand'
-    ? 'rounded-[1.25rem] border border-[var(--brand-soft-strong)] bg-[var(--public-accent-soft)] p-5 shadow-sm'
-    : 'rounded-[1.25rem] border border-slate-200 bg-white p-5 shadow-sm';
+    ? 'interactive-card interactive-card-featured soft-surface rounded-[1.35rem] border border-[var(--brand-soft-strong)] bg-[var(--public-accent-soft)] p-5'
+    : 'interactive-card soft-surface rounded-[1.35rem] border border-black/5 bg-white p-5';
 }
 
 export default async function Home() {
@@ -152,14 +152,14 @@ export default async function Home() {
       viewer={viewer}
     >
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)] lg:items-stretch">
-        <article className="rounded-[1.75rem] border border-[var(--brand-soft-strong)] bg-[var(--public-accent-soft)] p-6 shadow-sm sm:p-7">
+        <article className="soft-surface rounded-[1.75rem] border border-[var(--brand-soft-strong)] bg-[var(--public-accent-soft)] p-6 sm:p-7">
           <p className="text-sm font-semibold text-[var(--brand-strong)]">
             {viewer ? '오늘 이어서 달리기' : '처음 들어와도 바로 시작'}
           </p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+          <h2 className="text-balance mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
             {viewer ? '내 일정과 다음 대회를 바로 이어서 관리해보세요.' : '대회 찾기부터 계획 세우기까지 한 번에 시작해보세요.'}
           </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-700 sm:text-base">
+          <p className="text-pretty mt-4 max-w-2xl text-sm leading-7 text-slate-700 sm:text-base">
             {viewer
               ? '이번 달 캘린더를 열고, 알림을 확인하고, 커뮤니티에서 필요한 정보를 바로 확인할 수 있습니다.'
               : '회원가입 전에도 대회 일정과 커뮤니티를 둘러볼 수 있고, 로그인하면 일정과 기록을 내 계정에 저장할 수 있습니다.'}
@@ -167,13 +167,13 @@ export default async function Home() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href={heroPrimaryLink.href}
-              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
+              className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white hover:bg-[var(--brand-strong)]"
             >
               {heroPrimaryLink.label}
             </Link>
             <Link
               href={heroSecondaryLink.href}
-              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
             >
               {heroSecondaryLink.label}
             </Link>
@@ -183,7 +183,7 @@ export default async function Home() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="focus-ring inline-flex min-h-11 items-center rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-white"
+                className="focus-ring pressable inline-flex min-h-11 items-center rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-white"
               >
                 {item.label}
               </Link>
@@ -192,17 +192,17 @@ export default async function Home() {
         </article>
 
         <section className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-          <article className="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
+          <article className="soft-surface rounded-[1.25rem] border border-black/5 bg-white p-5">
             <p className="text-sm font-medium text-slate-500">대회 탐색</p>
-            <p className="mt-3 text-xl font-semibold text-slate-950">접수 중 일정과 마감 임박 대회를 빠르게 확인합니다.</p>
+            <p className="text-balance mt-3 text-xl font-semibold text-slate-950">접수 중 일정과 마감 임박 대회를 빠르게 확인합니다.</p>
           </article>
-          <article className="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
+          <article className="soft-surface rounded-[1.25rem] border border-black/5 bg-white p-5">
             <p className="text-sm font-medium text-slate-500">일정 관리</p>
-            <p className="mt-3 text-xl font-semibold text-slate-950">이번 달 계획과 실행 기록을 한곳에서 이어서 관리합니다.</p>
+            <p className="text-balance mt-3 text-xl font-semibold text-slate-950">이번 달 계획과 실행 기록을 한곳에서 이어서 관리합니다.</p>
           </article>
-          <article className="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
+          <article className="soft-surface rounded-[1.25rem] border border-black/5 bg-white p-5">
             <p className="text-sm font-medium text-slate-500">커뮤니티</p>
-            <p className="mt-3 text-xl font-semibold text-slate-950">준비 팁과 완주 후기를 읽고 직접 질문을 남길 수 있습니다.</p>
+            <p className="text-balance mt-3 text-xl font-semibold text-slate-950">준비 팁과 완주 후기를 읽고 직접 질문을 남길 수 있습니다.</p>
           </article>
         </section>
       </section>
@@ -218,9 +218,9 @@ export default async function Home() {
           {destinationCards.map((item) => (
             <Link key={item.href} href={item.href} className={`focus-ring block ${cardClassName(item.tone)}`}>
               <p className="text-xs font-semibold text-slate-500">{item.eyebrow}</p>
-              <h3 className="mt-3 text-xl font-semibold tracking-tight text-slate-950">{item.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
-              <span className="mt-5 inline-flex min-h-11 items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">
+              <h3 className="text-balance mt-3 text-xl font-semibold tracking-tight text-slate-950">{item.title}</h3>
+              <p className="text-pretty mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
+              <span className="mt-5 inline-flex min-h-11 items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
                 {item.action}
               </span>
             </Link>
@@ -229,23 +229,23 @@ export default async function Home() {
       </section>
 
       <section className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-        <article className="rounded-[1.5rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <article className="soft-surface rounded-[1.5rem] border border-black/5 bg-white p-6">
           <p className="text-sm font-semibold text-slate-500">{viewer ? '상태에 맞는 다음 행동' : '로그인 전에도 할 수 있는 것'}</p>
-          <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">
+          <h2 className="text-balance mt-2 text-2xl font-bold tracking-tight text-slate-950">
             {viewer ? '지금 이어서 하기 좋은 화면' : '시작 흐름을 더 짧게'}
           </h2>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
+          <p className="text-pretty mt-3 text-sm leading-6 text-slate-600">
             {viewer
               ? '가장 자주 이어서 보는 화면을 모았습니다. 오늘 필요한 동선부터 바로 열어보세요.'
               : '로그인 전에는 탐색부터, 로그인 후에는 일정 저장과 알림 확인까지 자연스럽게 이어집니다.'}
           </p>
           <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {followUpActions.map((item) => (
-              <Link key={item.href} href={item.href} className="focus-ring block rounded-[1.25rem] border border-slate-200 bg-slate-50 p-5 transition hover:border-slate-300 hover:bg-white">
+              <Link key={item.href} href={item.href} className="focus-ring interactive-card soft-surface block rounded-[1.25rem] border border-black/5 bg-slate-50 p-5 hover:bg-white">
                 <p className="text-xs font-semibold text-slate-500">{item.eyebrow}</p>
-                <h3 className="mt-3 text-lg font-semibold text-slate-950">{item.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
-                <span className="mt-5 inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
+                <h3 className="text-balance mt-3 text-lg font-semibold text-slate-950">{item.title}</h3>
+                <p className="text-pretty mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
+                <span className="mt-5 inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">
                   {item.action}
                 </span>
               </Link>

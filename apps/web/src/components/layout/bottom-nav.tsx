@@ -23,13 +23,13 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="app-bottom-nav sticky bottom-0 z-20 mt-10 border-t border-slate-200 bg-white/95 backdrop-blur">
+    <nav className="app-bottom-nav sticky bottom-0 z-20 mt-10 border-t border-black/5 bg-white/92 backdrop-blur">
       <div className="mx-auto grid max-w-5xl grid-cols-5 px-3 py-2">
         {items.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className={`focus-ring flex min-h-11 flex-col items-center justify-center rounded-xl px-2 py-3 text-center text-[11px] leading-tight font-medium transition ${
+            className={`focus-ring pressable flex min-h-11 flex-col items-center justify-center rounded-xl px-2 py-3 text-center text-[11px] leading-tight font-medium ${
               isActive(pathname, item.href)
                 ? 'bg-slate-100 text-slate-950'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'

@@ -24,7 +24,7 @@ export function ServiceTabs({ isStaff = false }: { isStaff?: boolean }) {
   const tabItems = isStaff ? [...items, { href: '/ops', label: '관리자' }] : items;
 
   return (
-    <div className="border-t border-slate-200 bg-white/95">
+    <div className="border-t border-black/5 bg-white/92">
       <div className="mx-auto max-w-5xl px-5 py-2.5 sm:px-8">
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs font-medium text-slate-400 sm:hidden">좌우로 넘겨 더 보기</p>
@@ -40,9 +40,9 @@ export function ServiceTabs({ isStaff = false }: { isStaff?: boolean }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`focus-ring inline-flex min-h-11 items-center whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition ${
+                  className={`focus-ring pressable inline-flex min-h-11 items-center whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium ${
                     active
-                      ? 'border border-slate-300 bg-slate-100 text-slate-950'
+                      ? 'border border-black/5 bg-slate-100 text-slate-950'
                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
