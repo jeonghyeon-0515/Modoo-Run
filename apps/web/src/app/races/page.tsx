@@ -235,64 +235,90 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
             <p className="text-sm font-semibold text-slate-950">빠른 탐색</p>
             <p className="mt-1 text-sm text-slate-500">검색 의도에 맞춰 자주 찾는 대회 묶음을 바로 볼 수 있습니다.</p>
           </div>
-          <Link href="/races/closing-soon" className="focus-ring inline-flex min-h-11 items-center rounded-lg px-2 py-2 text-sm font-semibold text-[var(--brand)]">
+          <Link href="/races/closing-soon" className="focus-ring inline-flex min-h-11 items-center rounded-full border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)] px-4 py-2 text-sm font-semibold text-[var(--brand-strong)] transition hover:bg-[#ffe9e2]">
             마감 임박 보기
           </Link>
         </div>
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-          {raceLandingPages.map((item) => (
-            <Link
-              key={item.key}
-              href={item.path}
-              className="focus-ring inline-flex min-h-11 items-center whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
-            >
-              {item.eyebrow}
-            </Link>
-          ))}
+        <div className="mt-3 flex items-center justify-between gap-3 text-xs font-medium text-slate-400">
+          <span>자주 찾는 필터 묶음</span>
+          <span>좌우로 넘겨 더 보기</span>
+        </div>
+        <div className="relative mt-3">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-white to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-white to-transparent" />
+          <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {raceLandingPages.map((item) => (
+              <Link
+                key={item.key}
+                href={item.path}
+                className="focus-ring inline-flex min-h-11 items-center whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
+              >
+                {item.eyebrow}
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
       <section className="mt-1 rounded-[1.1rem] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[1.25rem]">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-slate-900">
-              {filters.registrationStatus === 'open' ? '접수 중 대회를 우선 표시합니다' : '원하는 상태를 선택해 보세요'}
-            </p>
-            <p className="mt-1 text-sm text-slate-600">
-              {isDefaultOpenView
-                ? '날짜가 가까운 순서로 정렬했습니다.'
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-slate-900">
+                {filters.registrationStatus === 'open' ? '접수 중 대회를 우선 표시합니다' : '원하는 상태를 선택해 보세요'}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">
+                {isDefaultOpenView
+                  ? '날짜가 가까운 순서로 정렬했습니다.'
                   : activeLabels.length > 0
-                  ? `${activeLabels.join(' · ')} 조건으로 조금 더 좁혀서 보여드리고 있어요.`
-                  : '조건을 바꾸면 지금 찾는 일정만 가볍게 골라볼 수 있어요.'}
-            </p>
+                    ? `${activeLabels.join(' · ')} 조건으로 조금 더 좁혀서 보여드리고 있어요.`
+                    : '조건을 바꾸면 지금 찾는 일정만 가볍게 골라볼 수 있어요.'}
+              </p>
+            </div>
+
+            {!isDefaultOpenView ? (
+              <Link href="/races" className="focus-ring public-secondary-button inline-flex min-h-11 items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition">
+                조건 초기화
+              </Link>
+            ) : null}
           </div>
 
-          {!isDefaultOpenView ? (
-            <Link href="/races" className="focus-ring inline-flex min-h-11 items-center rounded-lg px-2 py-2 text-sm font-medium text-slate-500 transition hover:text-slate-900">
-              조건 초기화
-            </Link>
+          {!isDefaultOpenView && activeLabels.length > 0 ? (
+            <div>
+              <p className="text-xs font-semibold text-slate-400">현재 적용 중인 조건</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {activeLabels.map((label) => (
+                  <span key={label} className="inline-flex min-h-10 items-center rounded-full bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700">
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </div>
           ) : null}
-        </div>
 
-        <div className="mt-3 flex flex-wrap gap-2">
-          {statusOptions.map((option) => (
-            <FilterChip
-              key={option.value}
-              active={filters.registrationStatus === option.value}
-              href={createFilterHref(normalizedQuery, 'registrationStatus', option.value)}
-            >
-              {option.label}
-            </FilterChip>
-          ))}
-        </div>
+          <div className="rounded-[1rem] border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-semibold text-slate-400">접수 상태</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {statusOptions.map((option) => (
+                <FilterChip
+                  key={option.value}
+                  active={filters.registrationStatus === option.value}
+                  href={createFilterHref(normalizedQuery, 'registrationStatus', option.value)}
+                >
+                  {option.label}
+                </FilterChip>
+              ))}
+            </div>
+          </div>
 
-        <details className="mt-3 rounded-[1rem] border border-slate-200 bg-slate-50 p-3">
-          <summary className="focus-ring rounded-md px-1 py-1 cursor-pointer list-none text-sm font-semibold text-slate-800">
-            지역 · 월 · 거리 더 고르기
-          </summary>
-          <p className="mt-3 text-xs text-slate-500">여러 조건을 동시에 적용할 수 있습니다.</p>
-          <div className="mt-4 space-y-4">{renderAdvancedFilters()}</div>
-        </details>
+          <div className="rounded-[1rem] border border-slate-200 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-slate-900">세부 조건</p>
+              <p className="text-xs text-slate-500">지역 · 월 · 거리를 함께 조합할 수 있습니다.</p>
+            </div>
+            <div className="mt-4 grid gap-4 lg:grid-cols-3">{renderAdvancedFilters()}</div>
+          </div>
+        </div>
       </section>
 
       <section className="mt-4 space-y-3">
@@ -351,21 +377,25 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                       {race.title}
                     </h2>
 
-                    <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-600 sm:text-sm">
-                      <span className="line-clamp-1">{race.location ?? '장소 정보는 상세에서 확인해보세요.'}</span>
-                      <span className="text-slate-300">·</span>
-                      <span className="line-clamp-1">{race.courseSummary ?? '종목 정보는 상세 페이지에서 확인할 수 있습니다.'}</span>
+                    <p className="mt-3 line-clamp-1 text-sm font-medium text-slate-700">
+                      {race.location ?? '장소 정보는 상세에서 확인해보세요.'}
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 sm:text-sm">
+                      <span>{race.courseSummary ?? '종목 정보는 상세 페이지에서 확인할 수 있습니다.'}</span>
+                      {race.registrationPeriodLabel ? (
+                        <>
+                          <span className="text-slate-300">·</span>
+                          <span>접수 {race.registrationPeriodLabel}</span>
+                        </>
+                      ) : null}
                     </div>
-                    {race.registrationPeriodLabel ? (
-                      <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">접수 {race.registrationPeriodLabel}</p>
-                    ) : null}
                   </div>
-                  <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-col items-end gap-3">
                     <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
                       {getRaceStatusLabel(race.registrationStatus)}
                     </StatusBadge>
-                    <span className="inline-flex items-center gap-2 text-[11px] font-medium text-slate-500 transition group-hover:text-slate-900 sm:text-xs">
-                      자세히 보기 →
+                    <span className="inline-flex min-h-10 items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700 transition group-hover:border-slate-300 group-hover:bg-slate-50 group-hover:text-slate-950 sm:text-xs">
+                      자세히 보기
                     </span>
                   </div>
                 </div>

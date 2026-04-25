@@ -181,10 +181,10 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
       <div className="mb-4">
         <Link
           href="/races"
-          className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-soft-strong)] bg-white px-5 py-3 text-base font-semibold text-slate-900 shadow-sm transition hover:border-[var(--brand)] hover:text-[var(--brand-strong)]"
+          className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-full border border-[var(--brand-soft-strong)] bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm transition hover:border-[var(--brand)] hover:text-[var(--brand-strong)]"
         >
           <span aria-hidden="true">←</span>
-          대회 목록으로 돌아가기
+          목록으로
           <LinkPendingCue mode="badge" label="이동" />
         </Link>
       </div>
@@ -218,64 +218,72 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
             ))}
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-semibold text-slate-100">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             {primaryApplyUrl ? (
               <a
                 href={getRaceOutboundPath(race.sourceRaceId, 'apply')}
                 target="_blank"
                 rel="noreferrer"
-                className="public-primary-button inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition"
+                className="focus-ring public-primary-button inline-flex min-h-11 items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition"
               >
                 바로 지원하기
               </a>
             ) : null}
-            {race.sourceDetailUrl ? (
-              <a
-                href={getRaceOutboundPath(race.sourceRaceId, 'source_detail')}
-                target="_blank"
-                rel="noreferrer"
-                className="underline-offset-4 hover:underline"
-              >
-                주최 측 안내 보기
-              </a>
-            ) : null}
-            {race.homepageUrl ? (
-              <a
-                href={getRaceOutboundPath(race.sourceRaceId, 'homepage')}
-                target="_blank"
-                rel="noreferrer"
-                className="underline-offset-4 hover:underline"
-              >
-                공식 홈페이지 바로가기
-              </a>
-            ) : null}
-            {mapLinkUrl ? (
-              <a
-                href={getRaceOutboundPath(race.sourceRaceId, 'map')}
-                target="_blank"
-                rel="noreferrer"
-                className="underline-offset-4 hover:underline"
-              >
-                지도에서 보기
-              </a>
-            ) : null}
-            {googleCalendarUrl ? (
-              <a
-                href={getRaceOutboundPath(race.sourceRaceId, 'calendar_google')}
-                target="_blank"
-                rel="noreferrer"
-                className="underline-offset-4 hover:underline"
-              >
-                Google 캘린더 담기
-              </a>
-            ) : null}
-            {calendarDownloadPath ? (
-              <a href={calendarDownloadPath} className="underline-offset-4 hover:underline">
-                ICS 저장
-              </a>
-            ) : null}
-            <RaceCompareButton item={compareItem} />
           </div>
+
+          {(race.sourceDetailUrl || race.homepageUrl || mapLinkUrl || googleCalendarUrl || calendarDownloadPath) ? (
+            <div className="mt-4 rounded-[1.25rem] bg-white/8 p-4 ring-1 ring-white/10 backdrop-blur">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-300">보조 링크 · 도구</p>
+              <div className="mt-3 flex flex-wrap gap-3 text-sm font-semibold text-slate-100">
+                <RaceCompareButton item={compareItem} />
+                {race.sourceDetailUrl ? (
+                  <a
+                    href={getRaceOutboundPath(race.sourceRaceId, 'source_detail')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="focus-ring inline-flex min-h-11 items-center rounded-full border border-white/15 bg-white/8 px-4 py-2 underline-offset-4 transition hover:bg-white/12"
+                  >
+                    주최 측 안내
+                  </a>
+                ) : null}
+                {race.homepageUrl ? (
+                  <a
+                    href={getRaceOutboundPath(race.sourceRaceId, 'homepage')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="focus-ring inline-flex min-h-11 items-center rounded-full border border-white/15 bg-white/8 px-4 py-2 underline-offset-4 transition hover:bg-white/12"
+                  >
+                    공식 홈페이지
+                  </a>
+                ) : null}
+                {mapLinkUrl ? (
+                  <a
+                    href={getRaceOutboundPath(race.sourceRaceId, 'map')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="focus-ring inline-flex min-h-11 items-center rounded-full border border-white/15 bg-white/8 px-4 py-2 underline-offset-4 transition hover:bg-white/12"
+                  >
+                    지도에서 보기
+                  </a>
+                ) : null}
+                {googleCalendarUrl ? (
+                  <a
+                    href={getRaceOutboundPath(race.sourceRaceId, 'calendar_google')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="focus-ring inline-flex min-h-11 items-center rounded-full border border-white/15 bg-white/8 px-4 py-2 underline-offset-4 transition hover:bg-white/12"
+                  >
+                    Google 캘린더
+                  </a>
+                ) : null}
+                {calendarDownloadPath ? (
+                  <a href={calendarDownloadPath} className="focus-ring inline-flex min-h-11 items-center rounded-full border border-white/15 bg-white/8 px-4 py-2 underline-offset-4 transition hover:bg-white/12">
+                    ICS 저장
+                  </a>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -294,33 +302,6 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
             >
               정보 수정 요청
             </Link>
-          </div>
-        </section>
-
-        <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-950">스폰서 · 제휴 안내</h3>
-              <p className="mt-1 text-sm text-slate-500">참가 준비 흐름 안에서 볼 수 있는 공개 가이드와 스폰서형 정보를 함께 정리했습니다.</p>
-            </div>
-            <Link href="/gear" className="text-sm font-semibold text-[var(--brand)]">
-              준비물 가이드
-            </Link>
-          </div>
-
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            {promoSlots.map((slot) => (
-              <PromoSlotCard
-                key={slot.id}
-                badge={slot.badge}
-                title={slot.title}
-                description={slot.description}
-                href={slot.href}
-                ctaLabel={slot.ctaLabel}
-                external={slot.external}
-                disclosure={slot.disclosure}
-              />
-            ))}
           </div>
         </section>
 
@@ -414,6 +395,33 @@ export default async function RaceDetailPage({ params }: { params: Params }) {
               현재 같은 지역의 접수 중 대회가 없습니다.
             </div>
           )}
+        </section>
+
+        <section className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6 shadow-sm ring-1 ring-black/5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-950">스폰서 · 제휴 안내</h3>
+              <p className="mt-1 text-sm text-slate-500">핵심 정보 확인 뒤 참고할 수 있도록 준비물 가이드와 스폰서형 정보를 아래에 모았습니다.</p>
+            </div>
+            <Link href="/gear" className="focus-ring text-sm font-semibold text-[var(--brand)]">
+              준비물 가이드
+            </Link>
+          </div>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            {promoSlots.map((slot) => (
+              <PromoSlotCard
+                key={slot.id}
+                badge={slot.badge}
+                title={slot.title}
+                description={slot.description}
+                href={slot.href}
+                ctaLabel={slot.ctaLabel}
+                external={slot.external}
+                disclosure={slot.disclosure}
+              />
+            ))}
+          </div>
         </section>
       </section>
     </PageShell>

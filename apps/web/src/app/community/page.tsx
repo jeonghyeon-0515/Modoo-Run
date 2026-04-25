@@ -88,6 +88,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
     <PageShell
       title="러너들의 이야기"
       description="대회 준비, 훈련 기록, 완주 후기를 읽고 작성할 수 있습니다."
+      viewer={viewer}
     >
       <section className="grid gap-4 sm:grid-cols-3">
         <article className="rounded-[1.1rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
@@ -103,132 +104,31 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
         <article className="rounded-[1.1rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
           <p className="text-sm font-medium text-slate-500">글 남기기</p>
           <p className="mt-3 text-3xl font-bold text-slate-950">{viewer ? '가능' : '로그인 필요'}</p>
-          <p className="mt-2 text-sm text-slate-500">읽기는 자유롭게, 작성은 로그인 후 가능합니다.</p>
+          <p className="mt-2 text-sm text-slate-500">{viewer ? '바로 아래 작성 영역에서 새 글을 남길 수 있습니다.' : '로그인 후 직접 글을 남길 수 있습니다.'}</p>
         </article>
       </section>
 
-      <section className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <div className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <Link
-                key={category.value}
-                href={categoryHref(category.value)}
-                className={`focus-ring inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-medium transition ${
-                  selectedCategory === category.value
-                    ? 'public-chip-active'
-                    : 'public-chip-idle'
-                }`}
-              >
-                {category.label}
-              </Link>
-            ))}
+      <section className="mt-6 rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-slate-900">카테고리</p>
+            <p className="mt-1 text-sm text-slate-500">관심 있는 주제부터 먼저 골라 피드를 빠르게 좁혀보세요.</p>
           </div>
-
-          {viewer ? (
-            <form action={createCommunityPostAction} className="mt-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
-              <div className="space-y-4">
-                <label className="block">
-                  <span className="text-sm font-semibold text-slate-700">카테고리</span>
-                  <select
-                    name="category"
-                    defaultValue={selectedCategory === 'all' ? 'free' : selectedCategory}
-                    className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
-                  >
-                    {categories
-                      .filter((category) => category.value !== 'all')
-                      .map((category) => (
-                        <option key={category.value} value={category.value}>
-                          {category.label}
-                        </option>
-                      ))}
-                  </select>
-                </label>
-
-                <label className="block">
-                  <span className="text-sm font-semibold text-slate-700">관련 대회</span>
-                  <select
-                    name="linkedRaceId"
-                    defaultValue=""
-                    className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
-                  >
-                    <option value="">선택 안 함</option>
-                    {races.map((race) => (
-                      <option key={race.id} value={race.id}>
-                        {race.title}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              <div className="space-y-4">
-                <label className="block">
-                  <span className="text-sm font-semibold text-slate-700">제목</span>
-                  <input
-                    name="title"
-                    className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
-                    placeholder="10km 첫 참가 전날 체크리스트"
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="text-sm font-semibold text-slate-700">내용</span>
-                  <textarea
-                    name="content"
-                    className="focus-ring mt-2 min-h-32 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
-                    placeholder="준비 과정, 훈련 기록, 후기와 팁"
-                  />
-                </label>
-
-                <button
-                  type="submit"
-                  className="focus-ring inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-                >
-                  글 작성하기
-                </button>
-              </div>
-            </form>
-          ) : (
-            <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-              로그인하면 대회 준비 경험이나 후기를 더 편하게 남길 수 있어요.{' '}
-              <Link href="/login?next=/community" className="focus-ring inline-flex min-h-11 items-center rounded-md px-2 font-semibold text-[var(--brand)]">
-                로그인하기
-              </Link>
-            </div>
-          )}
+          <p className="text-xs font-medium text-slate-400">최근 글 20개씩 표시</p>
         </div>
-
-        <aside className="space-y-6">
-          <section className="space-y-4">
-            {promoSlots.map((slot) => (
-              <PromoSlotCard
-                key={slot.id}
-                badge={slot.badge}
-                title={slot.title}
-                description={slot.description}
-                href={slot.href}
-                ctaLabel={slot.ctaLabel}
-                external={slot.external}
-                disclosure={slot.disclosure}
-                compact
-              />
-            ))}
-          </section>
-
-          <section className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h2 className="text-lg font-semibold text-slate-950">지금 나누기 좋은 주제</h2>
-            <div className="mt-4 space-y-3">
-              {starterPrompts.map((item) => (
-                <div key={item.title} className="rounded-[1rem] bg-slate-50 p-4">
-                  <p className="text-sm font-semibold text-slate-900">{item.title}</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-          <PartnerInquiryCard sourcePath="/community" compact />
-        </aside>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <Link
+              key={category.value}
+              href={categoryHref(category.value)}
+              className={`focus-ring inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                selectedCategory === category.value ? 'public-chip-active' : 'public-chip-idle'
+              }`}
+            >
+              {category.label}
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className="mt-6 space-y-4">
@@ -290,6 +190,132 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
             ) : null}
           </div>
         </div>
+      </section>
+
+      <section className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="space-y-6">
+          <section className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-950">직접 이야기 남기기</h2>
+                <p className="mt-2 text-sm text-slate-600">준비 과정, 훈련 기록, 완주 후기를 짧게라도 바로 남길 수 있습니다.</p>
+              </div>
+              {viewer ? <StatusBadge tone="success">작성 가능</StatusBadge> : <StatusBadge tone="neutral">로그인 필요</StatusBadge>}
+            </div>
+
+            {viewer ? (
+              <form action={createCommunityPostAction} className="mt-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+                <div className="space-y-4">
+                  <label className="block">
+                    <span className="text-sm font-semibold text-slate-700">카테고리</span>
+                    <select
+                      name="category"
+                      defaultValue={selectedCategory === 'all' ? 'free' : selectedCategory}
+                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                    >
+                      {categories
+                        .filter((category) => category.value !== 'all')
+                        .map((category) => (
+                          <option key={category.value} value={category.value}>
+                            {category.label}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+
+                  <label className="block">
+                    <span className="text-sm font-semibold text-slate-700">관련 대회</span>
+                    <select
+                      name="linkedRaceId"
+                      defaultValue=""
+                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                    >
+                      <option value="">선택 안 함</option>
+                      {races.map((race) => (
+                        <option key={race.id} value={race.id}>
+                          {race.title}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="block">
+                    <span className="text-sm font-semibold text-slate-700">제목</span>
+                    <input
+                      name="title"
+                      autoComplete="off"
+                      spellCheck={false}
+                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                      placeholder="10km 첫 참가 전날 체크리스트"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="text-sm font-semibold text-slate-700">내용</span>
+                    <textarea
+                      name="content"
+                      autoComplete="off"
+                      spellCheck
+                      className="focus-ring mt-2 min-h-32 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                      placeholder="준비 과정, 훈련 기록, 후기와 팁"
+                    />
+                  </label>
+
+                  <button
+                    type="submit"
+                    className="focus-ring inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                  >
+                    글 작성하기
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
+                로그인하면 대회 준비 경험이나 후기를 더 편하게 남길 수 있어요.{' '}
+                <Link href="/login?next=/community" className="focus-ring inline-flex min-h-11 items-center rounded-md px-2 font-semibold text-[var(--brand)]">
+                  로그인하기
+                </Link>
+              </div>
+            )}
+          </section>
+
+          <section className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <h2 className="text-lg font-semibold text-slate-950">지금 나누기 좋은 주제</h2>
+            <div className="mt-4 space-y-3">
+              {starterPrompts.map((item) => (
+                <div key={item.title} className="rounded-[1rem] bg-slate-50 p-4">
+                  <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <aside className="space-y-4 lg:pt-1">
+          <section className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-5">
+            <h2 className="text-base font-semibold text-slate-900">함께 보면 좋은 정보</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">피드를 다 본 뒤 참고할 수 있도록 제휴/안내 영역은 아래에 모았습니다.</p>
+          </section>
+          <section className="space-y-4">
+            {promoSlots.map((slot) => (
+              <PromoSlotCard
+                key={slot.id}
+                badge={slot.badge}
+                title={slot.title}
+                description={slot.description}
+                href={slot.href}
+                ctaLabel={slot.ctaLabel}
+                external={slot.external}
+                disclosure={slot.disclosure}
+                compact
+              />
+            ))}
+          </section>
+          <PartnerInquiryCard sourcePath="/community" compact />
+        </aside>
       </section>
     </PageShell>
   );
