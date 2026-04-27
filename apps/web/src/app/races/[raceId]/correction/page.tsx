@@ -105,7 +105,7 @@ export default async function RaceCorrectionPage({
                 <span className="text-sm font-semibold text-slate-700">이름</span>
                 <input
                   name="requesterName"
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                   placeholder="홍길동"
                 />
               </label>
@@ -114,7 +114,7 @@ export default async function RaceCorrectionPage({
                 <input
                   name="requesterEmail"
                   type="email"
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                   placeholder="contact@example.com"
                 />
               </label>
@@ -126,7 +126,7 @@ export default async function RaceCorrectionPage({
                 <select
                   name="requesterRole"
                   defaultValue="runner"
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                 >
                   {correctionRequesterRoles.map((role) => (
                     <option key={role} value={role}>
@@ -141,7 +141,7 @@ export default async function RaceCorrectionPage({
                 <select
                   name="fieldKind"
                   defaultValue="date"
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                 >
                   {correctionFieldKinds.map((kind) => (
                     <option key={kind} value={kind}>
@@ -156,7 +156,7 @@ export default async function RaceCorrectionPage({
               <span className="text-sm font-semibold text-slate-700">현재 보이는 내용</span>
               <textarea
                 name="currentValue"
-                className="mt-2 min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                className="mt-2 min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                 placeholder="예: 접수기간이 2026년 4월 17일까지로 표시되어 있습니다."
               />
             </label>
@@ -165,7 +165,7 @@ export default async function RaceCorrectionPage({
               <span className="text-sm font-semibold text-slate-700">바르게 고칠 내용</span>
               <textarea
                 name="suggestedValue"
-                className="mt-2 min-h-28 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                className="mt-2 min-h-28 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                 placeholder="예: 공식 공지 기준 접수 마감일은 2026년 4월 10일입니다."
               />
             </label>
@@ -174,7 +174,7 @@ export default async function RaceCorrectionPage({
               <span className="text-sm font-semibold text-slate-700">참고 링크 또는 설명</span>
               <textarea
                 name="message"
-                className="mt-2 min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                className="mt-2 min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                 placeholder="확인 가능한 공식 링크나 추가 설명이 있으면 적어주세요."
               />
             </label>

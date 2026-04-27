@@ -56,12 +56,14 @@ const LEGACY_OPEN_RACE_DETAIL_PREFIX = 'races:v2:detail:';
 const LEGACY_DATASET_KEY = 'races:v1:dataset';
 const OPEN_RACE_INDEX_TTL_SECONDS = 60 * 60 * 48;
 const MEMORY_TTL_MS = 60 * 1000;
+const REDIS_FALLBACK_TTL_MS = 5 * 60 * 1000;
 const raceCacheSelectColumns =
   'id, source_race_id, title, event_date, event_date_label, weekday_label, region, location, course_summary, organizer, registration_status, registration_period_label, last_synced_at, representative_name, phone, homepage_url, summary, description, source_detail_url, source_list_url, registration_open_at, registration_close_at';
 
 let memoryOpenIndex: { expiresAt: number; value: OpenRaceIndex } | null = null;
 let memoryOpenRegions: { expiresAt: number; value: string[] } | null = null;
 const memoryOpenDetails = new Map<string, { expiresAt: number; value: RaceDetailItem }>();
+let redisFallbackUntil = 0;
 
 function legacyDetailKey(sourceRaceId: string) {
   return `${LEGACY_OPEN_RACE_DETAIL_PREFIX}${sourceRaceId}`;
@@ -138,6 +140,19 @@ function readJson<T>(raw: unknown): T | null {
   return raw as T;
 }
 
+function logRaceCacheFallback(context: string, error: unknown) {
+  redisFallbackUntil = Date.now() + REDIS_FALLBACK_TTL_MS;
+  console.warn(`${context} failed, falling back to database`, error);
+}
+
+function getRaceCacheRedisClient() {
+  if (redisFallbackUntil > Date.now()) {
+    return null;
+  }
+
+  return getUpstashRedisClient()
+}
+
 function rememberOpenIndex(index: OpenRaceIndex) {
   memoryOpenIndex = {
     expiresAt: Date.now() + MEMORY_TTL_MS,
@@ -191,27 +206,42 @@ function getRememberedDetail(sourceRaceId: string) {
 }
 
 async function readOpenIndexFromRedis() {
-  const redis = getUpstashRedisClient();
+  const redis = getRaceCacheRedisClient();
   if (!redis) return null;
 
-  const raw = await redis.get(OPEN_RACE_INDEX_KEY);
-  return readJson<OpenRaceIndex>(raw);
+  try {
+    const raw = await redis.get(OPEN_RACE_INDEX_KEY);
+    return readJson<OpenRaceIndex>(raw);
+  } catch (error) {
+    logRaceCacheFallback('open race index lookup', error);
+    return null;
+  }
 }
 
 async function readLegacyOpenIndexFromRedis() {
-  const redis = getUpstashRedisClient();
+  const redis = getRaceCacheRedisClient();
   if (!redis) return null;
 
-  const raw = await redis.get(LEGACY_OPEN_RACE_INDEX_KEY);
-  return readJson<{ sourceRaceIds: string[] }>(raw);
+  try {
+    const raw = await redis.get(LEGACY_OPEN_RACE_INDEX_KEY);
+    return readJson<{ sourceRaceIds: string[] }>(raw);
+  } catch (error) {
+    logRaceCacheFallback('legacy open race index lookup', error);
+    return null;
+  }
 }
 
 async function readOpenRegionsFromRedis() {
-  const redis = getUpstashRedisClient();
+  const redis = getRaceCacheRedisClient();
   if (!redis) return null;
 
-  const raw = await redis.get(OPEN_RACE_REGIONS_KEY);
-  return readJson<string[]>(raw);
+  try {
+    const raw = await redis.get(OPEN_RACE_REGIONS_KEY);
+    return readJson<string[]>(raw);
+  } catch (error) {
+    logRaceCacheFallback('open race regions lookup', error);
+    return null;
+  }
 }
 
 async function readOpenIndex() {
@@ -243,17 +273,22 @@ async function readOpenRaceDetails(sourceRaceIds: string[]) {
   });
 
   if (missingIds.length > 0) {
-    const redis = getUpstashRedisClient();
-    if (!redis) return [...details.values()];
+    const redis = getRaceCacheRedisClient();
+    if (!redis) return [] as RaceDetailItem[];
 
-    const values = ((await redis.hmget(OPEN_RACE_DETAIL_HASH_KEY, ...missingIds)) ?? []) as Array<string | null>;
-    missingIds.forEach((sourceRaceId, index) => {
-      const parsed = readJson<RaceDetailItem>(values[index]);
-      if (!parsed) return;
-      const normalized = normalizeRaceDetail(parsed);
-      details.set(sourceRaceId, normalized);
-      rememberDetail(normalized);
-    });
+    try {
+      const values = ((await redis.hmget(OPEN_RACE_DETAIL_HASH_KEY, ...missingIds)) ?? []) as Array<string | null>;
+      missingIds.forEach((sourceRaceId, index) => {
+        const parsed = readJson<RaceDetailItem>(values[index]);
+        if (!parsed) return;
+        const normalized = normalizeRaceDetail(parsed);
+        details.set(sourceRaceId, normalized);
+        rememberDetail(normalized);
+      });
+    } catch (error) {
+      logRaceCacheFallback('open race detail batch lookup', error);
+      return [] as RaceDetailItem[];
+    }
   }
 
   return sourceRaceIds
@@ -281,16 +316,21 @@ export async function getCachedRaceDetail(sourceRaceId: string) {
     return remembered;
   }
 
-  const redis = getUpstashRedisClient();
+  const redis = getRaceCacheRedisClient();
   if (!redis) return null;
 
-  const raw = await redis.hget(OPEN_RACE_DETAIL_HASH_KEY, sourceRaceId);
-  const parsed = readJson<RaceDetailItem>(raw);
-  if (!parsed) return null;
+  try {
+    const raw = await redis.hget(OPEN_RACE_DETAIL_HASH_KEY, sourceRaceId);
+    const parsed = readJson<RaceDetailItem>(raw);
+    if (!parsed) return null;
 
-  const normalized = normalizeRaceDetail(parsed);
-  rememberDetail(normalized);
-  return normalized;
+    const normalized = normalizeRaceDetail(parsed);
+    rememberDetail(normalized);
+    return normalized;
+  } catch (error) {
+    logRaceCacheFallback('single race detail lookup', error);
+    return null;
+  }
 }
 
 export async function getCachedRelatedRaces(input: {
@@ -344,9 +384,13 @@ export async function getCachedRegions() {
   if (details.length === 0) return null;
 
   const regions = collectRaceRegions(details);
-  const redis = getUpstashRedisClient();
+  const redis = getRaceCacheRedisClient();
   if (redis) {
-    await redis.set(OPEN_RACE_REGIONS_KEY, JSON.stringify(regions), { ex: OPEN_RACE_INDEX_TTL_SECONDS });
+    try {
+      await redis.set(OPEN_RACE_REGIONS_KEY, JSON.stringify(regions), { ex: OPEN_RACE_INDEX_TTL_SECONDS });
+    } catch (error) {
+      logRaceCacheFallback('open race regions write', error);
+    }
   }
   rememberOpenRegions(regions);
   return regions;
@@ -361,7 +405,7 @@ export async function getCachedRaceExplorerSummary() {
 }
 
 export async function warmRaceCacheFromDatabase(): Promise<RaceCacheWarmResult> {
-  const redis = getUpstashRedisClient();
+  const redis = getRaceCacheRedisClient();
   if (!redis) {
     return {
       enabled: false,

@@ -9,7 +9,7 @@ export function RaceCorrectionSubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+      className="focus-ring public-primary-button pressable inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:bg-slate-400 disabled:text-white"
     >
       {pending ? '접수 중…' : '수정 요청 보내기'}
     </button>

@@ -1,13 +1,14 @@
 import { ReactNode } from 'react';
 
-type Tone = 'disclosure' | 'ops-info' | 'success' | 'warning' | 'neutral';
+type Tone = 'featured' | 'disclosure' | 'ops-info' | 'success' | 'warning' | 'neutral';
 
 const toneClassMap: Record<Tone, string> = {
-  disclosure: 'bg-[#fff7f2] text-[var(--public-accent-strong)] ring-[#f1d8ce]',
-  'ops-info': 'bg-[#fff1ec] text-[var(--brand-strong)] ring-[#f7d7cf]',
-  success: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
-  warning: 'bg-amber-50 text-amber-700 ring-amber-100',
-  neutral: 'bg-slate-100 text-slate-600 ring-slate-200',
+  featured: 'bg-[#fff1ec] text-[var(--brand-strong)] ring-[rgba(255,107,84,0.18)]',
+  disclosure: 'bg-[#fff7f4] text-[var(--brand-strong)] ring-[rgba(255,107,84,0.12)]',
+  'ops-info': 'bg-[#eef3f8] text-[var(--secondary)] ring-[rgba(44,62,80,0.12)]',
+  success: 'bg-[#edf8ee] text-[#2f8b35] ring-[rgba(76,175,80,0.16)]',
+  warning: 'bg-[#fff4e5] text-[#b86f11] ring-[rgba(255,183,77,0.18)]',
+  neutral: 'bg-[#f3f4f6] text-[#5f6b76] ring-[rgba(44,62,80,0.08)]',
 };
 
 export function StatusBadge({ tone, children }: { tone: Tone; children: ReactNode }) {

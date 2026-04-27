@@ -15,10 +15,10 @@ export function PartnerInquiryCard({
         <h2 className="text-balance text-base font-semibold text-slate-950">브랜드/주최측 문의</h2>
       </div>
       <p className="text-pretty mt-3 text-sm leading-6 text-slate-600">
-        featured listing, 스폰서 노출, 준비물 제휴 같은 협업 문의를 받습니다.
+        featured listing, 스폰서 노출, 준비물 제휴처럼 공개 노출과 연결된 협업 문의를 받습니다.
       </p>
       <div className="mt-4 flex items-center justify-between gap-3">
-        <p className="text-pretty text-xs text-slate-400">운영자가 직접 확인 후 답변합니다.</p>
+        <p className="text-pretty text-xs text-slate-400/90">운영자가 공개 노출 성격을 확인한 뒤 답변합니다.</p>
         <Link
           href={`/out/partner/partner_inquiry?source=${encodeURIComponent(sourcePath)}`}
           className="public-primary-button pressable inline-flex min-h-11 items-center justify-center rounded-[0.95rem] px-4 py-2.5 text-center text-sm font-semibold"

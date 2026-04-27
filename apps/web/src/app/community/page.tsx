@@ -1,11 +1,8 @@
 import Link from 'next/link';
 import { getOptionalViewer } from '@/lib/auth/session';
 import { PageShell } from '@/components/layout/page-shell';
-import { PartnerInquiryCard } from '@/components/monetization/partner-inquiry-card';
-import { PromoSlotCard } from '@/components/monetization/promo-slot-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { listCommunityPosts } from '@/lib/community/repository';
-import { getCommunityPromoSlots } from '@/lib/monetization/public-catalog';
 import { listRaces } from '@/lib/races/repository';
 import { createCommunityPostAction } from './actions';
 
@@ -81,40 +78,17 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
 
   const posts = postResult.items;
   const hasNextPage = postResult.hasNextPage;
-  const activeCategoryCount = new Set(posts.map((post) => post.category)).size;
-  const promoSlots = getCommunityPromoSlots();
 
   return (
     <PageShell
       title="러너들의 이야기"
-      description="대회 준비, 훈련 기록, 완주 후기를 읽고 작성할 수 있습니다."
+      description="대회 준비, 훈련 기록, 완주 후기를 읽고 남길 수 있습니다."
       viewer={viewer}
     >
-      <section className="grid gap-4 sm:grid-cols-3">
-        <article className="rounded-[1.1rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-          <p className="text-sm font-medium text-slate-500">지금 보이는 글</p>
-          <p className="mt-3 text-3xl font-bold tabular-nums text-slate-950">{posts.length.toLocaleString('ko-KR')}개</p>
-          <p className="mt-2 text-sm text-slate-500">선택한 주제의 글만 표시합니다.</p>
-        </article>
-        <article className="rounded-[1.1rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-          <p className="text-sm font-medium text-slate-500">활성 카테고리</p>
-          <p className="mt-3 text-3xl font-bold tabular-nums text-slate-950">{activeCategoryCount}개</p>
-          <p className="mt-2 text-sm text-slate-500">읽을 주제를 골라 볼 수 있습니다.</p>
-        </article>
-        <article className="rounded-[1.1rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-          <p className="text-sm font-medium text-slate-500">글 남기기</p>
-          <p className="mt-3 text-3xl font-bold text-slate-950">{viewer ? '가능' : '로그인 필요'}</p>
-          <p className="mt-2 text-sm text-slate-500">{viewer ? '바로 아래 작성 영역에서 새 글을 남길 수 있습니다.' : '로그인 후 직접 글을 남길 수 있습니다.'}</p>
-        </article>
-      </section>
-
-      <section className="mt-6 rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+      <section className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-slate-900">카테고리</p>
-            <p className="mt-1 text-sm text-slate-500">관심 있는 주제부터 먼저 골라 피드를 빠르게 좁혀보세요.</p>
-          </div>
-          <p className="text-xs font-medium text-slate-400">최근 글 20개씩 표시</p>
+          <p className="text-sm font-semibold text-slate-900">카테고리</p>
+          <p className="text-xs font-medium text-slate-400">20개씩 보기</p>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {categories.map((category) => (
@@ -133,7 +107,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
 
       <section className="mt-6 space-y-4">
         <div className="flex items-center justify-between gap-3 rounded-[1.1rem] bg-white px-4 py-3 shadow-sm ring-1 ring-black/5">
-          <p className="text-sm text-slate-600">최근 글부터 20개씩 먼저 보여줍니다.</p>
+          <p className="text-sm font-medium text-slate-700">최근 글</p>
           <p className="text-sm font-semibold tabular-nums text-slate-900">{page}페이지</p>
         </div>
         {posts.length === 0 ? (
@@ -158,9 +132,8 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                   </div>
                   <h2 className="mt-3 text-lg font-semibold text-slate-950">{post.title}</h2>
                 </div>
-                <span className="text-sm font-medium text-slate-500">보기</span>
               </div>
-              <p className="mt-3 text-sm leading-6 text-slate-600 line-clamp-2">{post.content}</p>
+              <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">{post.content}</p>
               <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-500">
                 <span>{post.authorLabel}</span>
                 <span className="tabular-nums">댓글 {post.comment_count}</span>
@@ -170,48 +143,48 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
           ))
         )}
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.1rem] bg-white px-4 py-4 shadow-sm ring-1 ring-black/5">
-          <p className="text-sm text-slate-500">이전 글도 페이지 단위로 계속 볼 수 있습니다.</p>
+          <p className="text-sm text-slate-500">페이지 이동</p>
           <div className="flex flex-wrap gap-2">
             {page > 1 ? (
               <Link
                 href={communityPageHref(selectedCategory, page - 1)}
                 className="focus-ring pressable inline-flex min-h-11 items-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
               >
-                이전 페이지
+                이전
               </Link>
             ) : null}
             {hasNextPage ? (
               <Link
                 href={communityPageHref(selectedCategory, page + 1)}
-                className="focus-ring pressable inline-flex min-h-11 items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+                className="focus-ring public-primary-button pressable inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold"
               >
-                다음 페이지
+                다음
               </Link>
             ) : null}
           </div>
         </div>
       </section>
 
-      <section className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <section className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <div className="space-y-6">
-          <section className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <section className="rounded-[1.5rem] border border-[var(--line)] bg-white p-6 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-slate-950">직접 이야기 남기기</h2>
-                <p className="mt-2 text-sm text-slate-600">준비 과정, 훈련 기록, 완주 후기를 짧게라도 바로 남길 수 있습니다.</p>
+                <h2 className="text-lg font-semibold text-[var(--secondary)]">직접 이야기 남기기</h2>
+                <p className="mt-2 text-sm text-slate-600">준비 과정, 훈련 기록, 완주 후기를 바로 남길 수 있습니다.</p>
               </div>
               {viewer ? <StatusBadge tone="success">작성 가능</StatusBadge> : <StatusBadge tone="neutral">로그인 필요</StatusBadge>}
             </div>
 
             {viewer ? (
-              <form action={createCommunityPostAction} className="mt-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+              <form action={createCommunityPostAction} className="mt-6 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
                 <div className="space-y-4">
                   <label className="block">
                     <span className="text-sm font-semibold text-slate-700">카테고리</span>
                     <select
                       name="category"
                       defaultValue={selectedCategory === 'all' ? 'free' : selectedCategory}
-                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
+                      className="focus-ring mt-2 w-full rounded-2xl border border-[var(--line)] px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                     >
                       {categories
                         .filter((category) => category.value !== 'all')
@@ -228,7 +201,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                     <select
                       name="linkedRaceId"
                       defaultValue=""
-                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
+                      className="focus-ring mt-2 w-full rounded-2xl border border-[var(--line)] px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                     >
                       <option value="">선택 안 함</option>
                       {races.map((race) => (
@@ -247,7 +220,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                       name="title"
                       autoComplete="off"
                       spellCheck={false}
-                      className="focus-ring mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
+                      className="focus-ring mt-2 w-full rounded-2xl border border-[var(--line)] px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                       placeholder="10km 첫 참가 전날 체크리스트"
                     />
                   </label>
@@ -258,21 +231,21 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
                       name="content"
                       autoComplete="off"
                       spellCheck
-                      className="focus-ring mt-2 min-h-32 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
+                      className="focus-ring mt-2 min-h-36 w-full rounded-2xl border border-[var(--line)] px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                       placeholder="준비 과정, 훈련 기록, 후기와 팁"
                     />
                   </label>
 
                   <button
                     type="submit"
-                    className="focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+                    className="focus-ring public-primary-button pressable inline-flex min-h-11 items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
                   >
                     글 작성하기
                   </button>
                 </div>
               </form>
             ) : (
-              <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
+              <div className="mt-6 rounded-[1.25rem] border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
                 로그인하면 대회 준비 경험이나 후기를 더 편하게 남길 수 있어요.{' '}
                 <Link href="/login?next=/community" className="focus-ring inline-flex min-h-11 items-center rounded-md px-2 font-semibold text-[var(--brand)]">
                   로그인하기
@@ -280,41 +253,33 @@ export default async function CommunityPage({ searchParams }: { searchParams: Se
               </div>
             )}
           </section>
+        </div>
 
-          <section className="rounded-[1.25rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h2 className="text-lg font-semibold text-slate-950">지금 나누기 좋은 주제</h2>
+        <aside className="space-y-4 lg:pt-1">
+          <section className="rounded-[1.5rem] border border-[var(--line)] bg-[#fffaf8] p-5">
+            <h2 className="text-base font-semibold text-[var(--secondary)]">지금 나누기 좋은 주제</h2>
             <div className="mt-4 space-y-3">
               {starterPrompts.map((item) => (
-                <div key={item.title} className="rounded-[1rem] bg-slate-50 p-4">
-                  <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                <div key={item.title} className="rounded-[1rem] bg-white p-4 shadow-sm ring-1 ring-[var(--line)]">
+                  <p className="text-sm font-semibold text-[var(--secondary)]">{item.title}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
                 </div>
               ))}
             </div>
           </section>
-        </div>
 
-        <aside className="space-y-4 lg:pt-1">
-          <section className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-5">
-            <h2 className="text-base font-semibold text-slate-900">함께 보면 좋은 정보</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">피드를 다 본 뒤 참고할 수 있도록 제휴/안내 영역은 아래에 모았습니다.</p>
+          <section className="rounded-[1.5rem] border border-[var(--line)] bg-white p-5">
+            <h2 className="text-base font-semibold text-[var(--secondary)]">커뮤니티 흐름</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">글을 읽고, 관련 대회를 보고, 다시 준비 팁을 남기는 흐름이 끊기지 않도록 구성했습니다.</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link
+                href="/races"
+                className="focus-ring pressable inline-flex min-h-11 items-center rounded-full border border-[rgba(255,107,84,0.18)] bg-[#fff7f4] px-4 py-2 text-sm font-semibold text-[var(--brand-strong)]"
+              >
+                대회 일정 보기
+              </Link>
+            </div>
           </section>
-          <section className="space-y-4">
-            {promoSlots.map((slot) => (
-              <PromoSlotCard
-                key={slot.id}
-                badge={slot.badge}
-                title={slot.title}
-                description={slot.description}
-                href={slot.href}
-                ctaLabel={slot.ctaLabel}
-                external={slot.external}
-                disclosure={slot.disclosure}
-                compact
-              />
-            ))}
-          </section>
-          <PartnerInquiryCard sourcePath="/community" compact />
         </aside>
       </section>
     </PageShell>

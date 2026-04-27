@@ -1,13 +1,11 @@
 import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
 import { FeaturedRaceSection } from '@/components/monetization/featured-race-section';
-import { PartnerInquiryCard } from '@/components/monetization/partner-inquiry-card';
-import { PromoSlotCard } from '@/components/monetization/promo-slot-card';
 import { RaceCompareButton } from '@/components/races/race-compare-button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { LinkPendingOverlay } from '@/components/ui/link-pending-overlay';
+import { getOptionalViewer } from '@/lib/auth/session';
 import { listActiveFeaturedRacePlacements } from '@/lib/monetization/featured-repository';
-import { getRacesPagePromoSlots } from '@/lib/monetization/public-catalog';
 import {
   formatRaceDate,
   getRaceStatusLabel,
@@ -102,6 +100,7 @@ function FilterLabel({ children }: { children: React.ReactNode }) {
 
 export default async function RacesPage({ searchParams }: { searchParams: SearchParams }) {
   const resolvedSearchParams = await searchParams;
+  const viewer = await getOptionalViewer();
   const filters = {
     registrationStatus:
       (readFirstValue(resolvedSearchParams.registrationStatus) as RaceStatus | 'all' | undefined) ?? 'open',
@@ -119,6 +118,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
 
   let races = [] as Awaited<ReturnType<typeof listRaces>>;
   let regions = [] as Awaited<ReturnType<typeof listRegions>>;
+  let featuredItems: Awaited<ReturnType<typeof listActiveFeaturedRacePlacements>> = [];
   let loadError: string | null = null;
 
   try {
@@ -131,6 +131,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
       }),
       listRegions(),
     ]);
+    featuredItems = await listActiveFeaturedRacePlacements(races);
   } catch (error) {
     loadError = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
   }
@@ -141,9 +142,6 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
     filters.region.length === 0 &&
     filters.month.length === 0 &&
     filters.distance.length === 0;
-  const featuredRaces = await listActiveFeaturedRacePlacements(races, 2);
-  const featuredRaceIds = new Set(featuredRaces.map((item) => item.race.id));
-  const promoSlots = getRacesPagePromoSlots();
 
   const renderAdvancedFilters = () => (
     <>
@@ -208,6 +206,7 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
       <PageShell
         title="대회 일정"
         description="대회 목록을 다시 불러올 수 있도록 안내합니다."
+        viewer={viewer}
       >
         <article className="rounded-[1.75rem] bg-white p-8 shadow-sm ring-1 ring-black/5">
           <p className="text-base font-semibold text-slate-950">대회 목록을 불러오지 못했습니다.</p>
@@ -228,20 +227,14 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
       title="대회 일정"
       description="접수 중인 대회를 가까운 일정 순으로 보여줍니다."
       compactIntro
+      viewer={viewer}
     >
       <section className="mb-5 rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-slate-950">빠른 탐색</p>
-            <p className="mt-1 text-sm text-slate-500">검색 의도에 맞춰 자주 찾는 대회 묶음을 바로 볼 수 있습니다.</p>
-          </div>
+          <p className="text-sm font-semibold text-slate-950">자주 찾는 대회 묶음</p>
           <Link href="/races/closing-soon" className="focus-ring pressable inline-flex min-h-11 items-center rounded-full border border-[var(--brand-soft-strong)] bg-[var(--brand-soft)] px-4 py-2 text-sm font-semibold text-[var(--brand-strong)] hover:bg-[#ffe9e2]">
             마감 임박 보기
           </Link>
-        </div>
-        <div className="mt-3 flex items-center justify-between gap-3 text-xs font-medium text-slate-400">
-          <span>자주 찾는 필터 묶음</span>
-          <span>좌우로 넘겨 더 보기</span>
         </div>
         <div className="relative mt-3">
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-white to-transparent" />
@@ -260,44 +253,36 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
         </div>
       </section>
 
-      <section className="mt-1 rounded-[1.1rem] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:rounded-[1.25rem]">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold text-slate-900">
-                {filters.registrationStatus === 'open' ? '접수 중 대회를 우선 표시합니다' : '원하는 상태를 선택해 보세요'}
-              </p>
-              <p className="mt-1 text-sm text-slate-600">
-                {isDefaultOpenView
-                  ? '날짜가 가까운 순서로 정렬했습니다.'
-                  : activeLabels.length > 0
-                    ? `${activeLabels.join(' · ')} 조건으로 조금 더 좁혀서 보여드리고 있어요.`
-                    : '조건을 바꾸면 지금 찾는 일정만 가볍게 골라볼 수 있어요.'}
-              </p>
-            </div>
+      <FeaturedRaceSection items={featuredItems} />
 
-            {!isDefaultOpenView ? (
-              <Link href="/races" className="focus-ring public-secondary-button pressable inline-flex min-h-11 items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold">
-                조건 초기화
-              </Link>
-            ) : null}
-          </div>
-
-          {!isDefaultOpenView && activeLabels.length > 0 ? (
-            <div>
-              <p className="text-xs font-semibold text-slate-400">현재 적용 중인 조건</p>
-              <div className="mt-2 flex flex-wrap gap-2">
+      <section className="mt-5 grid gap-5 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
+        <aside className="space-y-4 lg:sticky lg:top-28">
+          <section className="rounded-[1.5rem] border border-[var(--line)] bg-white p-5 shadow-sm">
+            <p className="text-sm font-semibold text-[var(--secondary)]">
+              {filters.registrationStatus === 'open' ? '접수 중 대회' : '대회 상태'}
+            </p>
+            {activeLabels.length > 0 ? (
+              <div className="mt-3 flex flex-wrap gap-2">
                 {activeLabels.map((label) => (
-                  <span key={label} className="inline-flex min-h-10 items-center rounded-full bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700">
+                  <span key={label} className="inline-flex min-h-10 items-center rounded-full bg-[#fff1ec] px-3 py-2 text-xs font-semibold text-[var(--brand-strong)]">
                     {label}
                   </span>
                 ))}
               </div>
-            </div>
-          ) : null}
+            ) : (
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                {isDefaultOpenView ? '가까운 일정부터 보고 있습니다.' : '조건을 조합해 원하는 일정만 좁혀보세요.'}
+              </p>
+            )}
+            {!isDefaultOpenView ? (
+              <Link href="/races" className="focus-ring public-secondary-button pressable mt-4 inline-flex min-h-11 items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold">
+                조건 초기화
+              </Link>
+            ) : null}
+          </section>
 
-          <div className="rounded-[1rem] border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs font-semibold text-slate-400">접수 상태</p>
+          <section className="rounded-[1.5rem] border border-[var(--line)] bg-white p-5 shadow-sm">
+            <p className="text-sm font-semibold text-[var(--secondary)]">접수 상태</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {statusOptions.map((option) => (
                 <FilterChip
@@ -309,119 +294,87 @@ export default async function RacesPage({ searchParams }: { searchParams: Search
                 </FilterChip>
               ))}
             </div>
-          </div>
-
-          <div className="rounded-[1rem] border border-slate-200 p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-slate-900">세부 조건</p>
-              <p className="text-xs text-slate-500">지역 · 월 · 거리를 함께 조합할 수 있습니다.</p>
+            <div className="mt-5 space-y-5">
+              {renderAdvancedFilters()}
             </div>
-            <div className="mt-4 grid gap-4 lg:grid-cols-3">{renderAdvancedFilters()}</div>
-          </div>
-        </div>
-      </section>
+          </section>
+        </aside>
 
-      <section className="mt-4 space-y-3">
-        <FeaturedRaceSection items={featuredRaces} />
-
-        <div className="grid gap-4 md:grid-cols-2">
-          {promoSlots.map((slot) => (
-            <PromoSlotCard
-              key={slot.id}
-              badge={slot.badge}
-              title={slot.title}
-              description={slot.description}
-              href={slot.href}
-              ctaLabel={slot.ctaLabel}
-              external={slot.external}
-              disclosure={slot.disclosure}
-            />
-          ))}
-        </div>
-
-        {races.length === 0 ? (
-          <article className="rounded-[1.25rem] bg-white p-8 text-center shadow-sm ring-1 ring-black/5">
-            <p className="text-base font-semibold text-slate-950">조건에 맞는 대회가 없습니다.</p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              필터를 조금만 풀어보면 다른 일정도 편하게 살펴볼 수 있어요.
-            </p>
-            <Link
-              href="/races"
-              className="public-primary-button pressable mt-5 inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold"
-            >
-              필터 초기화
-            </Link>
-          </article>
-        ) : (
-          races.map((race) => (
-            <article
-              key={race.id}
-              className="interactive-card soft-surface overflow-hidden rounded-[1rem] border border-black/5 bg-white sm:rounded-[1.1rem]"
-            >
+        <div className="space-y-3">
+          {races.length === 0 ? (
+            <article className="rounded-[1.5rem] bg-white p-8 text-center shadow-sm ring-1 ring-[var(--line)]">
+              <p className="text-base font-semibold text-[var(--secondary)]">조건에 맞는 대회가 없습니다.</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                필터를 조금만 풀어보면 다른 일정도 편하게 살펴볼 수 있어요.
+              </p>
               <Link
-                href={`/races/${race.sourceRaceId}`}
-                aria-label={`${race.title} 상세 보기`}
-                className="group relative block p-3 sm:p-4"
+                href="/races"
+                className="public-primary-button pressable mt-5 inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
               >
-                <LinkPendingOverlay label="대회 여는 중…" />
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="tabular-nums text-[11px] font-semibold text-slate-500 sm:text-xs">
-                        {formatRaceDate(race.eventDate, race.eventDateLabel)}
-                      </p>
-                      {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
-                      {featuredRaceIds.has(race.id) ? <StatusBadge tone="disclosure">Featured</StatusBadge> : null}
-                    </div>
-                    <h2 className="text-balance mt-1 line-clamp-2 text-sm font-semibold text-slate-950 sm:text-lg">
-                      {race.title}
-                    </h2>
+                필터 초기화
+              </Link>
+            </article>
+          ) : (
+            races.map((race) => (
+              <article
+                key={race.id}
+                className="interactive-card soft-surface overflow-hidden rounded-[1.25rem] border border-[var(--line)] bg-white"
+              >
+                <Link
+                  href={`/races/${race.sourceRaceId}`}
+                  aria-label={`${race.title} 상세 보기`}
+                  className="group relative block p-4 sm:p-5"
+                >
+                  <LinkPendingOverlay label="대회 여는 중…" />
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="tabular-nums text-[11px] font-semibold text-slate-500 sm:text-xs">
+                          {formatRaceDate(race.eventDate, race.eventDateLabel)}
+                        </p>
+                        {race.region ? <StatusBadge tone="neutral">{race.region}</StatusBadge> : null}
+                      </div>
+                      <h2 className="text-balance mt-2 line-clamp-2 text-base font-semibold text-[var(--secondary)] sm:text-xl">
+                        {race.title}
+                      </h2>
 
-                    <p className="mt-3 line-clamp-1 text-sm font-medium text-slate-700">
-                      {race.location ?? '장소 정보는 상세에서 확인해보세요.'}
-                    </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 sm:text-sm">
-                      <span>{race.courseSummary ?? '종목 정보는 상세 페이지에서 확인할 수 있습니다.'}</span>
-                      {race.registrationPeriodLabel ? (
-                        <>
-                          <span className="text-slate-300">·</span>
-                          <span>접수 {race.registrationPeriodLabel}</span>
-                        </>
+                      {race.location ? (
+                        <p className="mt-3 line-clamp-1 text-sm font-medium text-slate-700">{race.location}</p>
+                      ) : null}
+                      {(race.courseSummary || race.registrationPeriodLabel) ? (
+                        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 sm:text-sm">
+                          {race.courseSummary ? <span>{race.courseSummary}</span> : null}
+                          {race.courseSummary && race.registrationPeriodLabel ? <span className="text-slate-300">·</span> : null}
+                          {race.registrationPeriodLabel ? <span>접수 {race.registrationPeriodLabel}</span> : null}
+                        </div>
                       ) : null}
                     </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-3">
                     <StatusBadge tone={getRaceStatusTone(race.registrationStatus)}>
                       {getRaceStatusLabel(race.registrationStatus)}
                     </StatusBadge>
-                    <span className="inline-flex min-h-10 items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700 sm:text-xs">
-                      자세히 보기
-                    </span>
                   </div>
+                </Link>
+                <div className="border-t border-[var(--line)] px-4 py-3 sm:px-5">
+                  <RaceCompareButton
+                    compact
+                    item={{
+                      sourceRaceId: race.sourceRaceId,
+                      title: race.title,
+                      eventDate: race.eventDate,
+                      eventDateLabel: race.eventDateLabel,
+                      region: race.region,
+                      location: race.location,
+                      courseSummary: race.courseSummary,
+                      registrationPeriodLabel: race.registrationPeriodLabel,
+                      detailPath: `/races/${race.sourceRaceId}`,
+                    }}
+                  />
                 </div>
-              </Link>
-              <div className="border-t border-slate-100 px-3 py-3 sm:px-4">
-                <RaceCompareButton
-                  compact
-                  item={{
-                    sourceRaceId: race.sourceRaceId,
-                    title: race.title,
-                    eventDate: race.eventDate,
-                    eventDateLabel: race.eventDateLabel,
-                    region: race.region,
-                    location: race.location,
-                    courseSummary: race.courseSummary,
-                    registrationPeriodLabel: race.registrationPeriodLabel,
-                    detailPath: `/races/${race.sourceRaceId}`,
-                  }}
-                />
-              </div>
-            </article>
-          ))
-        )}
+              </article>
+            ))
+          )}
+        </div>
       </section>
-
-      <PartnerInquiryCard sourcePath="/races" />
     </PageShell>
   );
 }

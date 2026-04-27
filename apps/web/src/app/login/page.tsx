@@ -38,7 +38,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
               name="email"
               type="email"
               required
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
               placeholder="runner@modoo.run"
             />
           </label>
@@ -50,7 +50,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
               type="password"
               required
               minLength={8}
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
               placeholder="8자 이상"
             />
           </label>

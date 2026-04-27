@@ -33,6 +33,7 @@ export default async function OpsFeaturedPage({ searchParams }: { searchParams: 
       title="Featured Listing 편성"
       description="대회 목록 상단 featured 영역을 운영자가 직접 선택하고 문구를 수정할 수 있습니다."
       compactIntro
+      mode="ops"
     >
       <section className="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -97,7 +98,7 @@ export default async function OpsFeaturedPage({ searchParams }: { searchParams: 
                 <select
                   name="isActive"
                   defaultValue={slot.isActive ? 'true' : 'false'}
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                 >
                   <option value="true">노출</option>
                   <option value="false">숨김</option>
@@ -109,7 +110,7 @@ export default async function OpsFeaturedPage({ searchParams }: { searchParams: 
                 <select
                   name="raceId"
                   defaultValue={slot.raceId}
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                 >
                   <option value="">대회를 선택하세요</option>
                   {races.map((race) => (
@@ -125,7 +126,7 @@ export default async function OpsFeaturedPage({ searchParams }: { searchParams: 
                 <select
                   name="eyebrow"
                   defaultValue={featuredPlacementLabelOptions.includes(slot.eyebrow as (typeof featuredPlacementLabelOptions)[number]) ? slot.eyebrow : 'Featured Listing'}
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                 >
                   {featuredPlacementLabelOptions.map((label) => (
                     <option key={label} value={label}>
@@ -143,7 +144,7 @@ export default async function OpsFeaturedPage({ searchParams }: { searchParams: 
                 <textarea
                   name="summary"
                   defaultValue={slot.summary}
-                  className="mt-2 min-h-28 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                  className="mt-2 min-h-28 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                   placeholder="지금 눈여겨볼 대회로 먼저 보여주는 시범 노출 영역입니다."
                 />
                 <p className="mt-2 text-xs leading-5 text-slate-500">

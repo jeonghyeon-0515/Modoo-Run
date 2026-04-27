@@ -46,17 +46,22 @@ export default async function OpsHomePage() {
       title="관리자 기능"
       description="운영 흐름, 공개 노출 상태, 광고·제휴 진입 화면을 빠르게 확인할 수 있습니다."
       compactIntro
+      mode="ops"
     >
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-3 xl:grid-cols-2">
         {adminLinks.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="rounded-[1.25rem] border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300"
+            className="rounded-[1.1rem] border border-[var(--line)] bg-white px-5 py-4 shadow-sm transition hover:border-[rgba(255,107,84,0.18)]"
           >
-            <p className="text-sm font-semibold text-slate-950">{item.title}</p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
-            <p className="mt-4 text-xs font-semibold text-[var(--brand-strong)]">바로 열기 →</p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-[var(--secondary)]">{item.title}</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600">{item.description}</p>
+              </div>
+              <span className="text-xs font-semibold text-[var(--brand-strong)]">열기</span>
+            </div>
           </Link>
         ))}
       </section>

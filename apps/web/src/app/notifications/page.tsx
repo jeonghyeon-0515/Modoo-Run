@@ -64,8 +64,8 @@ export default async function NotificationsPage({ searchParams }: { searchParams
               href="/notifications?filter=all"
               className={`focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold ${
                 filter === 'all'
-                  ? 'border-slate-900 bg-slate-900 text-white'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                  ? 'border-[var(--secondary)] bg-[var(--secondary)] text-white'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-[rgba(255,107,84,0.18)] hover:text-[var(--secondary)]'
               }`}
             >
               전체
@@ -74,8 +74,8 @@ export default async function NotificationsPage({ searchParams }: { searchParams
               href="/notifications?filter=unread"
               className={`focus-ring pressable inline-flex min-h-11 items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold ${
                 filter === 'unread'
-                  ? 'border-slate-900 bg-slate-900 text-white'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                  ? 'border-[var(--secondary)] bg-[var(--secondary)] text-white'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-[rgba(255,107,84,0.18)] hover:text-[var(--secondary)]'
               }`}
             >
               읽지 않음

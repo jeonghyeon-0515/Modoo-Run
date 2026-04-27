@@ -113,7 +113,7 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Se
               <span className="text-sm font-semibold text-slate-700">이름</span>
               <input
                 name="name"
-                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
+                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                 placeholder="홍길동"
               />
             </label>
@@ -123,7 +123,7 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Se
               <input
                 name="email"
                 type="email"
-                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
+                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                 placeholder="contact@example.com"
               />
             </label>
@@ -132,7 +132,7 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Se
               <span className="text-sm font-semibold text-slate-700">브랜드 / 주최측명</span>
               <input
                 name="organizationName"
-                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
+                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                 placeholder="브랜드명 또는 대회 주최측명"
               />
             </label>
@@ -142,7 +142,7 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Se
               <select
                 name="inquiryType"
                 defaultValue="featured_listing"
-                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
+                className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
               >
                 <option value="featured_listing">Featured 등록 문의</option>
                 <option value="sponsorship">스폰서 제안</option>
@@ -155,7 +155,7 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Se
               <span className="text-sm font-semibold text-slate-700">문의 내용</span>
               <textarea
                 name="message"
-                className="mt-2 min-h-36 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-slate-400"
+                className="mt-2 min-h-36 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                 placeholder="원하는 노출 방식, 예산, 일정, 협업 목적을 적어주세요."
               />
             </label>

@@ -19,7 +19,7 @@ export function FeaturedRaceSection({
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <StatusBadge tone={isOpsPreview ? 'ops-info' : 'disclosure'}>Featured</StatusBadge>
+            <StatusBadge tone={isOpsPreview ? 'ops-info' : 'featured'}>Featured</StatusBadge>
             <p className="text-lg font-semibold text-slate-950">주목할 대회</p>
           </div>
           <p className="mt-2 text-sm text-slate-600">

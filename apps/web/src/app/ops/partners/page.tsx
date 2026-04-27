@@ -27,6 +27,7 @@ export default async function OpsPartnersPage({ searchParams }: { searchParams: 
       title="제휴 링크 관리"
       description="공개 화면에서 사용되는 파트너 링크를 관리자 화면에서 직접 바꿀 수 있습니다."
       compactIntro
+      mode="ops"
     >
       <section className="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -88,7 +89,7 @@ export default async function OpsPartnersPage({ searchParams }: { searchParams: 
                 <input
                   name="destinationUrl"
                   defaultValue={setting.currentUrl}
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                   placeholder="https://..."
                 />
               </label>

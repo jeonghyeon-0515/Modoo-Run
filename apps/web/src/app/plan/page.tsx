@@ -100,21 +100,19 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
   return (
     <PageShell
       title="이번 달 러닝 계획"
-      description="이번 달 계획과 실행 기록을 관리합니다."
+      description="이번 달 계획과 실행을 정리합니다."
       viewer={viewer}
     >
       {!viewer ? (
         <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
-          <p className="text-lg font-semibold text-slate-950">로그인하면 내 계획을 볼 수 있습니다.</p>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            로그인하면 이번 달 계획과 실행 기록을 계정에 저장할 수 있습니다.
-          </p>
+          <p className="text-lg font-semibold text-slate-950">로그인하면 계획을 저장할 수 있습니다.</p>
+          <p className="mt-3 text-sm leading-6 text-slate-600">이번 달 계획과 실행 기록을 계정에 남깁니다.</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href={`/login?next=${encodeURIComponent(`/plan?year=${year}&month=${month}`)}`}
               className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand)] px-5 py-3 text-sm font-semibold text-white pressable hover:bg-[var(--brand-strong)]"
             >
-              로그인하고 계획 보기
+              로그인하고 시작하기
             </Link>
             <Link
               href="/races"
@@ -124,8 +122,8 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
             </Link>
           </div>
 
-          <div className="mt-8 grid gap-3 lg:grid-cols-3">
-            {starterTemplates.map((template) => (
+          <div className="mt-8 grid gap-3 lg:grid-cols-2">
+            {starterTemplates.slice(0, 2).map((template) => (
               <article key={template.id} className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{template.accent}</p>
                 <h3 className="mt-2 text-sm font-semibold text-slate-950">{template.title}</h3>
@@ -136,56 +134,54 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
         </section>
       ) : (
         <>
-          <section className="grid gap-4 sm:grid-cols-3">
-            <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
+          <section className="hero-shell overflow-hidden rounded-[1.75rem] px-6 py-6 text-white sm:px-7">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-[#ffd3c4]">Monthly plan</p>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">{monthTitle} 러닝 계획</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-200">
+                  목표 대회와 이번 달 훈련 흐름을 한 화면에서 정리하고, 날짜별 실행 상태까지 이어서 남길 수 있습니다.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  href={monthHref(prevMonth.year, prevMonth.month)}
+                  className="focus-ring pressable inline-flex min-h-11 items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/16"
+                >
+                  이전 달
+                </Link>
+                <Link
+                  href={monthHref(nextMonth.year, nextMonth.month)}
+                  className="focus-ring pressable inline-flex min-h-11 items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/16"
+                >
+                  다음 달
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          <section className="mt-5 grid gap-4 sm:grid-cols-3">
+            <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-[var(--line)]">
               <p className="text-sm font-medium text-slate-500">이번 달 실행률</p>
-              <p className="mt-3 text-3xl font-bold tabular-nums text-slate-950">{stats.completionRate}%</p>
+              <p className="mt-3 text-3xl font-bold tabular-nums text-[var(--secondary)]">{stats.completionRate}%</p>
             </article>
-            <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
+            <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-[var(--line)]">
               <p className="text-sm font-medium text-slate-500">잡아둔 일정</p>
-              <p className="mt-3 text-3xl font-bold tabular-nums text-slate-950">{stats.totalCount}개</p>
+              <p className="mt-3 text-3xl font-bold tabular-nums text-[var(--secondary)]">{stats.totalCount}개</p>
             </article>
-            <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
+            <article className="rounded-[1.5rem] bg-white p-5 shadow-sm ring-1 ring-[var(--line)]">
               <p className="text-sm font-medium text-slate-500">이어 달린 날</p>
-              <p className="mt-3 text-3xl font-bold tabular-nums text-slate-950">{stats.streak}일</p>
+              <p className="mt-3 text-3xl font-bold tabular-nums text-[var(--secondary)]">{stats.streak}일</p>
             </article>
           </section>
 
           <section className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
             <aside className="order-1 space-y-6 lg:order-2">
               <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-950">이번 달 한눈에 보기</h3>
-                    <p className="mt-2 text-sm text-slate-600">{monthTitle} 목표와 진행 상태를 빠르게 확인합니다.</p>
-                  </div>
-                  {plan ? <StatusBadge tone="neutral">계획 저장됨</StatusBadge> : <StatusBadge tone="warning">계획 필요</StatusBadge>}
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[1.25rem] bg-slate-50 p-4">
-                    <p className="text-xs font-semibold text-slate-400">완료한 일정</p>
-                    <p className="mt-2 text-lg font-semibold tabular-nums text-slate-950">{stats.completedCount}개</p>
-                  </div>
-                  <div className="rounded-[1.25rem] bg-slate-50 p-4">
-                    <p className="text-xs font-semibold text-slate-400">부분 완료</p>
-                    <p className="mt-2 text-lg font-semibold tabular-nums text-slate-950">{stats.partialCount}개</p>
-                  </div>
-                  <div className="rounded-[1.25rem] bg-slate-50 p-4">
-                    <p className="text-xs font-semibold text-slate-400">쉬어간 일정</p>
-                    <p className="mt-2 text-lg font-semibold tabular-nums text-slate-950">{stats.skippedCount}개</p>
-                  </div>
-                  <div className="rounded-[1.25rem] bg-slate-50 p-4">
-                    <p className="text-xs font-semibold text-slate-400">이어 달린 날</p>
-                    <p className="mt-2 text-lg font-semibold tabular-nums text-slate-950">{stats.streak}일</p>
-                  </div>
-                </div>
-              </section>
-
-              <section className="rounded-[1.75rem] bg-white p-6 shadow-sm ring-1 ring-black/5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-lg font-semibold text-slate-950">새 일정 추가</h3>
-                    <p className="mt-2 text-sm text-slate-600">달릴 일정 한 개부터 가볍게 추가할 수 있습니다.</p>
+                    <p className="mt-2 text-sm text-slate-600">일정 한 개부터 바로 추가할 수 있습니다.</p>
                   </div>
                   <StatusBadge tone="neutral">빠른 입력</StatusBadge>
                 </div>
@@ -196,12 +192,12 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       type="date"
                       name="scheduledDate"
                       defaultValue={createDateInputValue(year, month)}
-                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                     />
                     <select
                       name="category"
                       defaultValue="easy_run"
-                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                     >
                       {categoryOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -213,14 +209,14 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       name="title"
                       autoComplete="off"
                       spellCheck={false}
-                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                      className="focus-ring w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                       placeholder="퇴근 후 5km"
                     />
                     <textarea
                       name="description"
                       autoComplete="off"
                       spellCheck
-                      className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                      className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                       placeholder="메모 또는 목표 페이스"
                     />
                     <div className="grid gap-3 sm:grid-cols-2">
@@ -230,7 +226,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                         inputMode="decimal"
                         autoComplete="off"
                         name="targetDistanceKm"
-                        className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                        className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                         placeholder="거리 (km)"
                       />
                       <input
@@ -238,7 +234,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                         inputMode="numeric"
                         autoComplete="off"
                         name="targetDurationMinutes"
-                        className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                        className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                         placeholder="시간 (분)"
                       />
                     </div>
@@ -278,9 +274,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                   <div>
                     <h3 className="text-lg font-semibold text-slate-950">{monthTitle} 계획</h3>
                     <p className="mt-2 text-sm text-slate-600">
-                      {plan
-                        ? '이번 달 목표와 메모를 가볍게 정리해두면 아래 일정 관리가 더 쉬워집니다.'
-                        : '먼저 월간 계획을 만들고, 그다음 일정과 실행 상태를 채워보세요.'}
+                      {plan ? '이번 달 목표를 정리해두는 영역입니다.' : '먼저 월간 계획을 만든 뒤 일정을 채워보세요.'}
                     </p>
                   </div>
                   {targetRaceLabel ? <StatusBadge tone="success">목표 대회 {targetRaceLabel}</StatusBadge> : null}
@@ -315,7 +309,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     defaultValue={plan?.title ?? ''}
                     autoComplete="off"
                     spellCheck={false}
-                    className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                    className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                     placeholder="예: 5월 하프 대비 페이스 끌어올리기"
                   />
                   <textarea
@@ -323,7 +317,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                     defaultValue={plan?.notes ?? ''}
                     autoComplete="off"
                     spellCheck
-                    className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                    className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                     placeholder="이번 달에 챙길 메모나 컨디션 목표"
                   />
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -334,7 +328,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       autoComplete="off"
                       name="goalDistanceKm"
                       defaultValue={plan?.goal_distance_km ?? ''}
-                      className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                      className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                       placeholder="목표 거리 (km)"
                     />
                     <input
@@ -343,14 +337,14 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                       autoComplete="off"
                       name="goalSessions"
                       defaultValue={plan?.goal_sessions ?? ''}
-                      className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                      className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                       placeholder="목표 횟수"
                     />
                   </div>
                   <select
                     name="targetRaceId"
                     defaultValue={plan?.target_race_id ?? ''}
-                    className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                    className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                   >
                     <option value="">목표 대회 선택 안 함</option>
                     {races.map((race) => (
@@ -420,7 +414,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                             <select
                               name="status"
                               defaultValue={item.status}
-                              className="focus-ring min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                              className="focus-ring min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                             >
                               {statusOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -448,12 +442,12 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                                 type="date"
                                 name="scheduledDate"
                                 defaultValue={item.scheduled_date}
-                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                               />
                               <select
                                 name="category"
                                 defaultValue={item.category}
-                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                               >
                                 {categoryOptions.map((option) => (
                                   <option key={option.value} value={option.value}>
@@ -467,14 +461,14 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                               defaultValue={item.title}
                               autoComplete="off"
                               spellCheck={false}
-                              className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                              className="focus-ring w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                             />
                             <textarea
                               name="description"
                               defaultValue={item.description ?? ''}
                               autoComplete="off"
                               spellCheck
-                              className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                              className="focus-ring min-h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                             />
                             <div className="grid gap-3 sm:grid-cols-2">
                               <input
@@ -484,7 +478,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                                 autoComplete="off"
                                 name="targetDistanceKm"
                                 defaultValue={item.target_distance_km ?? ''}
-                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                                 placeholder="8"
                               />
                               <input
@@ -493,7 +487,7 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
                                 autoComplete="off"
                                 name="targetDurationMinutes"
                                 defaultValue={item.target_duration_minutes ?? ''}
-                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-blue-400"
+                                className="focus-ring rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none field-transition focus:border-[rgba(255,107,84,0.34)]"
                                 placeholder="50"
                               />
                             </div>

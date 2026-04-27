@@ -161,6 +161,7 @@ export default async function OutboundClicksPage({ searchParams }: { searchParam
       title="외부 신청 흐름"
       description="최근 외부 이동 흐름을 확인할 수 있는 운영 화면입니다."
       compactIntro
+      mode="ops"
     >
       <section className="rounded-[1.5rem] bg-white p-4 shadow-sm ring-1 ring-black/5 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">

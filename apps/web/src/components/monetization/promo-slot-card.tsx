@@ -28,7 +28,7 @@ export function PromoSlotCard({
       </div>
       <p className="text-pretty mt-3 text-sm leading-6 text-slate-600">{description}</p>
       <div className="mt-4 flex items-center justify-between gap-3">
-        <p className="text-pretty text-xs text-slate-400">{disclosure ?? '광고 · 제휴 표기를 포함한 정보형 슬롯입니다.'}</p>
+        <p className="text-pretty text-xs text-slate-400/90">{disclosure ?? '광고 · 제휴 여부를 함께 안내하는 정보형 슬롯입니다.'}</p>
         <span className="public-primary-button pressable inline-flex min-h-11 items-center justify-center rounded-[0.95rem] px-4 py-2.5 text-center text-sm font-semibold">
           {ctaLabel}
         </span>

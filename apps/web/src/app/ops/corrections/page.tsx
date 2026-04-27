@@ -38,6 +38,7 @@ export default async function OpsCorrectionsPage({ searchParams }: { searchParam
       title="대회 정보 수정 요청"
       description="사용자와 주최측이 보낸 정보 수정 요청을 검토하고 처리 상태를 남깁니다."
       compactIntro
+      mode="ops"
     >
       <section className="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -70,8 +71,8 @@ export default async function OpsCorrectionsPage({ searchParams }: { searchParam
           href="/ops/corrections?status=all"
           className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
             selectedStatus === 'all'
-              ? 'border-slate-900 bg-slate-900 text-white'
-              : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+              ? 'border-[var(--secondary)] bg-[var(--secondary)] text-white'
+              : 'border-slate-200 bg-white text-slate-600 hover:border-[rgba(255,107,84,0.18)] hover:text-[var(--secondary)]'
           }`}
         >
           전체
@@ -82,8 +83,8 @@ export default async function OpsCorrectionsPage({ searchParams }: { searchParam
             href={`/ops/corrections?status=${status}`}
             className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
               selectedStatus === status
-                ? 'border-slate-900 bg-slate-900 text-white'
-                : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                ? 'border-[var(--secondary)] bg-[var(--secondary)] text-white'
+                : 'border-slate-200 bg-white text-slate-600 hover:border-[rgba(255,107,84,0.18)] hover:text-[var(--secondary)]'
             }`}
           >
             {getCorrectionStatusLabel(status)}
@@ -148,7 +149,7 @@ export default async function OpsCorrectionsPage({ searchParams }: { searchParam
                   <select
                     name="status"
                     defaultValue={item.status}
-                    className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                    className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                   >
                     {correctionStatuses.map((status) => (
                       <option key={status} value={status}>
@@ -162,14 +163,14 @@ export default async function OpsCorrectionsPage({ searchParams }: { searchParam
                   <textarea
                     name="adminNote"
                     defaultValue={item.adminNote ?? ''}
-                    className="mt-2 min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+                    className="mt-2 min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[rgba(255,107,84,0.34)]"
                     placeholder="확인한 공식 링크, 반영 여부, 보류 사유를 남겨주세요."
                   />
                 </label>
                 <div className="flex justify-end">
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+                    className="focus-ring pressable inline-flex items-center justify-center rounded-xl bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--brand-strong)]"
                   >
                     처리 상태 저장
                   </button>
