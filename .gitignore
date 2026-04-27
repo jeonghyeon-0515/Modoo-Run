@@ -1,7 +1,9 @@
 .omx/
 .omc/
+.claude/
 .playwright-mcp/
 .npm-cache/
 .vercel
+apps/web/.qa-artifacts/
 docs/reports/weekly-*.md
 supabase/.temp/
